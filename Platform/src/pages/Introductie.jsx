@@ -20,8 +20,11 @@ import {
   Heart,
   Compass,
   Gauge,
-  BookOpen
+  BookOpen,
+  Eye,
+  FileText
 } from 'lucide-react'
+import { kernprincipes } from '../data/programmaData'
 
 function Introductie() {
   return (
@@ -419,7 +422,92 @@ function Introductie() {
         </div>
       </section>
 
-      {/* SECTIE 5: Governance Structuur */}
+      {/* SECTIE 5: De 7 Kernprincipes */}
+      <section className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+        <div className="bg-indigo-50 px-8 py-6 border-b border-indigo-100">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-indigo-500 rounded-xl shadow-lg">
+              <Shield className="w-7 h-7 text-white" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-indigo-900">5. De 7 Kernprincipes</h2>
+              <p className="text-base text-indigo-700 mt-1">Fundament van de methodologie</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-6">
+          <p className="text-sm text-slate-600 mb-4">
+            Deze 7 principes vormen de basis van "Werken aan Programma's" en gelden voor alle programma-activiteiten.
+            Ze helpen bij het maken van keuzes en het vermijden van valkuilen.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {kernprincipes.map(principe => {
+              const iconMap = {
+                Eye: Eye,
+                Users: Users,
+                Layers: Layers,
+                FileText: FileText,
+                TrendingUp: TrendingUp,
+                Shield: Shield,
+                Target: Target
+              }
+              const Icon = iconMap[principe.icon] || Shield
+
+              return (
+                <div
+                  key={principe.id}
+                  className="p-4 rounded-xl border-2 hover:shadow-md transition-all"
+                  style={{ borderColor: `${principe.kleur}40`, backgroundColor: `${principe.kleur}08` }}
+                >
+                  <div className="flex items-start gap-3">
+                    <div
+                      className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                      style={{ backgroundColor: principe.kleur }}
+                    >
+                      <Icon className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-bold text-slate-400">P{principe.id}</span>
+                        <h3 className="font-semibold text-slate-800 text-sm">{principe.titel}</h3>
+                      </div>
+                      <p className="text-xs text-slate-600 mb-2">{principe.beschrijving}</p>
+
+                      {/* KiB Toepassing */}
+                      <div className="bg-blue-50 rounded p-2 mb-2">
+                        <div className="text-[10px] text-blue-600 font-medium mb-0.5">Klant in Beeld:</div>
+                        <div className="text-xs text-blue-800">{principe.kibToepassing}</div>
+                      </div>
+
+                      {/* Valkuil & Check */}
+                      <div className="flex gap-2 text-[10px]">
+                        <div className="flex-1 bg-red-50 rounded p-1.5">
+                          <span className="text-red-600 font-medium">Valkuil: </span>
+                          <span className="text-red-700">{principe.valkuil}</span>
+                        </div>
+                        <div className="flex-1 bg-green-50 rounded p-1.5">
+                          <span className="text-green-600 font-medium">Check: </span>
+                          <span className="text-green-700">{principe.check}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          <div className="mt-4 p-3 bg-indigo-50 rounded-lg border border-indigo-200">
+            <p className="text-xs text-indigo-800">
+              <strong>Bron:</strong> "Werken aan Programma's" (Prevaas & Van Loon) - Deze principes zijn de basis voor alle programma-activiteiten.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTIE 6: Governance Structuur */}
       <section className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
         <div className="bg-amber-50 px-8 py-6 border-b border-amber-100">
           <div className="flex items-center gap-4">
@@ -427,7 +515,7 @@ function Introductie() {
               <Users className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-amber-900">5. Governance Structuur</h2>
+              <h2 className="text-2xl font-bold text-amber-900">6. Governance Structuur</h2>
               <p className="text-base text-amber-700 mt-1">Wie is verantwoordelijk waarvoor</p>
             </div>
           </div>

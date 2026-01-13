@@ -125,7 +125,7 @@ const viewModes = [
 
 function Methodologie() {
   const navigate = useNavigate()
-  const { voortgang, getCyclusVoortgang, getTotaleVoortgang, getVolgendeActie } = useMethodologieStore()
+  const { voortgang, getCyclusVoortgang, getTotaleVoortgang, getVolgendeActie, advanceWeek, advanceCyclus, canUnlockCyclus } = useMethodologieStore()
   const [geselecteerdeCyclus, setGeselecteerdeCyclus] = useState(null)
   const [geselecteerdThema, setGeselecteerdThema] = useState(null)
   const [activeView, setActiveView] = useState('overzicht')
@@ -672,6 +672,149 @@ function Methodologie() {
         </div>
       </div>
 
+      {/* === VIEW-BASED CONTENT === */}
+      {activeView === 'timeline' && (
+        <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-6">
+          <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <Calendar className="w-5 h-5 text-blue-500" />
+            Timeline: Faseverloop Week 1-8
+          </h2>
+
+          {/* Timeline Grid */}
+          <div className="relative">
+            {/* Week headers */}
+            <div className="grid grid-cols-9 gap-1 mb-2">
+              <div className="text-xs font-medium text-slate-500 p-2">Fase</div>
+              {[1, 2, 3, 4, 5, 6, 7, 8].map(week => (
+                <div
+                  key={week}
+                  className={`text-xs font-medium text-center p-2 rounded ${
+                    voortgang.huidigeWeek === week
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-slate-100 text-slate-600'
+                  }`}
+                >
+                  W{week}
+                </div>
+              ))}
+            </div>
+
+            {/* VERKENNEN Row */}
+            <div className="grid grid-cols-9 gap-1 mb-1">
+              <div className="text-xs font-medium text-blue-700 bg-blue-50 p-2 rounded flex items-center">
+                <span className="w-4 h-4 rounded bg-blue-500 text-white text-[10px] flex items-center justify-center mr-1">1</span>
+                Verkennen
+              </div>
+              <div className="bg-blue-100 p-1.5 rounded text-[10px] text-blue-800 truncate">Voorstel</div>
+              <div className="bg-blue-100 p-1.5 rounded text-[10px] text-blue-800 truncate">Sessie</div>
+              <div className="bg-blue-100 p-1.5 rounded text-[10px] text-blue-800 truncate">B.case</div>
+              <div className="bg-amber-100 p-1.5 rounded text-[10px] text-amber-800 truncate border border-amber-300">Go/No-Go</div>
+              <div className="bg-slate-50 p-1.5 rounded" />
+              <div className="bg-slate-50 p-1.5 rounded" />
+              <div className="bg-slate-50 p-1.5 rounded" />
+              <div className="bg-slate-50 p-1.5 rounded" />
+            </div>
+
+            {/* OPBOUWEN Row */}
+            <div className="grid grid-cols-9 gap-1 mb-1">
+              <div className="text-xs font-medium text-purple-700 bg-purple-50 p-2 rounded flex items-center">
+                <span className="w-4 h-4 rounded bg-purple-500 text-white text-[10px] flex items-center justify-center mr-1">2</span>
+                Opbouwen
+              </div>
+              <div className="bg-slate-50 p-1.5 rounded" />
+              <div className="bg-slate-50 p-1.5 rounded" />
+              <div className="bg-slate-50 p-1.5 rounded" />
+              <div className="bg-slate-50 p-1.5 rounded" />
+              <div className="bg-purple-100 p-1.5 rounded text-[10px] text-purple-800 truncate">Bouw</div>
+              <div className="bg-purple-100 p-1.5 rounded text-[10px] text-purple-800 truncate">Bouw</div>
+              <div className="bg-purple-100 p-1.5 rounded text-[10px] text-purple-800 truncate">Bouw</div>
+              <div className="bg-amber-100 p-1.5 rounded text-[10px] text-amber-800 truncate border border-amber-300">Go/No-Go</div>
+            </div>
+
+            {/* Current week indicator */}
+            <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-sm font-medium text-blue-800">Huidige week: {voortgang.huidigeWeek}</span>
+                  <span className="text-xs text-blue-600 ml-2">({voortgang.huidigeCyclus})</span>
+                </div>
+                <button
+                  onClick={advanceWeek}
+                  className="px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
+                >
+                  Week +1
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeView === 'detail' && (
+        <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-6">
+          <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <List className="w-5 h-5 text-blue-500" />
+            Detail: Alle Activiteiten
+          </h2>
+
+          <div className="space-y-4">
+            {levensloopcycli.map(cyclus => {
+              const cyclusVoortgang = getCyclusVoortgang(cyclus.id)
+              const kleur = cyclusKleuren[cyclus.id]
+              const cyclusActiviteiten = activiteiten.filter(a => a.cyclusId === cyclus.id)
+
+              return (
+                <div key={cyclus.id} className="border rounded-lg overflow-hidden">
+                  <div
+                    className="p-3 flex items-center justify-between"
+                    style={{ backgroundColor: `${kleur}15` }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="w-6 h-6 rounded flex items-center justify-center text-white text-sm font-bold"
+                        style={{ backgroundColor: kleur }}
+                      >
+                        {cyclus.nummer}
+                      </div>
+                      <span className="font-medium text-slate-800">{cyclus.naam}</span>
+                      <span className="text-xs text-slate-500">({cyclus.duur})</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-20 h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                        <div
+                          className="h-full rounded-full"
+                          style={{ width: `${cyclusVoortgang.percentage}%`, backgroundColor: kleur }}
+                        />
+                      </div>
+                      <span className="text-xs font-medium" style={{ color: kleur }}>{cyclusVoortgang.percentage}%</span>
+                    </div>
+                  </div>
+                  <div className="p-3 space-y-1">
+                    {cyclusActiviteiten.map(act => {
+                      const thema = themas.find(t => t.id === act.themaId)
+                      return (
+                        <div key={act.id} className="flex items-center gap-2 text-sm py-1.5 px-2 hover:bg-slate-50 rounded">
+                          <Circle className="w-3 h-3 text-slate-300" />
+                          <span className="flex-1 text-slate-700">{act.naam}</span>
+                          <span
+                            className="text-[10px] px-1.5 py-0.5 rounded"
+                            style={{ backgroundColor: `${thema?.kleur}20`, color: thema?.kleur }}
+                          >
+                            {thema?.naam}
+                          </span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      {activeView === 'overzicht' && (
+      <>
       {/* === 4 LEVENSLOOPCYCLI - HORIZONTAL FLOW === */}
       <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
         <div className="bg-slate-50 px-6 py-4 border-b border-slate-100">
@@ -1056,8 +1199,11 @@ function Methodologie() {
         {expandedSections.faseverloop && (
           <div className="p-6 pt-2 space-y-6">
             {/* VERKENNEN (Week 1-4) */}
+            {(() => {
+              const verkennenVoortgang = getCyclusVoortgang('verkennen')
+              return (
             <div className={`rounded-xl border-2 ${voortgang.huidigeCyclus === 'verkennen' ? 'border-blue-300 bg-white' : 'border-slate-200 bg-slate-50/50'}`}>
-              <div className="p-4 border-b border-slate-200 flex items-center justify-between">
+              <div className="p-3 border-b border-slate-200 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center text-white font-bold">1</div>
                   <div>
@@ -1065,14 +1211,26 @@ function Methodologie() {
                     <div className="text-xs text-slate-500">Week 1-4 • Kiezen om de opgave aan te pakken als programma</div>
                   </div>
                 </div>
-                {voortgang.huidigeCyclus === 'verkennen' && (
-                  <span className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">Huidige fase</span>
-                )}
+                <div className="flex items-center gap-3">
+                  {/* Voortgang indicator */}
+                  <div className="flex items-center gap-2">
+                    <div className="w-24 h-2 bg-slate-200 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-blue-500 rounded-full transition-all duration-500"
+                        style={{ width: `${verkennenVoortgang.percentage}%` }}
+                      />
+                    </div>
+                    <span className="text-xs font-medium text-slate-600">{verkennenVoortgang.percentage}%</span>
+                  </div>
+                  {voortgang.huidigeCyclus === 'verkennen' && (
+                    <span className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">Actief</span>
+                  )}
+                </div>
               </div>
 
-              <div className="p-4 space-y-3">
+              <div className="p-3 space-y-2">
                 {/* Week 1 */}
-                <div className={`p-4 rounded-lg border ${voortgang.huidigeWeek === 1 ? 'border-blue-400 bg-blue-50 ring-2 ring-blue-200' : 'border-slate-200 bg-white'}`}>
+                <div className={`p-3 rounded-lg border ${voortgang.huidigeWeek === 1 ? 'border-blue-400 bg-blue-50 ring-2 ring-blue-200' : 'border-slate-200 bg-white'}`}>
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
@@ -1123,7 +1281,7 @@ function Methodologie() {
                 </div>
 
                 {/* Week 2 */}
-                <div className={`p-4 rounded-lg border ${voortgang.huidigeWeek === 2 ? 'border-blue-400 bg-blue-50 ring-2 ring-blue-200' : 'border-slate-200 bg-white'}`}>
+                <div className={`p-3 rounded-lg border ${voortgang.huidigeWeek === 2 ? 'border-blue-400 bg-blue-50 ring-2 ring-blue-200' : 'border-slate-200 bg-white'}`}>
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
@@ -1170,7 +1328,7 @@ function Methodologie() {
                 </div>
 
                 {/* Week 3 */}
-                <div className={`p-4 rounded-lg border ${voortgang.huidigeWeek === 3 ? 'border-blue-400 bg-blue-50 ring-2 ring-blue-200' : 'border-slate-200 bg-white'}`}>
+                <div className={`p-3 rounded-lg border ${voortgang.huidigeWeek === 3 ? 'border-blue-400 bg-blue-50 ring-2 ring-blue-200' : 'border-slate-200 bg-white'}`}>
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
@@ -1219,7 +1377,7 @@ function Methodologie() {
                 </div>
 
                 {/* Week 4 - Go/No-Go */}
-                <div className={`p-4 rounded-lg border-2 ${voortgang.huidigeWeek === 4 ? 'border-amber-400 bg-amber-50 ring-2 ring-amber-200' : 'border-amber-200 bg-amber-50/50'}`}>
+                <div className={`p-3 rounded-lg border-2 ${voortgang.huidigeWeek === 4 ? 'border-amber-400 bg-amber-50 ring-2 ring-amber-200' : 'border-amber-200 bg-amber-50/50'}`}>
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
@@ -1260,8 +1418,21 @@ function Methodologie() {
                           <BookOpen className="w-3 h-3" />
                           Bron: §6.2 Go/No-Go Verkenning, Sponsorgroep keurt goed
                         </div>
-                        <div className="mt-2 p-2 bg-amber-100 rounded text-xs text-amber-800">
-                          <strong>Besluit:</strong> Sponsorgroep keurt programmavoorstel goed → Start Opbouw
+                        {/* Go/No-Go Button */}
+                        <div className="mt-2 flex items-center gap-2">
+                          {voortgang.huidigeCyclus === 'verkennen' && verkennenVoortgang.percentage >= 75 ? (
+                            <button
+                              onClick={() => advanceCyclus('opbouwen')}
+                              className="flex-1 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+                            >
+                              <CheckCircle className="w-4 h-4" />
+                              Go! Start Opbouwfase
+                            </button>
+                          ) : (
+                            <div className="flex-1 py-2 bg-amber-100 text-amber-800 text-xs rounded-lg text-center">
+                              <strong>Voorwaarde:</strong> Minimaal 75% voortgang voor Go/No-Go besluit
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -1269,34 +1440,60 @@ function Methodologie() {
                 </div>
 
                 {/* Milestone */}
-                <div className="flex items-center gap-3 py-2">
-                  <div className="flex-1 h-px bg-[#003366]" />
-                  <div className="px-4 py-2 bg-[#003366] text-white text-xs font-bold rounded-full">
-                    FORMELE START OPBOUWFASE
+                {voortgang.huidigeCyclus !== 'verkennen' && (
+                <div className="flex items-center gap-3 py-1">
+                  <div className="flex-1 h-px bg-green-500" />
+                  <div className="px-4 py-1.5 bg-green-500 text-white text-xs font-bold rounded-full flex items-center gap-2">
+                    <CheckCircle className="w-3 h-3" />
+                    VERKENNEN AFGEROND
                   </div>
-                  <div className="flex-1 h-px bg-[#003366]" />
+                  <div className="flex-1 h-px bg-green-500" />
                 </div>
+                )}
               </div>
             </div>
+              )
+            })()}
 
             {/* OPBOUWEN (Week 5-8) */}
-            <div className={`rounded-xl border-2 ${voortgang.huidigeCyclus === 'opbouwen' ? 'border-purple-300 bg-white' : 'border-slate-200 bg-slate-50/50'}`}>
-              <div className="p-4 border-b border-slate-200 flex items-center justify-between">
+            {(() => {
+              const opbouwenVoortgang = getCyclusVoortgang('opbouwen')
+              const cyclusVolgorde = ['verkennen', 'opbouwen', 'uitvoeren', 'afbouwen']
+              const isUnlocked = cyclusVolgorde.indexOf(voortgang.huidigeCyclus) >= 1
+              return (
+            <div className={`rounded-xl border-2 ${voortgang.huidigeCyclus === 'opbouwen' ? 'border-purple-300 bg-white' : isUnlocked ? 'border-slate-200 bg-slate-50/50' : 'border-slate-200 bg-slate-100/50 opacity-60'}`}>
+              <div className="p-3 border-b border-slate-200 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-purple-500 flex items-center justify-center text-white font-bold">2</div>
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold ${isUnlocked ? 'bg-purple-500' : 'bg-slate-400'}`}>2</div>
                   <div>
                     <div className="font-bold text-slate-800">OPBOUWEN</div>
                     <div className="text-xs text-slate-500">Week 5-8 • Programma concreet inrichten</div>
                   </div>
                 </div>
-                {voortgang.huidigeCyclus === 'opbouwen' && (
-                  <span className="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded-full">Huidige fase</span>
-                )}
+                <div className="flex items-center gap-3">
+                  {isUnlocked && (
+                    <div className="flex items-center gap-2">
+                      <div className="w-24 h-2 bg-slate-200 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-purple-500 rounded-full transition-all duration-500"
+                          style={{ width: `${opbouwenVoortgang.percentage}%` }}
+                        />
+                      </div>
+                      <span className="text-xs font-medium text-slate-600">{opbouwenVoortgang.percentage}%</span>
+                    </div>
+                  )}
+                  {!isUnlocked && (
+                    <span className="px-3 py-1 bg-slate-200 text-slate-500 text-xs font-medium rounded-full">Vergrendeld</span>
+                  )}
+                  {voortgang.huidigeCyclus === 'opbouwen' && (
+                    <span className="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded-full">Actief</span>
+                  )}
+                </div>
               </div>
 
-              <div className="p-4 space-y-3">
+              <div className="p-3 space-y-2">
                 {/* Week 5-7: Bouwsessies */}
-                <div className={`p-4 rounded-lg border ${voortgang.huidigeWeek >= 5 && voortgang.huidigeWeek <= 7 ? 'border-purple-400 bg-purple-50' : 'border-slate-200 bg-white'}`}>
+                <div className={`p-3 rounded-lg border ${voortgang.huidigeWeek >= 5 && voortgang.huidigeWeek <= 7 ? 'border-purple-400 bg-purple-50' : 'border-slate-200 bg-white'}`}>
                   <div className="flex items-center gap-2 mb-2">
                     <span className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-500">5-7</span>
                     <span className="font-semibold text-slate-800">Bouwsessies Baten & Inspanningen</span>
@@ -1369,7 +1566,7 @@ function Methodologie() {
                 </div>
 
                 {/* Week 8 - Integratiesessie + Go/No-Go */}
-                <div className="p-4 rounded-lg border-2 border-amber-200 bg-amber-50/50">
+                <div className="p-3 rounded-lg border-2 border-amber-200 bg-amber-50/50">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-500">8</span>
                     <span className="font-semibold text-slate-800">Integratiesessie + Go/No-Go</span>
@@ -1405,22 +1602,42 @@ function Methodologie() {
                       <span className="text-[10px] px-2 py-0.5 bg-blue-100 text-blue-700 rounded">Inspanningenregister</span>
                       <span className="text-[10px] px-2 py-0.5 bg-red-100 text-red-700 rounded">Thema: Beslissen</span>
                     </div>
-                    <div className="mt-2 p-2 bg-amber-100 rounded text-xs text-amber-800">
-                      <strong>Besluit:</strong> Eigenaar keurt programmaplan goed → Start Uitvoering Cyclus 1
+                    {/* Go/No-Go Button */}
+                    {isUnlocked && (
+                    <div className="mt-2 flex items-center gap-2">
+                      {voortgang.huidigeCyclus === 'opbouwen' && opbouwenVoortgang.percentage >= 75 ? (
+                        <button
+                          onClick={() => advanceCyclus('uitvoeren')}
+                          className="flex-1 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+                        >
+                          <CheckCircle className="w-4 h-4" />
+                          Go! Start Uitvoerfase
+                        </button>
+                      ) : (
+                        <div className="flex-1 py-2 bg-amber-100 text-amber-800 text-xs rounded-lg text-center">
+                          <strong>Voorwaarde:</strong> Minimaal 75% voortgang voor Go/No-Go besluit
+                        </div>
+                      )}
                     </div>
+                    )}
                   </div>
                 </div>
 
                 {/* Milestone */}
-                <div className="flex items-center gap-3 py-2">
+                {cyclusVolgorde.indexOf(voortgang.huidigeCyclus) >= 2 && (
+                <div className="flex items-center gap-3 py-1">
                   <div className="flex-1 h-px bg-green-500" />
-                  <div className="px-4 py-2 bg-green-500 text-white text-xs font-bold rounded-full">
-                    START EERSTE CYCLUS (UITVOEREN)
+                  <div className="px-4 py-1.5 bg-green-500 text-white text-xs font-bold rounded-full flex items-center gap-2">
+                    <CheckCircle className="w-3 h-3" />
+                    OPBOUWEN AFGEROND - START UITVOERING
                   </div>
                   <div className="flex-1 h-px bg-green-500" />
                 </div>
+                )}
               </div>
             </div>
+              )
+            })()}
 
             {/* Legend */}
             <div className="flex items-center justify-between p-3 bg-slate-100 rounded-lg text-xs">
@@ -1517,6 +1734,8 @@ function Methodologie() {
           ))}
         </div>
       </div>
+      </>
+      )}
 
       {/* Modals */}
       {geselecteerdeCyclus && (

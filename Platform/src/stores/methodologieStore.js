@@ -112,6 +112,55 @@ export const useMethodologieStore = create(
         }
       })),
 
+      // Week vooruit gaan
+      advanceWeek: () => set((state) => {
+        const nieuweWeek = state.voortgang.huidigeWeek + 1
+        return {
+          voortgang: { ...state.voortgang, huidigeWeek: nieuweWeek }
+        }
+      }),
+
+      // Naar volgende cyclus gaan (na Go/No-Go)
+      advanceCyclus: (nieuweCyclusId) => set((state) => {
+        const cyclusVolgorde = ['verkennen', 'opbouwen', 'uitvoeren', 'afbouwen']
+        const nieuweIndex = cyclusVolgorde.indexOf(nieuweCyclusId)
+        // Week 1 = verkennen (1-4), Week 5 = opbouwen (5-8), etc.
+        const startWeek = nieuweIndex === 0 ? 1 : nieuweIndex === 1 ? 5 : nieuweIndex === 2 ? 9 : 13
+
+        return {
+          voortgang: {
+            ...state.voortgang,
+            huidigeCyclus: nieuweCyclusId,
+            huidigeWeek: startWeek,
+            besluiten: [
+              ...state.voortgang.besluiten,
+              {
+                id: `goNogo-${Date.now()}`,
+                cyclus: state.voortgang.huidigeCyclus,
+                besluit: 'go',
+                datum: new Date().toISOString().split('T')[0],
+                nieuweCyclus: nieuweCyclusId
+              }
+            ]
+          }
+        }
+      }),
+
+      // Check of cyclus ontgrendeld kan worden
+      canUnlockCyclus: (cyclusId) => {
+        const state = get()
+        const cyclusVolgorde = ['verkennen', 'opbouwen', 'uitvoeren', 'afbouwen']
+        const huidigeIndex = cyclusVolgorde.indexOf(state.voortgang.huidigeCyclus)
+        const targetIndex = cyclusVolgorde.indexOf(cyclusId)
+
+        // Kan alleen naar de volgende cyclus
+        if (targetIndex !== huidigeIndex + 1) return false
+
+        // Check of huidige cyclus voldoende voortgang heeft (minimaal 75%)
+        const voortgang = get().getCyclusVoortgang(state.voortgang.huidigeCyclus)
+        return voortgang.percentage >= 75
+      },
+
       // Computed getters
       getActiviteitStatus: (activiteitId) => {
         const state = get()
