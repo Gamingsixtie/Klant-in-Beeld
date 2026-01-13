@@ -12,14 +12,15 @@ import {
   ChevronRight,
   Layers,
   FileText,
-  Play
+  Play,
+  Scale
 } from 'lucide-react'
 
 const navItems = [
   // Programma niveau - conceptueel
   { path: '/introductie', icon: BookOpen, label: 'Introductie', description: 'Start hier' },
-  { path: '/', icon: LayoutDashboard, label: 'Werkdocument', description: 'Voortgang & Activiteiten' },
-  { path: '/programmaplan', icon: FileText, label: 'Programmaplan', description: 'Levend document' },
+  { path: '/', icon: LayoutDashboard, label: 'Programmaverloop', description: 'Cycli & Activiteiten' },
+  { path: '/programma-vs-lijn', icon: Scale, label: 'Programma vs Lijn', description: 'Beslissingstool' },
   { path: '/governance', icon: Users, label: 'Governance', description: 'Wie doet wat' },
   // Sectoren - doelgroepen
   { type: 'divider', label: 'Sectoren' },

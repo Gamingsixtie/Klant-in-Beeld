@@ -15,9 +15,9 @@ import {
   werkfases,
   toolkit,
   batenProfielen,
-  batenStructuur,
   domeinen
 } from '../data/programmaData'
+import { useAppStore } from '../stores/appStore'
 import {
   ArrowLeft,
   CheckCircle,
@@ -32,16 +32,36 @@ import {
   CheckSquare,
   Square,
   ArrowRight,
-  ExternalLink
+  ExternalLink,
+  TrendingUp,
+  Briefcase,
+  Activity
 } from 'lucide-react'
 import { useState } from 'react'
 
 function SectorDetail() {
   const { sectorId } = useParams()
   const sector = sectoren.find(s => s.id === sectorId)
+  const { baten, inspanningen } = useAppStore()
 
   // State voor checklist items (in productie zou dit uit database komen)
   const [completedItems, setCompletedItems] = useState({})
+
+  // Filter baten en inspanningen voor deze sector
+  const sectorBaten = baten.filter(b => b.sector === sector?.naam)
+  const sectorInspanningen = inspanningen.filter(i =>
+    i.gekoppeldeBaten?.some(baatId =>
+      sectorBaten.some(b => String(b.id) === baatId)
+    )
+  )
+
+  // Bereken sector NPS metrics
+  const gemNPS = sectorBaten.length > 0
+    ? Math.round(sectorBaten.reduce((sum, b) => sum + (b.huidigeWaarde || 0), 0) / sectorBaten.length)
+    : 0
+  const doelNPS = sectorBaten.length > 0
+    ? Math.round(sectorBaten.reduce((sum, b) => sum + (b.doelWaarde || 0), 0) / sectorBaten.length)
+    : 0
 
   const toggleItem = (key) => {
     setCompletedItems(prev => ({
@@ -65,9 +85,6 @@ function SectorDetail() {
   const getToolsVoorWerkfase = (werkfaseId) => {
     return toolkit.filter(t => t.werkfase === werkfaseId)
   }
-
-  // Get baten for this sector
-  const sectorBaten = batenStructuur // In productie zou je filteren op sector
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -100,6 +117,42 @@ function SectorDetail() {
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1">{sector.werkfaseStatus}</p>
+        </div>
+      </div>
+
+      {/* Sector KPIs */}
+      <div className="grid grid-cols-4 gap-4">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Target className="w-4 h-4 text-purple-500" />
+            <span className="text-xs text-slate-500">Baten</span>
+          </div>
+          <div className="text-2xl font-bold text-slate-800">{sectorBaten.length}</div>
+          <div className="text-xs text-slate-400">gedefinieerd</div>
+        </div>
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Briefcase className="w-4 h-4 text-pink-500" />
+            <span className="text-xs text-slate-500">Inspanningen</span>
+          </div>
+          <div className="text-2xl font-bold text-slate-800">{sectorInspanningen.length}</div>
+          <div className="text-xs text-slate-400">gekoppeld</div>
+        </div>
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <TrendingUp className="w-4 h-4 text-blue-500" />
+            <span className="text-xs text-slate-500">Gem. NPS nu</span>
+          </div>
+          <div className="text-2xl font-bold text-slate-800">+{gemNPS}</div>
+          <div className="text-xs text-slate-400">huidige waarde</div>
+        </div>
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Activity className="w-4 h-4 text-green-500" />
+            <span className="text-xs text-slate-500">Gem. NPS doel</span>
+          </div>
+          <div className="text-2xl font-bold text-green-600">+{doelNPS}</div>
+          <div className="text-xs text-slate-400">te bereiken</div>
         </div>
       </div>
 
@@ -332,41 +385,71 @@ function SectorDetail() {
         </div>
       </div>
 
-      {/* Gerelateerde baten */}
+      {/* Sector Baten (LIVE DATA) */}
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-        <h2 className="font-semibold text-slate-800 mb-4">Te realiseren baten</h2>
-        <div className="grid grid-cols-2 gap-4">
-          {sectorBaten.slice(0, 4).map(baat => {
-            const domein = domeinen.find(d => d.id === baat.domein)
-            return (
-              <div
-                key={baat.id}
-                className="p-4 rounded-lg border"
-                style={{ borderColor: domein?.kleur, backgroundColor: `${domein?.kleur}10` }}
-              >
-                <div className="flex items-start gap-3">
-                  <Target className="w-5 h-5 mt-0.5" style={{ color: domein?.kleur }} />
-                  <div className="flex-1">
-                    <div className="font-medium text-slate-800">{baat.baat}</div>
-                    <div className="text-xs text-slate-500 mt-1">
-                      {baat.indicator}: {baat.nulmeting} → {baat.doel}
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-semibold text-slate-800">Baten voor {sector.naam}</h2>
+          <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Live data</span>
+        </div>
+        {sectorBaten.length > 0 ? (
+          <div className="space-y-3">
+            {sectorBaten.map(baat => {
+              const gekoppeldeInsp = inspanningen.filter(i =>
+                i.gekoppeldeBaten?.includes(String(baat.id))
+              )
+              return (
+                <div
+                  key={baat.id}
+                  className="p-4 rounded-lg border-2"
+                  style={{ borderColor: sector.kleur, backgroundColor: `${sector.kleur}08` }}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-start gap-3">
+                      <Target className="w-5 h-5 mt-0.5" style={{ color: sector.kleur }} />
+                      <div>
+                        <div className="font-medium text-slate-800">{baat.naam}</div>
+                        <div className="text-xs text-slate-500 mt-1">{baat.indicator}</div>
+                      </div>
                     </div>
-                    <div className="text-xs mt-2">
-                      <span className="px-2 py-0.5 rounded" style={{ backgroundColor: domein?.kleur, color: 'white' }}>
-                        {domein?.naam}
-                      </span>
+                    <div className="text-right">
+                      <div className="text-sm font-medium text-slate-600">
+                        +{baat.huidigeWaarde} → <span className="text-green-600">+{baat.doelWaarde}</span>
+                      </div>
+                      <div className="text-xs text-slate-400 mt-1">
+                        {gekoppeldeInsp.length} inspanning{gekoppeldeInsp.length !== 1 ? 'en' : ''} gekoppeld
+                      </div>
                     </div>
                   </div>
+                  {gekoppeldeInsp.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {gekoppeldeInsp.map(insp => (
+                        <span
+                          key={insp.id}
+                          className="text-xs px-2 py-1 rounded bg-slate-100 text-slate-600"
+                        >
+                          {insp.naam}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              </div>
-            )
-          })}
-        </div>
+              )
+            })}
+          </div>
+        ) : (
+          <div className="text-center py-8 text-slate-500">
+            <Target className="w-10 h-10 mx-auto mb-2 text-slate-300" />
+            <p>Nog geen baten voor {sector.naam}</p>
+            <Link to="/baten" className="text-sm text-blue-600 hover:underline mt-2 inline-block">
+              Baten toevoegen
+            </Link>
+          </div>
+        )}
         <Link
           to="/baten"
           className="inline-flex items-center gap-2 mt-4 text-sm text-blue-600 hover:text-blue-800"
         >
-          Bekijk alle baten <ExternalLink className="w-4 h-4" />
+          Beheer alle baten <ExternalLink className="w-4 h-4" />
         </Link>
       </div>
 

@@ -2,6 +2,35 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { activiteiten, themas, levensloopcycli, documentTemplates } from '../data/methodologie'
 
+// Initiële stuurparameters (dynamisch, editbaar)
+const initialStuurparameters = {
+  doeltreffendheid: {
+    status: 'groen',
+    toelichting: 'Op koers voor geplande baten',
+    laatstGewijzigd: null
+  },
+  tempo: {
+    status: 'geel',
+    toelichting: 'Sector Professionals loopt achter',
+    laatstGewijzigd: null
+  },
+  haalbaarheid: {
+    status: 'groen',
+    toelichting: 'Voldoende capaciteit',
+    laatstGewijzigd: null
+  },
+  wendbaarheid: {
+    status: 'groen',
+    toelichting: 'Flexibele werkwijze',
+    laatstGewijzigd: null
+  },
+  efficientie: {
+    status: 'groen',
+    toelichting: 'Geen verspilling',
+    laatstGewijzigd: null
+  }
+}
+
 // Initiële voortgang - Klant in Beeld start in VERKENNEN fase (Week 1)
 const initialVoortgang = {
   // Huidige positie
@@ -31,6 +60,37 @@ export const useMethodologieStore = create(
     (set, get) => ({
       // State
       voortgang: initialVoortgang,
+      stuurparameters: initialStuurparameters,
+
+      // Stuurparameter bijwerken
+      updateStuurparameter: (parameterId, updates) => set((state) => ({
+        stuurparameters: {
+          ...state.stuurparameters,
+          [parameterId]: {
+            ...state.stuurparameters[parameterId],
+            ...updates,
+            laatstGewijzigd: new Date().toISOString().split('T')[0]
+          }
+        }
+      })),
+
+      // Alle stuurparameters ophalen met statische metadata
+      getStuurparametersMetMetadata: () => {
+        const state = get()
+        const metadata = {
+          doeltreffendheid: { naam: 'Doeltreffendheid', vraag: 'Bereiken we de juiste effecten?', indicatoren: ['NPS trend', 'Batenrealisatie %'] },
+          tempo: { naam: 'Tempo', vraag: 'Liggen we op schema?', indicatoren: ['Mijlpalen gehaald', 'Doorlooptijd'] },
+          haalbaarheid: { naam: 'Haalbaarheid', vraag: 'Kunnen we dit realiseren?', indicatoren: ['Resources beschikbaar', 'Afhankelijkheden'] },
+          wendbaarheid: { naam: 'Wendbaarheid', vraag: 'Kunnen we bijsturen waar nodig?', indicatoren: ['Wijzigingen doorgevoerd', 'Besluitsnelheid'] },
+          efficientie: { naam: 'Efficiëntie', vraag: 'Doen we de dingen goed?', indicatoren: ['Budget vs realisatie', 'Herwerk %'] }
+        }
+
+        return Object.entries(state.stuurparameters).map(([id, data]) => ({
+          id,
+          ...metadata[id],
+          ...data
+        }))
+      },
 
       // Huidige positie wijzigen
       setCyclus: (cyclusId) => set((state) => ({

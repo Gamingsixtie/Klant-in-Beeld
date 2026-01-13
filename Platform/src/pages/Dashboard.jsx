@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useAppStore } from '../stores/appStore'
 import { useMethodologieStore } from '../stores/methodologieStore'
-import { stuurparameters, sectoren } from '../data/programmaData'
+import { sectoren } from '../data/programmaData'
 import { useNavigate } from 'react-router-dom'
 import {
   Target,
@@ -17,7 +17,11 @@ import {
   BarChart3,
   Building2,
   Clock,
-  AlertCircle
+  AlertCircle,
+  GitBranch,
+  Briefcase,
+  Circle,
+  Lightbulb
 } from 'lucide-react'
 import {
   BarChart,
@@ -120,7 +124,10 @@ function RecentActivityItem({ icon: Icon, title, description, time, color }) {
 export default function Dashboard() {
   const navigate = useNavigate()
   const { baten, inspanningen, stakeholders, risicos, issues, getStats } = useAppStore()
-  const { voortgang } = useMethodologieStore()
+  const { voortgang, getStuurparametersMetMetadata } = useMethodologieStore()
+
+  // Dynamische stuurparameters uit store
+  const stuurparameters = getStuurparametersMetMetadata()
 
   // Memoized statistics calculations
   const stats = useMemo(() => ({
@@ -210,6 +217,31 @@ export default function Dashboard() {
     totalBaten > 0 ? Math.round((completedBaten / totalBaten) * 100) : 0
   , [totalBaten, completedBaten])
 
+  // Dekkingsgraad: % baten met gekoppelde inspanningen
+  const dekkingsgraad = useMemo(() => {
+    if (baten?.length === 0) return 0
+    const batenMetKoppeling = baten?.filter(baat =>
+      inspanningen?.some(insp => insp.gekoppeldeBaten?.includes(String(baat.id)))
+    )?.length || 0
+    return Math.round((batenMetKoppeling / baten.length) * 100)
+  }, [baten, inspanningen])
+
+  // Baten-Inspanningen netwerk data
+  const batenMetInspanningen = useMemo(() => {
+    return baten?.map(baat => ({
+      ...baat,
+      inspanningen: inspanningen?.filter(
+        insp => insp.gekoppeldeBaten?.includes(String(baat.id))
+      ) || []
+    })) || []
+  }, [baten, inspanningen])
+
+  const ongekoppeldeInspanningen = useMemo(() => {
+    return inspanningen?.filter(
+      insp => !insp.gekoppeldeBaten || insp.gekoppeldeBaten.length === 0
+    ) || []
+  }, [inspanningen])
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -225,7 +257,7 @@ export default function Dashboard() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <StatCard
           icon={Target}
           label="Baten"
@@ -264,6 +296,16 @@ export default function Dashboard() {
           trend={completionRate > 0 ? 'up' : undefined}
           trendValue={completionRate > 0 ? `${completionRate}%` : undefined}
           onClick={() => navigate('/baten')}
+        />
+        <StatCard
+          icon={Activity}
+          label="Dekkingsgraad"
+          value={`${dekkingsgraad}%`}
+          subValue="Baten met gekoppelde inspanningen"
+          color="bg-gradient-to-br from-indigo-500 to-indigo-600"
+          trend={dekkingsgraad >= 75 ? 'up' : dekkingsgraad >= 50 ? undefined : 'down'}
+          trendValue={dekkingsgraad >= 75 ? 'Goed' : dekkingsgraad >= 50 ? 'Matig' : 'Laag'}
+          onClick={() => navigate('/programmaplan')}
         />
       </div>
 
@@ -462,6 +504,95 @@ export default function Dashboard() {
             </div>
           </div>
         </ChartCard>
+      </div>
+
+      {/* Baten-Inspanningen Netwerk */}
+      <div className="bg-white rounded-xl border border-slate-100 p-5">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-purple-100 rounded-lg">
+              <GitBranch className="w-5 h-5 text-purple-600" />
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-slate-900">Baten-Inspanningen Netwerk</h3>
+              <p className="text-xs text-slate-500">Welke inspanningen dragen bij aan welke baten?</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-4 text-xs">
+            <span className="text-slate-500">{batenMetInspanningen.length} baten</span>
+            <span className="text-slate-500">{inspanningen?.length || 0} inspanningen</span>
+            <span className="font-medium text-purple-600">{dekkingsgraad}% dekking</span>
+          </div>
+        </div>
+
+        {batenMetInspanningen.length > 0 ? (
+          <div className="space-y-3 max-h-96 overflow-y-auto">
+            {batenMetInspanningen.map((baat) => (
+              <div key={baat.id} className="border border-slate-200 rounded-lg overflow-hidden">
+                <div className="bg-purple-50 p-3 flex items-center gap-3">
+                  <Target className="w-4 h-4 text-purple-600" />
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium text-sm text-slate-800 truncate">{baat.naam}</div>
+                    <div className="text-xs text-slate-500">{baat.sector} • {baat.indicator}</div>
+                  </div>
+                  <div className="text-right text-xs">
+                    <span className="text-slate-600">+{baat.huidigeWaarde}</span>
+                    <span className="text-slate-400 mx-1">→</span>
+                    <span className="text-green-600 font-medium">+{baat.doelWaarde}</span>
+                  </div>
+                </div>
+                <div className="p-3 bg-white">
+                  {baat.inspanningen.length > 0 ? (
+                    <div className="flex flex-wrap gap-1.5">
+                      {baat.inspanningen.map((insp) => (
+                        <span
+                          key={insp.id}
+                          className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs"
+                          style={{
+                            backgroundColor: insp.type === 'project' ? '#3b82f620' : insp.type === 'leer' ? '#10b98120' : insp.type === 'proces' ? '#8b5cf620' : '#f59e0b20',
+                            color: insp.type === 'project' ? '#3b82f6' : insp.type === 'leer' ? '#10b981' : insp.type === 'proces' ? '#8b5cf6' : '#f59e0b'
+                          }}
+                        >
+                          <Briefcase className="w-3 h-3" />
+                          {insp.naam}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-xs text-slate-400 italic flex items-center gap-1">
+                      <Circle className="w-2.5 h-2.5" />
+                      Geen inspanningen gekoppeld
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+
+            {ongekoppeldeInspanningen.length > 0 && (
+              <div className="border border-amber-200 rounded-lg overflow-hidden">
+                <div className="bg-amber-50 p-3 flex items-center gap-2">
+                  <Lightbulb className="w-4 h-4 text-amber-600" />
+                  <span className="text-sm font-medium text-amber-800">Ongekoppelde inspanningen ({ongekoppeldeInspanningen.length})</span>
+                </div>
+                <div className="p-3 bg-white">
+                  <div className="flex flex-wrap gap-1.5">
+                    {ongekoppeldeInspanningen.map((insp) => (
+                      <span key={insp.id} className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs bg-slate-100 text-slate-600">
+                        <Briefcase className="w-3 h-3" />
+                        {insp.naam}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="text-center py-8 text-slate-400">
+            <GitBranch className="w-10 h-10 mx-auto mb-2 opacity-50" />
+            <p className="text-sm">Nog geen baten gedefinieerd</p>
+          </div>
+        )}
       </div>
     </div>
   )

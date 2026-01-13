@@ -23,7 +23,6 @@ import {
   sectoren,
   domeinen,
   batenProfielen,
-  stuurparameters,
   programmaInfo,
   documentenRegister,
   kernprincipes,
@@ -125,11 +124,12 @@ const viewModes = [
 
 function Methodologie() {
   const navigate = useNavigate()
-  const { voortgang, getCyclusVoortgang, getTotaleVoortgang, getVolgendeActie, advanceWeek, advanceCyclus, canUnlockCyclus } = useMethodologieStore()
+  const { voortgang, getCyclusVoortgang, getTotaleVoortgang, getVolgendeActie, advanceWeek, advanceCyclus, canUnlockCyclus, getStuurparametersMetMetadata, updateStuurparameter } = useMethodologieStore()
   const [geselecteerdeCyclus, setGeselecteerdeCyclus] = useState(null)
   const [geselecteerdThema, setGeselecteerdThema] = useState(null)
   const [activeView, setActiveView] = useState('overzicht')
   const [expandedSections, setExpandedSections] = useState({
+    stuurparameters: true, // Open - belangrijke sturingsinformatie
     kernprincipes: false,
     kibteam: false,
     baten: false,        // Standaard dicht - minder cognitive load
@@ -137,9 +137,11 @@ function Methodologie() {
     faseverloop: false,  // Standaard dicht - grote sectie
     sectoren: false
   })
+  const [editingParameter, setEditingParameter] = useState(null)
 
   const totaal = getTotaleVoortgang()
   const volgendeActie = getVolgendeActie()
+  const stuurparameters = getStuurparametersMetMetadata()
 
   // Toggle section expansion (progressive disclosure)
   const toggleSection = (section) => {
@@ -522,7 +524,7 @@ function Methodologie() {
             </div>
             <div>
               <h1 className="text-2xl font-bold tracking-tight">{programmaInfo.naam}</h1>
-              <p className="text-white/80 text-sm mt-1">Werkdocument: Werken aan Programma's</p>
+              <p className="text-white/80 text-sm mt-1">Programmaverloop: Werken aan Programma's</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -557,6 +559,111 @@ function Methodologie() {
             )
           })}
         </div>
+      </div>
+
+      {/* === 5 STUURPARAMETERS - INTERACTIEF === */}
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <button
+          onClick={() => toggleSection('stuurparameters')}
+          className="w-full p-4 flex items-center justify-between hover:bg-slate-50 transition-colors focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500"
+          aria-expanded={expandedSections.stuurparameters}
+        >
+          <div className="flex items-center gap-2">
+            <BarChart3 className="w-5 h-5 text-slate-400" />
+            <h2 className="font-medium text-slate-800">5 Stuurparameters</h2>
+            <span className="text-xs text-slate-500 ml-2">Hoe staat het programma ervoor?</span>
+          </div>
+          <div className="flex items-center gap-3">
+            {/* Quick status summary */}
+            <div className="flex items-center gap-1">
+              {stuurparameters.map(p => (
+                <div
+                  key={p.id}
+                  className={`w-2.5 h-2.5 rounded-full ${statusKleuren[p.status]}`}
+                  title={`${p.naam}: ${p.status}`}
+                />
+              ))}
+            </div>
+            {expandedSections.stuurparameters ? (
+              <ChevronDown className="w-5 h-5 text-slate-400" />
+            ) : (
+              <ChevronRight className="w-5 h-5 text-slate-400" />
+            )}
+          </div>
+        </button>
+
+        {expandedSections.stuurparameters && (
+          <div className="p-4 pt-0">
+            <div className="grid grid-cols-5 gap-3">
+              {stuurparameters.map(param => (
+                <div
+                  key={param.id}
+                  className={`p-3 rounded-lg border-2 transition-all ${
+                    editingParameter === param.id
+                      ? 'border-blue-500 shadow-md'
+                      : param.status === 'groen' ? 'border-green-200 bg-green-50'
+                      : param.status === 'geel' ? 'border-amber-200 bg-amber-50'
+                      : 'border-red-200 bg-red-50'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-medium text-sm text-slate-800">{param.naam}</span>
+                    <button
+                      onClick={() => setEditingParameter(editingParameter === param.id ? null : param.id)}
+                      className="text-xs text-slate-400 hover:text-slate-600"
+                    >
+                      {editingParameter === param.id ? '✕' : '✎'}
+                    </button>
+                  </div>
+
+                  {editingParameter === param.id ? (
+                    <div className="space-y-2">
+                      {/* Status selector */}
+                      <div className="flex gap-1">
+                        {['groen', 'geel', 'rood'].map(status => (
+                          <button
+                            key={status}
+                            onClick={() => updateStuurparameter(param.id, { status })}
+                            className={`flex-1 py-1.5 rounded text-xs font-medium transition-all ${
+                              param.status === status
+                                ? status === 'groen' ? 'bg-green-500 text-white'
+                                : status === 'geel' ? 'bg-amber-500 text-white'
+                                : 'bg-red-500 text-white'
+                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                            }`}
+                          >
+                            {status === 'groen' ? 'Groen' : status === 'geel' ? 'Geel' : 'Rood'}
+                          </button>
+                        ))}
+                      </div>
+                      {/* Toelichting input */}
+                      <input
+                        type="text"
+                        value={param.toelichting}
+                        onChange={(e) => updateStuurparameter(param.id, { toelichting: e.target.value })}
+                        placeholder="Toelichting..."
+                        className="w-full text-xs p-2 border border-slate-200 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                      />
+                    </div>
+                  ) : (
+                    <>
+                      <div className="text-xs text-slate-500 mb-1">{param.vraag}</div>
+                      <div className="text-xs text-slate-600 italic">{param.toelichting}</div>
+                      {param.laatstGewijzigd && (
+                        <div className="text-[10px] text-slate-400 mt-2">
+                          Gewijzigd: {param.laatstGewijzigd}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
+            <div className="mt-3 text-xs text-slate-400 text-center">
+              Klik op ✎ om een parameter te wijzigen • Wijzigingen worden automatisch opgeslagen
+            </div>
+          </div>
+        )}
       </div>
 
       {/* === VOLGENDE ACTIE - PROMINENT (zoals Motion) === */}
@@ -1177,7 +1284,7 @@ function Methodologie() {
               <Calendar className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="font-bold text-slate-800">Werkdocument: Faseverloop</h2>
+              <h2 className="font-bold text-slate-800">Faseverloop</h2>
               <span className="text-xs text-slate-500">Theorie → Praktijk: Week-voor-week met documenten</span>
             </div>
           </div>
