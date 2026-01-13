@@ -11,7 +11,7 @@ import Roadmap from './pages/Roadmap'
 import Settings from './pages/Settings'
 import Introductie from './pages/Introductie'
 import SectorDetail from './pages/SectorDetail'
-import Framework from './pages/Framework'
+import Programmaplan from './pages/Programmaplan'
 import Templates from './pages/Templates'
 import Sessies from './pages/Sessies'
 import { useAppStore } from './stores/appStore'
@@ -50,7 +50,7 @@ function App() {
               <Route path="/introductie" element={<Introductie />} />
               <Route path="/thema/:themaId" element={<ThemaDetail />} />
               <Route path="/sector/:sectorId" element={<SectorDetail />} />
-              <Route path="/framework" element={<Framework />} />
+              <Route path="/programmaplan" element={<Programmaplan />} />
               <Route path="/templates" element={<Templates />} />
               <Route path="/sessies" element={<Sessies />} />
               <Route path="/dashboard" element={<Dashboard />} />

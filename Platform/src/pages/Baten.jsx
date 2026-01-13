@@ -19,7 +19,10 @@ import {
   ChevronRight,
   Grid3X3,
   LayoutList,
-  Lightbulb
+  Lightbulb,
+  Link2,
+  ArrowRight,
+  Briefcase
 } from 'lucide-react'
 
 // Domein configuratie
@@ -387,8 +390,14 @@ function BaatForm({ baat, onSave, onCancel }) {
   )
 }
 
+// Helper: vind inspanningen die bijdragen aan een specifieke baat
+const getGekoppeldeInspanningen = (baatId, inspanningen) => {
+  if (!baatId || !inspanningen) return []
+  return inspanningen.filter(i => i.gekoppeldeBaten?.includes(String(baatId)))
+}
+
 function Baten() {
-  const { baten, addBaat, updateBaat, deleteBaat } = useAppStore()
+  const { baten, inspanningen, addBaat, updateBaat, deleteBaat } = useAppStore()
   const [showForm, setShowForm] = useState(false)
   const [editingBaat, setEditingBaat] = useState(null)
   const [search, setSearch] = useState('')
@@ -569,7 +578,7 @@ function Baten() {
                 Voorbeeld: "Hogere klanttevredenheid" woont in Cultuur, maar vereist ook actie in Proces (werkwijzen aanpassen) en Systeem (tools verbeteren).
               </span>
             </p>
-            <div className="flex items-center gap-3 mt-2">
+            <div className="flex items-center gap-3 mt-2 flex-wrap">
               <span className="inline-flex items-center gap-1 text-[10px]">
                 <span className="w-3 h-3 bg-red-500 rounded"></span> Hoog = Kritieke actie
               </span>
@@ -578,6 +587,9 @@ function Baten() {
               </span>
               <span className="inline-flex items-center gap-1 text-[10px]">
                 <span className="w-3 h-3 bg-slate-300 rounded"></span> Laag = Randvoorwaardelijk
+              </span>
+              <span className="inline-flex items-center gap-1 text-[10px] border-l border-blue-200 pl-3 ml-1">
+                <Briefcase className="w-3 h-3 text-blue-500" /> = Gekoppelde inspanningen
               </span>
             </div>
           </div>
@@ -738,6 +750,30 @@ function Baten() {
                                         domeinImpact={baat.domeinImpact}
                                         primaryDomein={baat.domein}
                                       />
+                                      {/* Gekoppelde inspanningen indicator */}
+                                      {(() => {
+                                        const gekoppeld = getGekoppeldeInspanningen(baat.id, inspanningen)
+                                        if (gekoppeld.length === 0) return null
+                                        return (
+                                          <div className="mt-2 pt-2 border-t border-slate-100">
+                                            <div className="flex items-center gap-1.5 text-[10px] text-slate-500">
+                                              <Briefcase className="w-3 h-3" />
+                                              <span className="font-medium">{gekoppeld.length} inspanning{gekoppeld.length !== 1 ? 'en' : ''}</span>
+                                            </div>
+                                            <div className="mt-1 space-y-0.5">
+                                              {gekoppeld.slice(0, 2).map(insp => (
+                                                <div key={insp.id} className="flex items-center gap-1 text-[9px] text-slate-400 truncate">
+                                                  <ArrowRight className="w-2.5 h-2.5 flex-shrink-0" />
+                                                  <span className="truncate">{insp.naam}</span>
+                                                </div>
+                                              ))}
+                                              {gekoppeld.length > 2 && (
+                                                <span className="text-[9px] text-slate-400">+{gekoppeld.length - 2} meer</span>
+                                              )}
+                                            </div>
+                                          </div>
+                                        )
+                                      })()}
                                       <div className="flex justify-end mt-2 opacity-0 group-hover:opacity-100">
                                         <button
                                           onClick={(e) => { e.stopPropagation(); handleDelete(baat.id) }}
@@ -877,16 +913,26 @@ function Baten() {
                             <td key={d} className="p-3 align-top">
                               <div className="space-y-1 min-w-[140px]">
                                 {/* Eigenaar baten (solid) */}
-                                {data.eigenaar.map(baat => (
-                                  <div
-                                    key={baat.id}
-                                    onClick={() => handleEdit(baat)}
-                                    className={`text-xs p-1.5 rounded ${dCfg.bg} text-white cursor-pointer hover:opacity-80 truncate`}
-                                    title={`${baat.naam} (Eigenaar)`}
-                                  >
-                                    {baat.naam}
-                                  </div>
-                                ))}
+                                {data.eigenaar.map(baat => {
+                                  const gekoppeld = getGekoppeldeInspanningen(baat.id, inspanningen)
+                                  return (
+                                    <div
+                                      key={baat.id}
+                                      onClick={() => handleEdit(baat)}
+                                      className={`text-xs p-1.5 rounded ${dCfg.bg} text-white cursor-pointer hover:opacity-80`}
+                                      title={`${baat.naam} (Eigenaar)${gekoppeld.length > 0 ? ` - ${gekoppeld.length} inspanning(en)` : ''}`}
+                                    >
+                                      <div className="flex items-center justify-between gap-1">
+                                        <span className="truncate">{baat.naam}</span>
+                                        {gekoppeld.length > 0 && (
+                                          <span className="flex-shrink-0 bg-white/20 px-1 rounded text-[9px]">
+                                            {gekoppeld.length}
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  )
+                                })}
 
                                 {/* Impact baten (dashed border) */}
                                 {data.impact.map(baat => {
@@ -894,15 +940,23 @@ function Baten() {
                                   const levelColor = impactLevel === 'hoog' ? 'border-red-400 bg-red-50 text-red-700'
                                     : impactLevel === 'midden' ? 'border-amber-400 bg-amber-50 text-amber-700'
                                     : 'border-slate-300 bg-slate-50 text-slate-600'
+                                  const gekoppeld = getGekoppeldeInspanningen(baat.id, inspanningen)
 
                                   return (
                                     <div
                                       key={`impact-${baat.id}`}
                                       onClick={() => handleEdit(baat)}
-                                      className={`text-xs p-1.5 rounded border-2 border-dashed ${levelColor} cursor-pointer hover:opacity-80 truncate`}
-                                      title={`${baat.naam} (Impact: ${impactLevel}) - eigenaar: ${baat.domein}`}
+                                      className={`text-xs p-1.5 rounded border-2 border-dashed ${levelColor} cursor-pointer hover:opacity-80`}
+                                      title={`${baat.naam} (Impact: ${impactLevel}) - eigenaar: ${baat.domein}${gekoppeld.length > 0 ? ` - ${gekoppeld.length} inspanning(en)` : ''}`}
                                     >
-                                      <span className="opacity-70">↪</span> {baat.naam}
+                                      <div className="flex items-center justify-between gap-1">
+                                        <span className="truncate"><span className="opacity-70">↪</span> {baat.naam}</span>
+                                        {gekoppeld.length > 0 && (
+                                          <span className="flex-shrink-0 bg-slate-200/50 px-1 rounded text-[9px]">
+                                            {gekoppeld.length}
+                                          </span>
+                                        )}
+                                      </div>
                                     </div>
                                   )
                                 })}

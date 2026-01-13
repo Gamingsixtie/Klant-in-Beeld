@@ -522,7 +522,7 @@ function Methodologie() {
             </div>
             <div>
               <h1 className="text-2xl font-bold tracking-tight">{programmaInfo.naam}</h1>
-              <p className="text-white/80 text-sm mt-1">Methodologie: Werken aan Programma's</p>
+              <p className="text-white/80 text-sm mt-1">Werkdocument: Werken aan Programma's</p>
             </div>
           </div>
           <div className="flex items-center gap-3">

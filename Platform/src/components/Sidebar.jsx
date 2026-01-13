@@ -16,21 +16,24 @@ import {
 } from 'lucide-react'
 
 const navItems = [
+  // Programma niveau - conceptueel
   { path: '/introductie', icon: BookOpen, label: 'Introductie', description: 'Start hier' },
-  { path: '/', icon: LayoutDashboard, label: 'Methodologie', description: "8 Thema's & Cycli" },
-  { path: '/framework', icon: Layers, label: 'Framework', description: 'Baten × Domeinen' },
-  { path: '/templates', icon: FileText, label: 'Templates', description: 'Werkvormen' },
-  { path: '/sessies', icon: Play, label: 'Sessies', description: 'Facilitatie' },
-  { path: '/dashboard', icon: TrendingUp, label: 'Dashboard', description: 'Status overzicht' },
+  { path: '/', icon: LayoutDashboard, label: 'Werkdocument', description: 'Voortgang & Activiteiten' },
+  { path: '/programmaplan', icon: FileText, label: 'Programmaplan', description: 'Levend document' },
+  { path: '/governance', icon: Users, label: 'Governance', description: 'Wie doet wat' },
+  // Sectoren - doelgroepen
   { type: 'divider', label: 'Sectoren' },
   { path: '/sector/po', label: 'PO', description: 'Primair Onderwijs', color: '#3b82f6' },
   { path: '/sector/vo', label: 'VO', description: 'Voortgezet Onderwijs', color: '#8b5cf6' },
   { path: '/sector/professionals', label: 'ZAK', description: 'Professionals', color: '#f59e0b' },
+  // Data & Tools - operationeel
   { type: 'divider', label: 'Data' },
+  { path: '/dashboard', icon: TrendingUp, label: 'Dashboard', description: 'Status overzicht' },
   { path: '/baten', icon: Target, label: 'Baten' },
   { path: '/inspanningen', icon: ListTodo, label: 'Inspanningen' },
-  { path: '/governance', icon: Users, label: 'Governance' },
   { path: '/roadmap', icon: CalendarDays, label: 'Roadmap' },
+  { path: '/templates', icon: FileText, label: 'Templates', description: 'Werkvormen' },
+  { path: '/sessies', icon: Play, label: 'Sessies', description: 'Facilitatie' },
 ]
 
 function Sidebar() {

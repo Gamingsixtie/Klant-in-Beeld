@@ -926,11 +926,27 @@ function Inspanningen() {
                                       </div>
                                       {/* Gekoppelde Baten */}
                                       {inspanning.gekoppeldeBaten && inspanning.gekoppeldeBaten.length > 0 && (
-                                        <div className="flex items-center gap-1 mt-1.5">
-                                          <Link2 className="w-3 h-3 text-slate-400" />
-                                          <span className="text-[10px] text-slate-400">
-                                            {inspanning.gekoppeldeBaten.length} baat(en)
-                                          </span>
+                                        <div className="mt-2 pt-2 border-t border-slate-100">
+                                          <div className="flex items-center gap-1.5 text-[10px] text-slate-500 mb-1">
+                                            <Target className="w-3 h-3" />
+                                            <span className="font-medium">{inspanning.gekoppeldeBaten.length} baat(en)</span>
+                                          </div>
+                                          <div className="space-y-0.5">
+                                            {inspanning.gekoppeldeBaten.slice(0, 2).map(baatId => {
+                                              const baat = baten.find(b => b.id === baatId)
+                                              if (!baat) return null
+                                              const baatDomeinCfg = domeinConfig[baat.domein] || {}
+                                              return (
+                                                <div key={baatId} className="flex items-center gap-1 text-[9px] text-slate-400 truncate">
+                                                  <ChevronRight className="w-2.5 h-2.5 flex-shrink-0" />
+                                                  <span className={`truncate ${baatDomeinCfg.text || 'text-slate-500'}`}>{baat.naam}</span>
+                                                </div>
+                                              )
+                                            })}
+                                            {inspanning.gekoppeldeBaten.length > 2 && (
+                                              <span className="text-[9px] text-slate-400">+{inspanning.gekoppeldeBaten.length - 2} meer</span>
+                                            )}
+                                          </div>
                                         </div>
                                       )}
                                       <div className="flex justify-end mt-2 opacity-0 group-hover:opacity-100">

@@ -72,8 +72,8 @@ const initialInspanningen = [
     startMaand: 1,
     eindMaand: 9,
     status: 'in_progress',
-    levenscyclus: 'opbouwen',
-    werkfase: 2,
+    levenscyclus: 'uitvoeren',
+    werkfase: 3,
     gekoppeldeBaten: ['1', '2', '3'] // Draagt bij aan deze baten
   },
   {
@@ -89,8 +89,8 @@ const initialInspanningen = [
     startMaand: 3,
     eindMaand: 12,
     status: 'planned',
-    levenscyclus: 'verkennen',
-    werkfase: 1,
+    levenscyclus: 'uitvoeren',
+    werkfase: 3,
     gekoppeldeBaten: ['1', '4']
   },
   {
@@ -123,8 +123,8 @@ const initialInspanningen = [
     startMaand: 4,
     eindMaand: 15,
     status: 'planned',
-    levenscyclus: 'opbouwen',
-    werkfase: 2,
+    levenscyclus: 'uitvoeren',
+    werkfase: 3,
     gekoppeldeBaten: ['2', '3']
   },
   {
@@ -140,8 +140,8 @@ const initialInspanningen = [
     startMaand: 4,
     eindMaand: 10,
     status: 'planned',
-    levenscyclus: 'opbouwen',
-    werkfase: 2,
+    levenscyclus: 'uitvoeren',
+    werkfase: 3,
     gekoppeldeBaten: ['2']
   },
   {
@@ -157,9 +157,61 @@ const initialInspanningen = [
     startMaand: 5,
     eindMaand: 8,
     status: 'planned',
-    levenscyclus: 'verkennen',
-    werkfase: 1,
+    levenscyclus: 'uitvoeren',
+    werkfase: 3,
     gekoppeldeBaten: ['3', '4']
+  },
+  // Voorbeeld inspanningen gekoppeld aan "Hogere klanttevredenheid PO" (baat id: 1)
+  {
+    id: '7',
+    type: 'project',
+    code: 'P-002',
+    naam: 'Klanttevredenheidsonderzoek PO',
+    beschrijving: 'Implementatie van continu klanttevredenheidsonderzoek bij PO-scholen met NPS-metingen en verbeteracties',
+    sector: 'Primair onderwijs',
+    domein: 'Cultuur',
+    eigenaar: 'Sectormanager PO',
+    leider: 'Customer Experience Lead',
+    startMaand: 2,
+    eindMaand: 6,
+    status: 'in_progress',
+    levenscyclus: 'uitvoeren',
+    werkfase: 3,
+    gekoppeldeBaten: ['1'] // Draagt bij aan: Hogere klanttevredenheid PO
+  },
+  {
+    id: '8',
+    type: 'leer',
+    code: 'L-003',
+    naam: 'Klantgerichtheid Training PO-team',
+    beschrijving: 'Trainingsprogramma voor alle medewerkers PO in klantgerichte houding en proactieve communicatie met scholen',
+    sector: 'Primair onderwijs',
+    domein: 'Mens',
+    eigenaar: 'HR-manager',
+    leider: 'L&D Specialist',
+    startMaand: 3,
+    eindMaand: 9,
+    status: 'in_progress',
+    levenscyclus: 'uitvoeren',
+    werkfase: 3,
+    gekoppeldeBaten: ['1'] // Draagt bij aan: Hogere klanttevredenheid PO
+  },
+  {
+    id: '9',
+    type: 'proces',
+    code: 'PR-003',
+    naam: 'Klachtenafhandeling Verbetering',
+    beschrijving: 'Herontwerp van het klachtenproces voor snellere responstijd en hogere oplossingsgraad bij eerste contact',
+    sector: 'Primair onderwijs',
+    domein: 'Proces',
+    eigenaar: 'Kwaliteitsmanager',
+    leider: 'Procesverbeteraar',
+    startMaand: 4,
+    eindMaand: 8,
+    status: 'planned',
+    levenscyclus: 'uitvoeren',
+    werkfase: 3,
+    gekoppeldeBaten: ['1'] // Draagt bij aan: Hogere klanttevredenheid PO
   }
 ]
 
