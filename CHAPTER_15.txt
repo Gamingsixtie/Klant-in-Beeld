@@ -1,0 +1,6 @@
+[120|] 15. Programmateam, programmabureau en kernteam samenstellen
+[121|] 15.1 Programmateam, programmabureau en kernteam
+[122|] 15.2 Programmateam: zorgt voor vormgeving en uitvoering
+[123|] 15.3 Programmabureau: ondersteunt de uitvoering
+[124|] 15.4 Kernteam: vindt elkaar in hart voor de opgave
+[125|] 15.5 Ter afronding: zorg dat je er niet alleen voor staat

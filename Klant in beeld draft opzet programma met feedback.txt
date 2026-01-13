@@ -1,0 +1,1065 @@
+[Uitgebreid stuk.\
+Het is deels een evaluatie (al mis ik wel de concrete deliverables van
+het programma tot nu toe, behalve de vermelde inzichten die wle genoemd
+zijn) en het betreft een voorstel voor de algemene doelen en de
+organisatie van het programma. Daarbij vind ik de indeling in mens,
+proces, systeem en structuur prettig.\
+Het stuk gaat uit van een wensbeeld. Wat ik nog mis is de gap-analyse
+(wens versus werkelijkheid) en het plan van aanpak (fasering, planning,
+begroting) voor 2026.\
+En wat ik nog mis is de keuze voor een duidelijke
+implementatiestrategie.\
+Verder moeten we scherper krijgen wat lijnactiviteiten zijn en wat
+programma-activiteiten zijn.]{.comment-start id="0" author="Roel Bakker"
+date="2025-12-15T20:18:00Z"}**1**[]{.comment-end id="0"}**. Aanleiding**
+
+Binnen Klant in Beeld zijn de afgelopen periode drie klantreistrajecten
+uitgevoerd: in het PO, VO en professionals. Deze trajecten hadden een
+dubbele doelstelling:
+
+1.  Leren: het ontwikkelen van een outside-in perspectief bij
+    medewerkers en daarmee teams van verschillende afdelingen. Dit
+    omvatte verdiepend luisteren, doorvragen, analyseren en betekenis
+    geven vanuit de situatie van klanten.
+
+2.  Leveren: het opleveren van concrete resultaten, zoals klantreizen,
+    interviewanalyses, quick wins, verbetervoorstellen en
+    implementatiescenario's.
+
+**[Opmerking: Uitdagingen koppelen met mogelijke risico\'s]{.mark}**
+
+Tijdens de uitvoering van deze trajecten en in de vervolgstappen rond
+stuurgroepoverleggen kwamen meerdere structurele patronen naar voren:
+
+-   Het combineren van leren en leveren binnen één project bleek
+    structureel knellend. Teams hadden moeite om nieuw gedrag aan te
+    leren terwijl er tegelijkertijd een hoge druk lag op het opleveren
+    van concrete producten.
+
+-   De vraagstukken die naar boven kwamen, bleken sectoroverstijgend: de
+    knelpunten en kansen in PO, VO en Zakelijk/professionals vertonen
+    veel overeenkomst en grijpen op elkaar in.
+
+-   De oplossingen en inzichten raakten meerdere afdelingen van de
+    organisatie: sectoren, Klantcontact, SIO, Data & Tech en andere
+    ondersteunende afdelingen.
+
+-   Eerdere initiatieven rond klantgericht werken bleken onvoldoende
+    geborgd: inzichten en verbeteringen verdwenen uit beeld of waren
+    niet verankerd in processen en systemen.
+
+-   Systemen en data ondersteunen de gewenste klantgerichte werkwijze
+    onvoldoende, waardoor de ambitie om proactief te werken met klanten
+    moeilijk realiseerbaar is.
+
+-   De verandervraag is langdurig, strategisch en organisatiebreed: het
+    gaat niet om één product, proces of campagne, maar om een
+    structurele ontwikkeling richting outside-in werken.
+
+In verschillende stuurgroepoverleggen zijn daarbij onder andere de
+volgende punten benoemd:
+
+-   De klantreis is in meerdere trajecten te breed ingestoken, waardoor
+    focus en richting ontbraken.
+
+-   Teams leren veel, maar borging in processen en systemen blijft
+    achter.
+
+-   Zonder goed integraal klantbeeld is het niet mogelijk om proactief
+    en consistent richting klanten te handelen.
+
+De combinatie van deze patronen maakt duidelijk dat de opgave die Cito
+met Klant in Beeld wil adresseren:
+
+-   niet in één project is op te lossen;
+
+-   meerdere domeinen tegelijk raakt;
+
+-   meerdere jaren vergt;
+
+-   strategisch van aard is;
+
+-   organisatiebreed effect heeft.
+
+Daarom is programmasturing nodig.
+
+**2. Opgaveverkenning**
+
+**Diagnose langs Mens -- Proces -- Systeem -- Cultuur**
+
+De resultaten uit de trajecten, stuurgroepverslagen en betrokken
+gesprekken zijn geanalyseerd langs vier veranderkundige domeinen: Mens,
+Proces, Systeem en Cultuur. Gezamenlijk vormen zij de opgave die het
+programma moet adresseren.
+
+**2.1 Mens**
+
+In alle trajecten is zichtbaar geworden dat medewerkers en teams:
+
+-   nog onvoldoende vaardig zijn in het structureel toepassen van
+    outside-in denken;
+
+-   Geen vaste structuur in outside-in klantgesprekken, met name in het
+    verdiepend doorvragen en duiden van signalen;
+
+-   moeite hebben om klantdata en kwalitatieve inzichten te vertalen
+    naar concrete keuzes;
+
+-   rolonduidelijkheid ervaren tussen sector, sales, data & tech en
+    andere betrokken afdelingen;
+
+-   weinig structurele oefenruimte hebben om nieuw gedrag uit te
+    proberen, te reflecteren en te bestendigen;
+
+-   in afwezigheid van coaching en begeleiding terugvallen in
+    vertrouwde, productgerichte inside-out patronen.
+
+De kern van de opgave in het domein Mens is:
+
+-   het ontwikkelen van vaardigheden;
+
+-   het versterken van houding en mindset;
+
+-   het duidelijk maken van rol en verantwoordelijkheid;
+
+-   het creëren van ruimte voor oefenen, reflectie en feedback.
+
+Dit is geen eenmalige interventie, maar een meerjarig ontwikkelproces.
+
+**2.2 Proces**
+
+Op procesniveau laten de trajecten het volgende beeld zien:
+
+-   Er is geen organisatiebreed, uniform klantproces. Iedere sector kent
+    zijn eigen werkwijze, eigen definities en eigen documenten.
+
+-   De manier waarop klantinzichten worden vastgelegd, gedeeld en
+    opgevolgd is versnipperd en niet gestandaardiseerd.
+
+-   Overdrachtsmomenten tussen sectoren, sales, productmanagement en
+    andere afdelingen zijn niet eenduidig belegd.
+
+-   Eerdere initiatieven rond klantgericht werken zijn niet structureel
+    verankerd in processen, waardoor herhaling van werk ontstaat en
+    effecten beperkt zijn.
+
+-   De klantreis werd in meerdere trajecten te breed en te ambitieus
+    ingestoken, wat zorgde voor gebrek aan focus en keuzevermogen binnen
+    teams.
+
+De kern van de procesopgave is:
+
+-   het ontwerpen en implementeren van een organisatiebreed klantproces;
+
+-   het inrichten van een heldere opvolgstructuur voor klantinzichten;
+
+-   het uniformeren van rollen, afspraken, definities en ritmes;
+
+-   het borgen van klantgericht werken in de standaard werkwijze.
+
+Dit vraagt om sectoroverstijgende afstemming en structurele
+besluitvorming.
+
+**2.3 Systeem**
+
+De systeemdiagnose geeft het volgende beeld:
+
+-   Klantinformatie is verspreid over verschillende systemen en
+    bestanden, zonder eenduidige integratie;
+
+-   CRM en andere klantinformatiesystemen sluiten niet goed aan bij het
+    gewenste klantproces;
+
+-   De kwaliteit en volledigheid van klantdata is onvoldoende voor
+    betrouwbare sturing en proactief handelen;
+
+-   Het ontbreken van een integraal klantbeeld maakt het moeilijk om
+    patronen te herkennen en gerichte acties te ondernemen;
+
+-   Onderlinge koppelingen tussen systemen en databronnen zijn beperkt
+    of ontbreken.
+
+De kern van de opgave in het domein Systeem is:
+
+-   het verbeteren van CRM en de klantdata-infrastructuur;
+
+-   het ontwikkelen van een integraal (360 graden) klantbeeld;
+
+-   het uniformeren en verbeteren van datakwaliteit;
+
+-   het faciliteren van proactieve dienstverlening vanuit systemen in
+    plaats van handmatige oplossingen.
+
+Zonder structurele aandacht op systeemniveau zullen mens- en
+procesinterventies onvoldoende effect sorteren.
+
+**2.4 Cultuur**
+
+Cultuurpatronen vormen een doorlopend thema in alle trajecten en
+overleggen:
+
+-   De reflex is vaak productgericht en aanbod gestuurd, in plaats van
+    klantbehoefte gestuurd;
+
+-   Eigenaarschap voor de totale klantrelatie is versnipperd over
+    functies en afdelingen;
+
+-   Sectoroverstijgende samenwerking is niet vanzelfsprekend en kost
+    extra energie;
+
+-   Teams hebben moeite om keuzes te maken en te focussen op wat voor
+    klanten het meest relevant is;
+
+-   Er is een neiging tot afwachtend gedrag in plaats van proactief
+    optreden richting klanten;
+
+-   Successen in klantgericht werken worden onvoldoende gedeeld,
+    waardoor positieve voorbeelden niet vanzelfsprekend navolging
+    krijgen.
+
+De kern van de cultuurverandering is:
+
+-   het verschuiven van productgericht naar klantgericht denken en
+    handelen;
+
+-   het versterken van gedeeld eigenaarschap voor klantrelaties;
+
+-   het normaliseren van sectoroverstijgende samenwerking;
+
+-   het stimuleren van proactief gedrag en het bespreekbaar maken van
+    keuzes.
+
+Cultuur verandert alleen als leiderschap, structuur, proces en gedrag in
+samenhang worden ontwikkeld.
+
+**\
+**
+
+**2.5 Integrale conclusie van de opgaveverkenning**
+
+De opgave voor Cito is integraal: Mens, Proces, Systeem en Cultuur zijn
+onlosmakelijk met elkaar verbonden. Verandering in één domein heeft
+alleen duurzaam effect als de andere domeinen mee veranderen. De aard,
+omvang en samenhang van deze opgave maken duidelijk dat:
+
+-   er meerdere soorten inspanningen nodig zijn;
+
+-   meerdere organisatieonderdelen betrokken zijn;
+
+-   effecten pas na langere tijd zichtbaar worden;
+
+-   sturing nodig is op effecten in plaats van alleen op output.
+
+Deze kenmerken horen bij een programma, niet bij afzonderlijke
+projecten.
+
+**3. Programmatische duiding**
+
+Het handboek Werken met Programma's [^1]omschrijft een programma als:
+*een samenhangend geheel van inspanningen, gericht op het realiseren van
+baten in meerdere delen van de organisatie, waarin afhankelijkheden
+bestaan tussen inspanningen en waarin sturing nodig is op effecten in
+plaats van alleen output.*
+
+Klant in Beeld voldoet aan alle kenmerken van een programma:
+
+1.  Meerdere baten\
+    De beoogde effecten van Klant in Beeld liggen op het gebied van
+    klanttevredenheid, klantbehoud, effectiviteit van dienstverlening,
+    efficiëntie in interne samenwerking, datakwaliteit en
+    cultuurontwikkeling.
+
+2.  Meerdere organisatieonderdelen\
+    De baten landen in meerdere sectoren en afdelingen: PO, VO,
+    Zakelijk/professionals , Klantcontact, HR, Data & Tech en andere
+    ondersteunende diensten.
+
+3.  Meerdere soorten inspanningen\
+    Er zijn projecten nodig (bijvoorbeeld verbeterprojecten),
+    procesinspanningen (uniform klantproces), leer- en
+    ontwikkeltrajecten (gedrag en vaardigheden) en systeem- en
+    data-inspanningen (CRM, klantbeeld, datakwaliteit).
+
+4.  Domein overschrijdende afhankelijkheden\
+    Geen enkel domein kan los worden opgepakt; systemen ondersteunen
+    processen, processen vragen om nieuw gedrag en de cultuur moet deze
+    werkwijze versterken.
+
+5.  Meerjarig en strategisch\
+    De beweging naar outside-in werken is verbonden met de strategische
+    koers van Cito en vereist meerdere jaren aan consistente aandacht en
+    investeringen.
+
+Conclusie:\
+Klant in Beeld is programmatisch van aard en wordt daarom vormgegeven
+als programma.
+
+**4. Doelbeeld van het programma**
+
+Mogelijk doelbeeld (nader te bepalen door opdrachtgever) van het
+programma Klant in Beeld:
+
+"Het programma Klant in Beeld ondersteunt Cito om zich duurzaam te
+ontwikkelen tot een organisatie die vanuit een buiten-in perspectief
+werkt, waarin mens, proces en systeem met elkaar verbonden zijn en deze
+samenhang onderdeel wordt van de cultuur, zodat onze dienstverlening en
+samenwerking blijvend aansluiten bij de behoeften, verwachtingen en
+contexten van klanten."
+
+Toelichting:
+
+-   Outside-in perspectief betekent dat de situatie, behoeften en
+    context van klanten leidend zijn in keuzes, prioritering en
+    handelen.
+
+-   De verbinding tussen Mens, Proces, cultuur en Systeem zorgt ervoor
+    dat gedrag, werkwijze en systemen elkaar versterken in plaats van
+    tegenwerken.
+
+-   De verankering in de cultuur maakt dat klantgericht werken geen
+    project is maar een manier van werken.
+
+-   De focus ligt op duurzame aansluiting van dienstverlening en
+    samenwerking op wat klanten nodig hebben.
+
+De baateigenaren(sectormanagers) zullen dit doelbeeld nader
+concretiseren in termen van meetbare baten per domein en per sector.
+
+**\
+**
+
+**5. Baten en effectstructuur**
+
+Het programma Klant in Beeld is gericht op het realiseren van baten.
+Baten zijn de gewenste effecten die Cito met dit programma wil bereiken.
+Deze worden per domein en per sector nader uitgewerkt door de
+baateigenaren.
+
+Voorbeelden van baten:
+
+-   Hogere tevredenheid en vertrouwen van klanten in Cito als partner.
+
+-   Lagere ongewenste uitstroom van klanten.
+
+-   Betere aansluiting van producten en diensten op de behoeften van
+    klanten.
+
+-   Meer voorspelbare en herkenbare samenwerking voor klanten.
+
+-   Efficiëntere interne samenwerking door uniforme processen en
+    rolverdeling.
+
+-   Een betrouwbaar, integraal klantbeeld dat sturing en proactief
+    handelen mogelijk maakt.
+
+-   Een cultuur waarin klantgericht denken de norm is en waarin
+    eigenaarschap en samenwerking centraal staan.
+
+De effectstructuur wordt verder uitgewerkt in de businesscase, waarbij
+onderscheid wordt gemaakt tussen:
+
+-   programmadoelen (overkoepelend niveau);
+
+-   baten per domein (Mens, Proces, Systeem, Cultuur);
+
+-   baten per sector (PO, VO, Zakelijk/Professionals).
+
+**6. Programmatische inrichting en governance**
+
+De programmatische inrichting volgt de uitgangspunten van Werken met
+Programma's en wordt aangepast aan de context van Cito.
+
+**6.1 Organigram (tekstuele weergave)**
+
+[De commercieel manager zal uiteindelijk optreden als gedelegeerd
+opdrachtgever/programma eigenaar en zal ook in de sponsorgroep
+deelnemen. Dat betekent dat de commercieel manager accountable is en de
+programmamanager responsible voor het programma conform de RASCI
+methodiek.]{.comment-start id="1" author="Roel Bakker"
+date="2025-12-15T20:15:00Z"}Opdrachtgever[]{.comment-end id="1"}\
+→ Directeur Cito bv (Roel Bakker)
+
+└── Sponsorgroep\
+• Directeur Cito bv (Roel Bakker)\
+• Manager SIO (Peter Dam)\
+• Programmadirecteur (Marjan Heijink)
+
+└── Programma-eigenaar\
+→ Commercieel Manager (n.t.b.)
+
+└── Programmamanager (Pim de Burger)
+
+→ huidige projectmanager Klant in Beeld
+
+└── Programmaraad
+
+• Programmamanager (voorzitter)
+
+• Programma-eigenaar
+
+• Baateigenaren:
+
+-- Sectormanager PO (Leontine Derks)
+
+-- Sectormanager VO (Bert Thijs de Jong)
+
+-- Sectormanager Zakelijk (Jasper Kwakkelstein)
+
+• HR-vertegenwoordiger (Mens-domein) (n.t.b.)
+
+• Data & Tech Manager (Systeem-domein) ( Cornelis Richter)
+
+• Methodiekexpert 3Sides
+
+└── Inspanningsleiders
+
+• Projectleiders ( n.t.b.)
+
+• Procesleiders ( n.t.b.)
+
+• Leiders leer- en gedragsontwikkeltrajecten ( n.t.b.)
+
+• Systeem- en datatrajectleiders ( n.t.b.)
+
+**6.2 Opdrachtgever**
+
+De Directeur bv is opdrachtgever van het programma.\
+Taken:
+
+-   geven van mandaat en richting;
+
+-   accorderen van doelbeeld, kaders en middelen;
+
+-   bewaken van de strategische aansluiting van het programma op de
+    koers van Cito;
+
+-   nemen van besluiten op vooraf gedefinieerde beslismomenten.
+
+**6.3 Sponsorgroep**
+
+De sponsorgroep bestaat uit de Directeur bv, de Manager SIO en de
+Programmadirecteur.
+
+Taken:
+
+-   ondersteunen van de programmamanager en programma-eigenaar bij het
+    oplossen van blokkades;
+
+-   bewaken van samenhang tussen het programma en andere strategische
+    initiatieven;
+
+-   zorgen voor noodzakelijke randvoorwaarden op bestuurlijk niveau;
+
+-   helpen bij het prioriteren wanneer programmadoelen spanning geven
+    met andere initiatieven.
+
+**6.4 Programma-eigenaar**
+
+De Commercieel Manager vervult de rol van programmaeigenaar.
+
+Taken:
+
+-   bewaken van de programmatische richting en samenhang met commerciële
+    en klantgerichte strategie;
+
+-   sturen op batenrealisatie: bewaken dat inspanningen daadwerkelijk
+    bijdragen aan de afgesproken effecten;
+
+-   verbinden van programmadoelstellingen met MT-besluitvorming;
+
+-   prioriteren van inspanningen in overleg met baateigenaren en
+    programmamanager;
+
+-   optreden als eerste aanspreekpunt voor de opdrachtgever over inhoud
+    en koers van het programma.
+
+**6.5 Programmamanager**
+
+De programmamanager:
+
+-   vertaalt de programmatische opdracht naar een werkbare structuur,
+    planning en fasering;
+
+-   stuurt baateigenaren en inspanningsleiders aan op samenhang en
+    bijdrage aan baten;
+
+-   bewaakt dat inspanningen in alle domeinen (Mens, Proces, Systeem,
+    Cultuur) in balans zijn;
+
+-   signaleert risico's, afhankelijkheden en knelpunten en agendeert
+    deze in programmaraad en sponsorgroep;
+
+-   rapporteert periodiek over voortgang, risico's en bereikte effecten
+    aan programma-eigenaar en opdrachtgever;
+
+-   zorgt dat ervaringen uit projecten, procesinspanningen,
+    leertrajecten en systeeminterventies worden benut in het verdere
+    programmadesign.
+
+**6.6 Baateigenaren**
+
+Baateigenaren zijn:
+
+-   Sectormanager PO;
+
+-   Sectormanager VO;
+
+-   Sectormanager Zakelijk/ Professionals.
+
+Taken:
+
+-   definiëren van baten binnen hun eigen domein (bijvoorbeeld PO, VO,
+    Zakelijk/ Professionals);
+
+-   initiëren van inspanningen (projecten, procesverbeteringen,
+    leertrajecten, systeemverbeteringen) die bijdragen aan deze baten;
+
+-   monitoren en rapporteren van voortgang, resultaten en knelpunten
+    binnen hun domein aan de programmamanager;
+
+-   bijdragen aan de vorming van de batenstructuur en prioritering in de
+    programmaraad;
+
+-   bewaken dat inspanningen binnen hun domein aansluiten op de
+    programmadoelen en de Cito-strategie.
+
+Baateigenaren leggen verantwoording af aan de programmamanager voor de
+voortgang en aan de programma-eigenaar voor de bijdrage aan de
+programmabaten.
+
+**6.7 Programmaraad**
+
+De programmaraad bestaat uit:
+
+-   de programmamanager (voorzitter);
+
+-   de programma-eigenaar;
+
+-   alle baateigenaren;
+
+-   een vertegenwoordiger van HR (voor Mens-domein);
+
+-   een vertegenwoordiger van Data & Tech (voor Systeem-domein);
+
+-   een methodiekexpert van 3Sides.
+
+Taken:
+
+-   adviseren over volgorde, prioritering en samenstelling van
+    inspanningen;
+
+-   bewaken van samenhang tussen Mens, Proces, Systeem en Cultuur;
+
+-   signaleren van risico's, afhankelijkheden en benodigde besluiten;
+
+-   voorbereiden van advies en besluitvorming richting
+    programma-eigenaar en sponsorgroep;
+
+-   fungeren als platform waar programmatische keuzes worden besproken
+    en voorbereid.
+
+**6.8 Inspanningsleiders**
+
+Inspanningsleiders zijn verantwoordelijk voor de uitvoering van
+specifieke inspanningen binnen het programma, zoals:
+
+-   projectleiders (voor projecten);
+
+-   procesleiders (voor procesinspanningen);
+
+-   leiders van leer- en gedragsontwikkeltrajecten;
+
+-   systeem- of datatrajectleiders.
+
+Taken:
+
+-   uitwerken van aanpak voor de eigen inspanning binnen de kaders van
+    het programma en de batenstructuur;
+
+-   aansturen van de uitvoering en bewaken van voortgang op tijd,
+    kwaliteit en scope;
+
+-   afstemmen met andere inspanningsleiders over afhankelijkheden
+    (bijvoorbeeld tussen IT en processen);
+
+-   rapporteren aan de programmamanager en, waar relevant, aan de
+    betreffende baateigenaar.
+
+**7. Inspanningsstructuur**
+
+De inspanningsstructuur beschrijft welke soorten inspanningen binnen het
+programma worden ingezet om de gewenste baten te realiseren. Binnen
+Klant in Beeld worden vier typen inspanningen onderscheiden.
+
+**7.1 Projecten**
+
+Doel: het opleveren van concreet, afgebakend resultaat binnen een
+bepaalde tijd.
+
+Projecten richten zich bijvoorbeeld op:
+
+-   verdieping of herontwerp van klantreizen in PO, VO en Zakelijk;
+
+-   verbeterprojecten op het gebied van dienstverlening, onboarding of
+    product-klantfit;
+
+-   interventies gericht op specifieke knelpunten uit analyses en
+    interviews;
+
+-   systeemgerelateerde projecten zoals de implementatie of
+    herinrichting van CRM;
+
+-   implementatieprojecten die direct bijdragen aan programmabaten
+    (bijvoorbeeld pilots, nieuwe werkwijzen, tooling).
+
+Kenmerken:
+
+-   duidelijke scope, planning en einddatum;
+
+-   focus op output die bijdraagt aan gewenste effecten;
+
+-   aansturing door een projectleider als inspanningsleider.
+
+**7.2 Procesinspanningen**
+
+Doel: het duurzaam verbeteren, uniformeren en borgen van werkprocessen.
+
+Procesinspanningen zijn nodig omdat:
+
+-   sectoren nu verschillende klantprocessen hanteren;
+
+-   de opvolging van klantinzichten niet eenduidig en structureel is;
+
+-   rollen, ritmes en vaste afspraken ontbreken of per sector
+    verschillen;
+
+-   eerdere klantinitiatieven niet in standaardprocessen zijn verankerd.
+
+Voorbeelden van procesinspanningen:
+
+-   het ontwerpen en invoeren van een organisatiebreed klantproces voor
+    alle sectoren;
+
+-   het inrichten van een vaste cyclus voor het verzamelen, analyseren
+    en opvolgen van klantinzichten;
+
+-   het uniformeren van definities, rolverdeling en
+    besluitvormingsmomenten;
+
+-   het vastleggen en onderhouden van processen rond klantcontact en
+    opvolging.
+
+Kenmerken:
+
+-   gericht op duurzame verandering van werkwijze;
+
+-   vragen afstemming tussen sectoren en afdelingen;
+
+-   worden aangestuurd door procesleiders of procesverantwoordelijken.
+
+**7.3 Leer- en gedragsontwikkeltrajecten**
+
+Doel: het structureel ontwikkelen van vaardigheden, houding en gedrag
+die nodig zijn om outside-in en klantgericht te werken.
+
+Deze inspanningen zijn cruciaal omdat:
+
+-   de gewenste gedragsverandering niet vanzelf ontstaat;
+
+-   medewerkers en managers nieuwe vaardigheden moeten ontwikkelen
+    (analyseren, luisteren, betekenis geven, prioriteren,
+    klantgesprekken voeren);
+
+-   leiderschap nodig is om het gewenste gedrag te stimuleren en te
+    borgen;
+
+-   cultuurverandering alleen plaatsvindt via herhaling, oefening en
+    begeleiding.
+
+Voorbeelden van leer- en gedragsontwikkeltrajecten:
+
+-   trainingen en workshops gericht op outside-in werken;
+
+-   trajecten rond verdiepend luisteren, analyseren en klantgesprekken
+    voeren;
+
+-   leiderschapsprogramma's gericht op sturen op effecten en
+    klantgerichtheid;
+
+-   intervisie, casusbesprekingen en coaching-on-the-job;
+
+-   train-de-trainer trajecten om borging binnen Cito te versterken;
+
+-   sectoroverstijgende ontwikkelingstrajecten om samenwerking en begrip
+    te vergroten.
+
+Kenmerken:
+
+-   meerjarig en cyclisch;
+
+-   gericht op gedrag, houding en vaardigheden;
+
+-   vragen om begeleiding, reflectie en evaluatie.
+
+**7.4 Systeem- en datainspanningen**
+
+Doel: het realiseren van systemen en data-infrastructuur die het
+klantproces en klantgericht werken ondersteunen.
+
+Deze inspanningen zijn nodig omdat:
+
+-   huidige systemen en data de gewenste werkwijze onvoldoende
+    ondersteunen;
+
+-   er behoefte is aan een betrouwbaar, integraal klantbeeld;
+
+-   consistentie in datakwaliteit nodig is voor goede sturing;
+
+-   proactief klantcontact niet mogelijk is zonder juiste
+    informatievoorziening.
+
+Voorbeelden van systeem- en datainspanningen:
+
+-   verbetering en herinrichting van CRM;
+
+-   het uniformeren en opschonen van klantdata;
+
+-   het integreren van verschillende databronnen in één klantbeeld;
+
+-   het ontwikkelen van dashboards en rapportages die klantgericht
+    sturen mogelijk maken;
+
+-   het inrichten van technische koppelingen tussen systemen.
+
+Kenmerken:
+
+-   vaak technisch complex en meerjarig;
+
+-   afhankelijk van heldere procesontwerpen en datadefinities;
+
+-   worden aangestuurd door afdeling Data & Tech en specifieke systeem-
+    of datatrajectleiders.
+
+Routines zoals vaste reflectiemomenten, kwartaaloverleggen of
+dashboardsessies worden beschouwd als een resultaat van goed ingerichte
+processen en gedrag; zij vormen geen aparte inspanningsvorm binnen de
+programmatische structuur.
+
+**8. Rol van 3Sides (strategisch partner ook bij de uitvoer kan
+helpen)**
+
+3Sides levert:
+
+-   methodiek, begeleiding en kwaliteitsborging
+
+-   een Consultancy rol
+
+-   Klant in Beeld team daar verantwoordelijk uitvoeren
+
+-   coaching van teams en baateigenaren
+
+-   inhoudelijke expertise bij domeinen Mens, Proces, systeem en Cultuur
+
+-   ondersteuning bij analyse en betekenisgeving
+
+3Sides is **geen eigenaar** maar **versterkt de interne capaciteit**,
+maar heeft wel het mandaat om te escaleren indien toleranties worden
+bereikt.
+
+**9. MT-overleg: presentatie van uitkomsten, programmabrug en opdracht
+aan baateigenaren**
+
+Het MT-overleg vormt een belangrijk scharniermoment in de overgang van
+projectmatig werken naar programmasturing.
+
+**9.1 Doel van het MT-moment**
+
+Tijdens het MT-overleg presenteert de programmamanager:
+
+1.  De kernuitkomsten uit de drie klantreistrajecten
+
+    -   inclusief patronen over Mens, Proces, Systeem en Cultuur;
+
+    -   voorzien van voorbeelden uit stuurgroepdocumenten,
+        trajectresultaten en praktijkcases;
+
+    -   met expliciete benoeming van knelpunten die sectoroverstijgend
+        zijn en niet in één sector zijn op te lossen.
+
+2.  Waarom de opgave programmatisch is
+
+    -   onderbouwing vanuit de praktijkervaringen in PO, VO en Zakelijk;
+
+    -   onderbouwing vanuit de analyses van de stuurgroep;
+
+    -   koppeling aan de programmatische criteria uit Werken met
+        Programma's;
+
+    -   toelichting dat structurele verandering meerjarig, strategisch
+        en domein-overstijgend is.
+
+3.  Een helder bruggetje naar het Programma Klant in Beeld
+
+    -   we hebben geleerd wat de werkelijke opgave is en waar de
+        patronen liggen;
+
+    -   we hebben gezien dat losse trajecten en projecten onvoldoende
+        borging opleveren;
+
+    -   de duurzame verandering vraagt om programmatische sturing met
+        duidelijke baten, kaders en rollen.
+
+**9.2 Uitleg van de rol en verantwoordelijkheid van MT-leden als
+baateigenaren**
+
+Tijdens het MT wordt daarnaast toegelicht wat de rol van baateigenaar
+inhoudt en wat dit vraagt van sectormanagers en de Manager Data & Tech.
+
+De programmamanager licht toe dat:
+
+-   de baateigenaar inhoudelijk en strategisch eigenaar is van de baten
+    binnen het eigen domein;
+
+-   de baateigenaar bepaalt welke effecten gerealiseerd moeten worden,
+    bijvoorbeeld voor PO, VO, Zakelijk/Professionals;
+
+-   de baateigenaar inspanningen initieert en ondersteunt die bijdragen
+    aan deze baten;
+
+-   de baateigenaar in de programmaraad actief meebeslist over
+    prioriteiten, samenhang en volgorde van inspanningen;
+
+-   de baateigenaar de brugfunctie vervult tussen
+    programmadoelstellingen en dagelijkse praktijk in de eigen sector.
+
+Baateigenaarschap is geen projectrol, maar een strategische veranderrol.
+Het MT moet begrijpen dat hun rol niet is om projecten zelf te managen,
+maar om de gewenste effecten te definiëren, kaders te stellen en te
+sturen op realisatie van baten.
+
+**9.3 Reflectieopdracht voor MT-leden (mee te nemen naar het volgende
+stuurgroepoverleg)**
+
+Tijdens de MT-sessie wordt elke baateigenaar gevraagd om na te denken
+over een aantal reflectievragen. Deze vragen zijn essentieel voor de
+vorming van het programma en de daaropvolgende businesscase.
+
+Vragen voor baateigenaren:
+
+1.  Wat zijn de gewenste baten binnen jouw domein?\
+    Voorbeelden:
+
+    -   PO: verbeterde onboarding van klanten, daling van ongewenste
+        uitstroom, betere didactische ondersteuning.
+
+    -   VO: duurzame partnerrelaties, ondersteuning bij digitalisering,
+        voorspelbare en herkenbare samenwerking.
+
+    -   Zakelijk: versterkte samenwerking met partners, vergroting van
+        de ervaren meerwaarde in advisering.
+
+    -   Data & Tech: betrouwbaar integraal klantbeeld, hogere
+        datakwaliteit, verbeterde CRM-ondersteuning.
+
+2.  Welke effecten moeten écht gerealiseerd worden?\
+    Niet in abstracte termen ("klantgerichter werken"), maar concreet en
+    toetsbaar. Bijvoorbeeld:
+
+    -   een meetbare daling van ongewenste uitstroom;
+
+    -   een herkenbare en voorspelbare samenwerking voor klanten;
+
+    -   systemen die het klantproces volledig ondersteunen;
+
+    -   duidelijke verbetering van klantfeedbackscores.
+
+3.  Welke inspanningen zijn hiervoor nodig binnen jouw domein?\
+    Denk aan:
+
+    -   projecten;
+
+    -   procesinspanningen;
+
+    -   leer- en gedragsontwikkeltrajecten;
+
+    -   systeem- en datainspanningen.
+
+4.  Wat is jouw rol als baateigenaar in dit programma?\
+    Reflectie op:
+
+    -   hoe je eigenaarschap neemt;
+
+    -   hoe je stuurt op effecten in plaats van activiteiten;
+
+    -   hoe je borgt dat teams consistent blijven werken vanuit de
+        klantreis;
+
+    -   hoe je sectoroverstijgende samenwerking stimuleert.
+
+5.  Welke keuzes moeten we organisatiebreed maken?\
+    Denk aan:
+
+    -   een uniform klantproces voor alle sectoren;
+
+    -   een consistent datamodel;
+
+    -   de rol en positionering van Productmanagement;
+
+    -   eigenaarschap over klantrelaties;
+
+    -   welke initiatieven prioriteit krijgen (en welke bewust niet).
+
+Deze reflecties vormen input voor de programmaraad en voor de verdere
+uitwerking van de businesscase.
+
+**9.4 Wat gebeurt er met hun input?**
+
+De antwoorden en reflecties van de baateigenaren worden:
+
+-   verzameld door programmamanager en programma-eigenaar;
+
+-   besproken in de eerstvolgende stuurgroepoverleg wat later een
+    programmaraad wordt;
+
+-   vertaald naar een batenstructuur per sector en per domein (Mens,
+    Proces, Systeem, Cultuur);
+
+-   samengevoegd met:
+
+    -   de programmatische kaders van de opdrachtgever;
+
+    -   de learnings uit eerdere trajecten en stuurgroepen;
+
+    -   technische en personele randvoorwaarden;
+
+    -   organisatiebrede prioriteiten.
+
+Deze gecombineerde input vormt de basis voor de nieuwe businesscase van
+het programma Klant in Beeld.
+
+**9.5 Naar een nieuwe businesscase -- formele programmastart**
+
+Op basis van:
+
+-   het MT-gesprek en de gedeelde probleemanalyse;
+
+-   de reflecties van baateigenaren;
+
+-   de programmatische kaders van de opdrachtgever;
+
+-   de inzichten uit de uitgevoerde trajecten;
+
+-   de strategische richting van Cito,
+
+schrijft de programmamanager, samen met de programma-eigenaar en de
+opdrachtgever, de nieuwe businesscase voor het Programma Klant in Beeld.
+
+Deze businesscase bevat ten minste:
+
+-   het definitieve doelbeeld voor het programma;
+
+-   de uitgewerkte baten en effectdoelen per sector en per domein;
+
+-   de complete batenstructuur;
+
+-   de inspanningsstructuur (typen inspanningen en hun onderlinge
+    samenhang);
+
+-   fasering en hoofdlijnplanning;
+
+-   een globale begroting en overzicht van benodigde middelen;
+
+-   risico's, afhankelijkheden en voorgestelde beheersmaatregelen;
+
+-   besluitmomenten en governance-inrichting.
+
+Na goedkeuring van deze businesscase door de opdrachtgever en de
+sponsorgroep kan het programma Klant in Beeld formeel worden gestart.
+
+**9.6 Duidelijke boodschap aan MT: wat verwachten wij van jullie?**
+
+De kernboodschap richting MT is dat het succes van het programma Klant
+in Beeld in belangrijke mate afhangt van het eigenaarschap en de actieve
+betrokkenheid van de MT-leden in hun rol als baateigenaar.
+
+Van het MT wordt verwacht dat zij:
+
+-   expliciet eigenaarschap tonen over baten binnen hun domein;
+
+-   denken en sturen in termen van effecten in plaats van losse
+    activiteiten;
+
+-   de programmatische kaders bewaken binnen hun eigen sector of
+    aandachtsgebied;
+
+-   voorbereid naar het eerstvolgende stuurgroep- of
+    programmaraadsoverleg komen, met uitgewerkte antwoorden op de
+    reflectievragen;
+
+-   verantwoordelijkheid nemen voor organisatiebrede keuzes, niet alleen
+    voor sectoreigen belang;
+
+-   samen met programmamanager en programma-eigenaar actief meewerken
+    aan de totstandkoming van de businesscase.
+
+**10. Naar een nieuwe businesscase en formele programmastart**
+
+De volgende stap na het MT-overleg en de uitwerking door de
+baateigenaren is het opstellen van de nieuwe businesscase voor het
+Programma Klant in Beeld.
+
+Deze businesscase:
+
+-   formaliseert het doelbeeld en de baten;
+
+-   legt de gekozen programmatische inrichting vast;
+
+-   specificeert de belangrijkste inspanningen en hun onderlinge
+    samenhang;
+
+-   bevat een voorstel voor fasering, middelen en besluitvorming;
+
+-   biedt de opdrachtgever en sponsorgroep een helder kader voor
+    besluitvorming.
+
+Na goedkeuring van de businesscase start het programma formeel en worden
+de eerste programmatische besluiten genomen over:
+
+-   prioritering van inspanningen;
+
+-   inzet van middelen en capaciteit;
+
+-   inrichting van rapportages en monitoring;
+
+-   verdere uitwerking van deelprogramma's of projecten waar nodig.
+
+Hiermee wordt Klant in Beeld van een reeks losse trajecten omgevormd tot
+een samenhangend, meerjarig programma waarmee Cito structureel werkt aan
+een buiten-in, klantgerichte organisatie.
+
+**Eigen aantekeningen niet van toepassing**
+
+[Draft programma defintie:]{.mark}
+
+[Eigenaarschap bij jullie]{.mark}
+
+[Aanpak: hoe zou je dat kunnen doen? Schets kunnen tekenen]{.mark}
+
+[1)Outline tekenen: aanpak hoe ga je het programma invullen:]{.mark}
+
+[In welke vorm uiting geven: Outline schetsne kunnen doen in
+organisatie:]{.mark}
+
+[2)Hoe waarborg je de waan van dag?]{.mark}
+
+[Kan sturen op mensen betrekken]{.mark}
+
+[3) competenties: welke mensen in huis. Juiste mensen op de juiste plek.
+Dragen visie comptenties: productmanager Saas kan ontwikkelen. Profielen
+defnieren\>. Welke profielen hebben we nu. Welke competenties nu en
+klopt dat waar je naartoe wilt.]{.mark}
+
+[Draaien met de mensen die je hebt? Comeptenties mensen sterk
+thema]{.mark}
+
+[^1]: https://werkenaanprogrammas.nl/

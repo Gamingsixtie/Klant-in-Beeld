@@ -1,0 +1,12 @@
+[96|] 12. Rollen definiëren en verdelen
+[97|] 12.1 Groepen en teams in en rond de programmaorganisatie
+[98|] 12.2 Sponsorgroep(en): strategische beslissers in de organisatie
+[99|] 12.3 Programmastuurgroep: programma-eigenaar, programmamanager en bateneigenaren
+[100|] 12.4 Programmateam: vormgevende, managende en ondersteunende rollen
+[101|] 12.5 Projectstuurgroep: projectopdrachtgever, senior gebruiker en senior leverancier
+[102|] 12.6 Inspanningsteam: inspanningsleider en -medewerkers
+[103|] 12.7 Veranderteam: leiders in de verandering en veranderkundige
+[104|] 12.8 Operatie: daar waar de verandering moet plaatsvinden
+[105|] 12.9 Andere rollen in en rond een programma
+[106|] 12.10 Uitgangspunten bij de rollen in programma’s
+[107|] 12.11 Ter afronding: rollen definiëren is één, maar het gaat om doorleven
