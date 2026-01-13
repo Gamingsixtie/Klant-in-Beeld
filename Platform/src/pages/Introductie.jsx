@@ -155,7 +155,92 @@ function Introductie() {
         </div>
       </section>
 
-      {/* SECTIE 2: De 8 Thema's */}
+      {/* SECTIE 2: De 7 Kernprincipes */}
+      <section className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+        <div className="bg-amber-50 px-8 py-6 border-b border-amber-100">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-amber-500 rounded-xl shadow-lg">
+              <Shield className="w-7 h-7 text-white" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-amber-900">2. De 7 Kernprincipes</h2>
+              <p className="text-base text-amber-700 mt-1">Fundament van de methodologie</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-6">
+          <p className="text-sm text-slate-600 mb-4">
+            Deze 7 principes vormen de basis van "Werken aan Programma's" en gelden voor alle programma-activiteiten.
+            Ze helpen bij het maken van keuzes en het vermijden van valkuilen.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {kernprincipes.map(principe => {
+              const iconMap = {
+                Eye: Eye,
+                Users: Users,
+                Layers: Layers,
+                FileText: FileText,
+                TrendingUp: TrendingUp,
+                Shield: Shield,
+                Target: Target
+              }
+              const Icon = iconMap[principe.icon] || Shield
+
+              return (
+                <div
+                  key={principe.id}
+                  className="p-4 rounded-xl border-2 hover:shadow-md transition-all"
+                  style={{ borderColor: `${principe.kleur}40`, backgroundColor: `${principe.kleur}08` }}
+                >
+                  <div className="flex items-start gap-3">
+                    <div
+                      className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                      style={{ backgroundColor: principe.kleur }}
+                    >
+                      <Icon className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-bold text-slate-400">P{principe.id}</span>
+                        <h3 className="font-semibold text-slate-800 text-sm">{principe.titel}</h3>
+                      </div>
+                      <p className="text-xs text-slate-600 mb-2">{principe.beschrijving}</p>
+
+                      {/* KiB Toepassing */}
+                      <div className="bg-blue-50 rounded p-2 mb-2">
+                        <div className="text-[10px] text-blue-600 font-medium mb-0.5">Klant in Beeld:</div>
+                        <div className="text-xs text-blue-800">{principe.kibToepassing}</div>
+                      </div>
+
+                      {/* Valkuil & Check */}
+                      <div className="flex gap-2 text-[10px]">
+                        <div className="flex-1 bg-red-50 rounded p-1.5">
+                          <span className="text-red-600 font-medium">Valkuil: </span>
+                          <span className="text-red-700">{principe.valkuil}</span>
+                        </div>
+                        <div className="flex-1 bg-green-50 rounded p-1.5">
+                          <span className="text-green-600 font-medium">Check: </span>
+                          <span className="text-green-700">{principe.check}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          <div className="mt-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
+            <p className="text-xs text-amber-800">
+              <strong>Bron:</strong> "Werken aan Programma's" (Prevaas & Van Loon) - Deze principes zijn de basis voor alle programma-activiteiten.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTIE 3: De 8 Thema's */}
       <section className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
         <div className="bg-indigo-50 px-8 py-6 border-b border-indigo-100">
           <div className="flex items-center gap-4">
@@ -163,7 +248,7 @@ function Introductie() {
               <Compass className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-indigo-900">2. De 8 Thema's</h2>
+              <h2 className="text-2xl font-bold text-indigo-900">3. De 8 Thema's</h2>
               <p className="text-base text-indigo-700 mt-1">Lenzen waardoor je naar het programma kijkt in elke cyclus</p>
             </div>
           </div>
@@ -219,7 +304,7 @@ function Introductie() {
         </div>
       </section>
 
-      {/* SECTIE 3: De 4 Domeinen (Klant in Beeld specifiek) */}
+      {/* SECTIE 4: De 4 Domeinen (Klant in Beeld specifiek) */}
       <section className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
         <div className="bg-[#003366]/10 px-8 py-6 border-b border-[#003366]/20">
           <div className="flex items-center gap-4">
@@ -227,7 +312,7 @@ function Introductie() {
               <Layers className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-[#003366]">3. De 4 Domeinen</h2>
+              <h2 className="text-2xl font-bold text-[#003366]">4. De 4 Domeinen</h2>
               <p className="text-base text-slate-600 mt-1">Structuur voor baten en inspanningen</p>
             </div>
           </div>
@@ -364,7 +449,7 @@ function Introductie() {
         </div>
       </section>
 
-      {/* SECTIE 4: De 5 Stuurparameters */}
+      {/* SECTIE 5: De 5 Stuurparameters */}
       <section className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
         <div className="bg-green-50 px-8 py-6 border-b border-green-100">
           <div className="flex items-center gap-4">
@@ -372,7 +457,7 @@ function Introductie() {
               <Gauge className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-green-900">4. De 5 Stuurparameters</h2>
+              <h2 className="text-2xl font-bold text-green-900">5. De 5 Stuurparameters</h2>
               <p className="text-base text-green-700 mt-1">Waarop we het programma monitoren en bijsturen</p>
             </div>
           </div>
@@ -418,91 +503,6 @@ function Introductie() {
               <div className="w-4 h-4 bg-red-500 rounded-full" />
               <span className="text-xs text-slate-600">Actie vereist</span>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* SECTIE 5: De 7 Kernprincipes */}
-      <section className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-        <div className="bg-indigo-50 px-8 py-6 border-b border-indigo-100">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-indigo-500 rounded-xl shadow-lg">
-              <Shield className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-indigo-900">5. De 7 Kernprincipes</h2>
-              <p className="text-base text-indigo-700 mt-1">Fundament van de methodologie</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="p-6">
-          <p className="text-sm text-slate-600 mb-4">
-            Deze 7 principes vormen de basis van "Werken aan Programma's" en gelden voor alle programma-activiteiten.
-            Ze helpen bij het maken van keuzes en het vermijden van valkuilen.
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {kernprincipes.map(principe => {
-              const iconMap = {
-                Eye: Eye,
-                Users: Users,
-                Layers: Layers,
-                FileText: FileText,
-                TrendingUp: TrendingUp,
-                Shield: Shield,
-                Target: Target
-              }
-              const Icon = iconMap[principe.icon] || Shield
-
-              return (
-                <div
-                  key={principe.id}
-                  className="p-4 rounded-xl border-2 hover:shadow-md transition-all"
-                  style={{ borderColor: `${principe.kleur}40`, backgroundColor: `${principe.kleur}08` }}
-                >
-                  <div className="flex items-start gap-3">
-                    <div
-                      className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                      style={{ backgroundColor: principe.kleur }}
-                    >
-                      <Icon className="w-5 h-5 text-white" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-bold text-slate-400">P{principe.id}</span>
-                        <h3 className="font-semibold text-slate-800 text-sm">{principe.titel}</h3>
-                      </div>
-                      <p className="text-xs text-slate-600 mb-2">{principe.beschrijving}</p>
-
-                      {/* KiB Toepassing */}
-                      <div className="bg-blue-50 rounded p-2 mb-2">
-                        <div className="text-[10px] text-blue-600 font-medium mb-0.5">Klant in Beeld:</div>
-                        <div className="text-xs text-blue-800">{principe.kibToepassing}</div>
-                      </div>
-
-                      {/* Valkuil & Check */}
-                      <div className="flex gap-2 text-[10px]">
-                        <div className="flex-1 bg-red-50 rounded p-1.5">
-                          <span className="text-red-600 font-medium">Valkuil: </span>
-                          <span className="text-red-700">{principe.valkuil}</span>
-                        </div>
-                        <div className="flex-1 bg-green-50 rounded p-1.5">
-                          <span className="text-green-600 font-medium">Check: </span>
-                          <span className="text-green-700">{principe.check}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-
-          <div className="mt-4 p-3 bg-indigo-50 rounded-lg border border-indigo-200">
-            <p className="text-xs text-indigo-800">
-              <strong>Bron:</strong> "Werken aan Programma's" (Prevaas & Van Loon) - Deze principes zijn de basis voor alle programma-activiteiten.
-            </p>
           </div>
         </div>
       </section>
