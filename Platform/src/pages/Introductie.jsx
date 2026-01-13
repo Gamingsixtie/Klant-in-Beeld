@@ -155,7 +155,71 @@ function Introductie() {
         </div>
       </section>
 
-      {/* SECTIE 2: De 7 Kernprincipes */}
+      {/* SECTIE 2: De 8 Thema's */}
+      <section className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+        <div className="bg-indigo-50 px-8 py-6 border-b border-indigo-100">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-indigo-500 rounded-xl shadow-lg">
+              <Compass className="w-7 h-7 text-white" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-indigo-900">2. De 8 Thema's</h2>
+              <p className="text-base text-indigo-700 mt-1">Lenzen waardoor je naar het programma kijkt in elke cyclus</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-6">
+          <p className="text-sm text-slate-600 mb-4">
+            In elke levenscyclus adresseer je dezelfde 8 thema's, maar met verschillende intensiteit en focus.
+            De thema's zorgen ervoor dat je niets over het hoofd ziet.
+          </p>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { nr: 1, naam: 'Kiezen', icon: Target, desc: 'Wel/niet doen, prioriteiten', kleur: 'rose' },
+              { nr: 2, naam: 'Vormgeven', icon: Lightbulb, desc: 'Visie, doelen en scope', kleur: 'orange' },
+              { nr: 3, naam: 'Organiseren', icon: Settings, desc: 'Rollen, structuur, resources', kleur: 'amber' },
+              { nr: 4, naam: 'Sturen', icon: Gauge, desc: 'Monitoren, rapporteren, bijsturen', kleur: 'yellow' },
+              { nr: 5, naam: 'Beslissen', icon: Shield, desc: 'Wie beslist wat, wanneer', kleur: 'lime' },
+              { nr: 6, naam: 'Samenwerken', icon: MessageSquare, desc: 'Stakeholders, communicatie', kleur: 'emerald' },
+              { nr: 7, naam: 'Leiden', icon: Users, desc: 'Leiderschap, voorbeeldgedrag', kleur: 'teal' },
+              { nr: 8, naam: 'Ontwikkelen', icon: TrendingUp, desc: 'Leren, verbeteren, reflectie', kleur: 'cyan' }
+            ].map(thema => {
+              const Icon = thema.icon
+              const colors = {
+                rose: 'bg-rose-100 text-rose-700 border-rose-200',
+                orange: 'bg-orange-100 text-orange-700 border-orange-200',
+                amber: 'bg-amber-100 text-amber-700 border-amber-200',
+                yellow: 'bg-yellow-100 text-yellow-700 border-yellow-200',
+                lime: 'bg-lime-100 text-lime-700 border-lime-200',
+                emerald: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+                teal: 'bg-teal-100 text-teal-700 border-teal-200',
+                cyan: 'bg-cyan-100 text-cyan-700 border-cyan-200'
+              }[thema.kleur]
+
+              return (
+                <div key={thema.nr} className={`${colors} border rounded-xl p-3`}>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-lg font-bold opacity-50">{thema.nr}</span>
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  <h4 className="font-semibold text-sm">{thema.naam}</h4>
+                  <p className="text-xs opacity-75">{thema.desc}</p>
+                </div>
+              )
+            })}
+          </div>
+
+          <div className="mt-4 p-3 bg-slate-50 rounded-lg">
+            <p className="text-xs text-slate-600">
+              <strong>Tip:</strong> De thema's zijn niet sequentieel. Je werkt parallel aan meerdere thema's, met wisselende prioriteit per fase.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTIE 3: De 7 Kernprincipes */}
       <section className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
         <div className="bg-amber-50 px-8 py-6 border-b border-amber-100">
           <div className="flex items-center gap-4">
@@ -163,7 +227,7 @@ function Introductie() {
               <Shield className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-amber-900">2. De 7 Kernprincipes</h2>
+              <h2 className="text-2xl font-bold text-amber-900">3. De 7 Kernprincipes</h2>
               <p className="text-base text-amber-700 mt-1">Fundament van de methodologie</p>
             </div>
           </div>
@@ -235,70 +299,6 @@ function Introductie() {
           <div className="mt-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
             <p className="text-xs text-amber-800">
               <strong>Bron:</strong> "Werken aan Programma's" (Prevaas & Van Loon) - Deze principes zijn de basis voor alle programma-activiteiten.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* SECTIE 3: De 8 Thema's */}
-      <section className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-        <div className="bg-indigo-50 px-8 py-6 border-b border-indigo-100">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-indigo-500 rounded-xl shadow-lg">
-              <Compass className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-indigo-900">3. De 8 Thema's</h2>
-              <p className="text-base text-indigo-700 mt-1">Lenzen waardoor je naar het programma kijkt in elke cyclus</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="p-6">
-          <p className="text-sm text-slate-600 mb-4">
-            In elke levenscyclus adresseer je dezelfde 8 thema's, maar met verschillende intensiteit en focus.
-            De thema's zorgen ervoor dat je niets over het hoofd ziet.
-          </p>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {[
-              { nr: 1, naam: 'Kiezen', icon: Target, desc: 'Wel/niet doen, prioriteiten', kleur: 'rose' },
-              { nr: 2, naam: 'Vormgeven', icon: Lightbulb, desc: 'Visie, doelen en scope', kleur: 'orange' },
-              { nr: 3, naam: 'Organiseren', icon: Settings, desc: 'Rollen, structuur, resources', kleur: 'amber' },
-              { nr: 4, naam: 'Sturen', icon: Gauge, desc: 'Monitoren, rapporteren, bijsturen', kleur: 'yellow' },
-              { nr: 5, naam: 'Beslissen', icon: Shield, desc: 'Wie beslist wat, wanneer', kleur: 'lime' },
-              { nr: 6, naam: 'Samenwerken', icon: MessageSquare, desc: 'Stakeholders, communicatie', kleur: 'emerald' },
-              { nr: 7, naam: 'Leiden', icon: Users, desc: 'Leiderschap, voorbeeldgedrag', kleur: 'teal' },
-              { nr: 8, naam: 'Ontwikkelen', icon: TrendingUp, desc: 'Leren, verbeteren, reflectie', kleur: 'cyan' }
-            ].map(thema => {
-              const Icon = thema.icon
-              const colors = {
-                rose: 'bg-rose-100 text-rose-700 border-rose-200',
-                orange: 'bg-orange-100 text-orange-700 border-orange-200',
-                amber: 'bg-amber-100 text-amber-700 border-amber-200',
-                yellow: 'bg-yellow-100 text-yellow-700 border-yellow-200',
-                lime: 'bg-lime-100 text-lime-700 border-lime-200',
-                emerald: 'bg-emerald-100 text-emerald-700 border-emerald-200',
-                teal: 'bg-teal-100 text-teal-700 border-teal-200',
-                cyan: 'bg-cyan-100 text-cyan-700 border-cyan-200'
-              }[thema.kleur]
-
-              return (
-                <div key={thema.nr} className={`${colors} border rounded-xl p-3`}>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-lg font-bold opacity-50">{thema.nr}</span>
-                    <Icon className="w-4 h-4" />
-                  </div>
-                  <h4 className="font-semibold text-sm">{thema.naam}</h4>
-                  <p className="text-xs opacity-75">{thema.desc}</p>
-                </div>
-              )
-            })}
-          </div>
-
-          <div className="mt-4 p-3 bg-slate-50 rounded-lg">
-            <p className="text-xs text-slate-600">
-              <strong>Tip:</strong> De thema's zijn niet sequentieel. Je werkt parallel aan meerdere thema's, met wisselende prioriteit per fase.
             </p>
           </div>
         </div>
