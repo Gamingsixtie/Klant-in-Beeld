@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAppStore } from '../stores/appStore'
 import {
   Plus,
@@ -26,7 +27,8 @@ import {
   Lightbulb,
   Link2,
   LayoutList,
-  Building
+  Building,
+  Map
 } from 'lucide-react'
 
 // Type configuratie
@@ -445,6 +447,8 @@ function InspanningForm({ inspanning, onSave, onCancel, baten }) {
 }
 
 function Inspanningen() {
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const { inspanningen, addInspanning, updateInspanning, deleteInspanning, baten } = useAppStore()
   const [showForm, setShowForm] = useState(false)
   const [editingInspanning, setEditingInspanning] = useState(null)
@@ -455,6 +459,29 @@ function Inspanningen() {
   const [selectedSector, setSelectedSector] = useState(null)
   const [viewType, setViewType] = useState('sector') // 'sector' | 'type'
   const [expandedSectors, setExpandedSectors] = useState(sectoren)
+
+  // Read highlight query param
+  const highlightId = searchParams.get('highlight')
+
+  // Auto-open highlighted inspanning for editing
+  useEffect(() => {
+    if (highlightId) {
+      const found = inspanningen.find(i => String(i.id) === highlightId)
+      if (found) {
+        setEditingInspanning(found)
+        setShowForm(true)
+        // Expand the sector containing this inspanning
+        if (found.sector && !expandedSectors.includes(found.sector)) {
+          setExpandedSectors(prev => [...prev, found.sector])
+        }
+      }
+    }
+  }, [highlightId, inspanningen])
+
+  // Navigate to Roadmap with highlight
+  const handleOpenInRoadmap = (inspanningId) => {
+    navigate(`/roadmap?view=kanban&highlight=${inspanningId}`)
+  }
 
   // Filters
   const [filters, setFilters] = useState({
@@ -831,13 +858,58 @@ function Inspanningen() {
       {/* SECTOR VIEW - Per Sector > Per Domein */}
       {viewType === 'sector' && (
         <div className="space-y-4">
+          {/* Sector Summary Cards */}
+          <div className="grid grid-cols-4 gap-3">
+            {sectoren.map(sector => {
+              const sConfig = sectorConfig[sector]
+              const count = stats.bySector[sector] || 0
+              const actief = inspanningen.filter(i => i.sector === sector && i.status === 'in_progress').length
+              const gepland = inspanningen.filter(i => i.sector === sector && i.status === 'planned').length
+              const voltooid = inspanningen.filter(i => i.sector === sector && i.status === 'completed').length
+              const isSelected = selectedSector === sector
+
+              return (
+                <button
+                  key={sector}
+                  onClick={() => setSelectedSector(isSelected ? null : sector)}
+                  className={`p-3 rounded-xl border-2 transition-all text-left ${
+                    isSelected
+                      ? `${sConfig.bgLight} ${sConfig.border} ring-2 ring-offset-1 ${sConfig.border}`
+                      : 'bg-white border-slate-200 hover:border-slate-300 hover:shadow-sm'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className={`w-8 h-8 ${sConfig.color} rounded-lg flex items-center justify-center`}>
+                      <span className="text-xs font-bold text-white">{sConfig.short}</span>
+                    </div>
+                    <span className={`text-2xl font-bold ${isSelected ? sConfig.text : 'text-slate-800'}`}>
+                      {count}
+                    </span>
+                  </div>
+                  <p className={`text-xs font-medium truncate ${isSelected ? sConfig.text : 'text-slate-600'}`}>
+                    {sector === 'Programma' ? 'Programma' : sector.split(' ')[0]}
+                  </p>
+                  {count > 0 && (
+                    <div className="flex gap-2 mt-2 text-[10px]">
+                      {actief > 0 && <span className="text-blue-600">{actief} actief</span>}
+                      {gepland > 0 && <span className="text-slate-500">{gepland} gepland</span>}
+                      {voltooid > 0 && <span className="text-green-600">{voltooid} klaar</span>}
+                    </div>
+                  )}
+                  {count === 0 && (
+                    <p className="text-[10px] text-slate-400 mt-2">Geen inspanningen</p>
+                  )}
+                </button>
+              )
+            })}
+          </div>
+
           {sectoren.map(sector => {
             const sConfig = sectorConfig[sector]
             const sectorData = inspanningenPerSector[sector]
             const isExpanded = expandedSectors.includes(sector)
 
-            // Skip sectors without items unless showing all
-            if (sectorData.total === 0 && !selectedSector) return null
+            // ALTIJD alle sectoren tonen, ook als leeg (bug fix)
 
             return (
               <div key={sector} className={`bg-white rounded-xl border-2 ${sConfig.border} overflow-hidden`}>
@@ -899,7 +971,7 @@ function Inspanningen() {
 
                             <div className="p-2 space-y-2 min-h-[120px]">
                               {items.length > 0 ? (
-                                items.map(inspanning => {
+                                items.map((inspanning) => {
                                   const tConfig = typeConfig[inspanning.type] || {}
                                   const TypeIcon = tConfig.icon || Briefcase
                                   const statusCfg = statussen.find(s => s.value === inspanning.status) || {}
@@ -949,7 +1021,14 @@ function Inspanningen() {
                                           </div>
                                         </div>
                                       )}
-                                      <div className="flex justify-end mt-2 opacity-0 group-hover:opacity-100">
+                                      <div className="flex justify-between mt-2 opacity-0 group-hover:opacity-100">
+                                        <button
+                                          onClick={(e) => { e.stopPropagation(); handleOpenInRoadmap(inspanning.id) }}
+                                          className="p-1 text-slate-400 hover:text-blue-500 flex items-center gap-1 text-[10px]"
+                                          title="Toon in Roadmap"
+                                        >
+                                          <Map className="w-3 h-3" />
+                                        </button>
                                         <button
                                           onClick={(e) => { e.stopPropagation(); handleDelete(inspanning.id) }}
                                           className="p-1 text-slate-400 hover:text-red-500"

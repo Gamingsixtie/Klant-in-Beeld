@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useAppStore } from '../stores/appStore'
 import { useMethodologieStore } from '../stores/methodologieStore'
 import { sectoren } from '../data/programmaData'
@@ -8,591 +8,512 @@ import {
   ListTodo,
   Users,
   TrendingUp,
-  ArrowUpRight,
-  ArrowDownRight,
-  Activity,
   Calendar,
-  Zap,
-  CheckCircle2,
-  BarChart3,
-  Building2,
-  Clock,
   AlertCircle,
+  AlertTriangle,
   GitBranch,
   Briefcase,
-  Circle,
-  Lightbulb
+  Flag,
+  Gauge,
+  CheckCircle,
+  ArrowRight,
+  ChevronRight,
+  Info
 } from 'lucide-react'
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  AreaChart,
-  Area,
-  Legend
-} from 'recharts'
 
-const COLORS = ['#22c55e', '#3b82f6', '#eab308', '#ef4444']
-const SECTOR_COLORS = ['#003366', '#0066cc', '#0088ee', '#00aaff', '#66ccff']
-
-function StatCard({ icon: Icon, label, value, subValue, color, trend, trendValue, onClick }) {
-  return (
-    <div
-      className={`bg-white rounded-xl border border-slate-100 p-5 hover:shadow-lg hover:border-slate-200 transition-all duration-300 hover:-translate-y-0.5 ${onClick ? 'cursor-pointer' : ''}`}
-      onClick={onClick}
-    >
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <p className="text-[13px] text-slate-500 font-medium mb-1">{label}</p>
-          <div className="flex items-baseline gap-2">
-            <p className="text-2xl font-bold text-slate-900 tracking-tight">{value}</p>
-            {trend && (
-              <span className={'flex items-center text-xs font-medium ' + (trend === 'up' ? 'text-green-600' : 'text-red-500')}>
-                {trend === 'up' ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
-                {trendValue}
-              </span>
-            )}
-          </div>
-          {subValue && <p className="text-[12px] text-slate-400 mt-1.5">{subValue}</p>}
-        </div>
-        <div className={'p-3 rounded-xl shadow-lg ' + color}>
-          <Icon className="w-5 h-5 text-white" />
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function StuurparameterCard({ parameter }) {
-  const statusColors = {
-    groen: 'bg-green-500',
-    geel: 'bg-yellow-500',
-    rood: 'bg-red-500'
-  }
-
-  const statusBg = {
-    groen: 'bg-green-50 border-green-200',
-    geel: 'bg-yellow-50 border-yellow-200',
-    rood: 'bg-red-50 border-red-200'
-  }
-
-  return (
-    <div className={`rounded-lg border p-3 ${statusBg[parameter.status]}`}>
-      <div className="flex items-center gap-2 mb-1">
-        <div className={`w-2.5 h-2.5 rounded-full ${statusColors[parameter.status]}`} />
-        <span className="text-sm font-medium text-slate-800">{parameter.naam}</span>
-      </div>
-      <p className="text-xs text-slate-600">{parameter.toelichting}</p>
-    </div>
-  )
-}
-
-function ChartCard({ title, subtitle, children }) {
-  return (
-    <div className="bg-white rounded-xl border border-slate-100 p-5 hover:shadow-lg transition-all duration-300">
-      <div className="mb-4">
-        <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
-        {subtitle && <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>}
-      </div>
-      {children}
-    </div>
-  )
-}
-
-function RecentActivityItem({ icon: Icon, title, description, time, color }) {
-  return (
-    <div className="flex items-start gap-3 py-3 border-b border-slate-100 last:border-0">
-      <div className={'p-2 rounded-lg ' + color}>
-        <Icon className="w-4 h-4 text-white" />
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-slate-900 truncate">{title}</p>
-        <p className="text-xs text-slate-500 truncate">{description}</p>
-      </div>
-      <span className="text-xs text-slate-400 whitespace-nowrap">{time}</span>
-    </div>
-  )
-}
+// Iteratie 1: Data Hiërarchie - Primaire en secundaire KPIs duidelijk gescheiden
+// Iteratie 2: Visuele indicatoren - Consistente kleuren en status badges
+// Iteratie 3: Compacte data cards - Dense maar leesbaar
+// Iteratie 4: Context tooltips - Uitleg bij elk getal
+// Iteratie 5: Actionable insights - Wat moet je doen?
 
 export default function Dashboard() {
   const navigate = useNavigate()
-  const { baten, inspanningen, stakeholders, risicos, issues, getStats } = useAppStore()
-  const { voortgang, getStuurparametersMetMetadata } = useMethodologieStore()
+  const { baten, inspanningen, risicos, issues } = useAppStore()
+  const { getStuurparametersMetMetadata, getCyclusVoortgang, voortgang } = useMethodologieStore()
+  const [sectorFilter, setSectorFilter] = useState('alle')
 
-  // Dynamische stuurparameters uit store
   const stuurparameters = getStuurparametersMetMetadata()
 
-  // Memoized statistics calculations
-  const stats = useMemo(() => ({
-    // Baten statistics
-    totalBaten: baten?.length || 0,
-    completedBaten: baten?.filter(b => b.status === 'completed')?.length || 0,
-    inProgressBaten: baten?.filter(b => b.status === 'in_progress')?.length || 0,
-    pendingBaten: baten?.filter(b => b.status === 'pending')?.length || 0,
+  // === DATA BEREKENINGEN ===
 
-    // Inspanningen statistics
-    totalInspanningen: inspanningen?.length || 0,
-    activeInspanningen: inspanningen?.filter(i => i.status === 'in_progress')?.length || 0,
-    plannedInspanningen: inspanningen?.filter(i => i.status === 'planned')?.length || 0,
+  // Gefilterde data
+  const filteredBaten = useMemo(() => {
+    if (sectorFilter === 'alle') return baten || []
+    const sectorNaam = sectoren.find(s => s.id === sectorFilter)?.naam
+    return baten?.filter(b => b.sector === sectorNaam) || []
+  }, [baten, sectorFilter])
 
-    // Risico's & issues
-    openRisicos: risicos?.filter(r => r.status === 'open' || r.status === 'in_behandeling')?.length || 0,
-    hoogRisicos: risicos?.filter(r => (r.score || 0) >= 15)?.length || 0,
-    openIssues: issues?.filter(i => i.status === 'open' || i.status === 'in_behandeling' || i.status === 'wacht_op_besluit')?.length || 0
-  }), [baten, inspanningen, risicos, issues])
-
-  // Destructure for convenience
-  const {
-    totalBaten, completedBaten, inProgressBaten, pendingBaten,
-    totalInspanningen, activeInspanningen, plannedInspanningen,
-    openRisicos, hoogRisicos, openIssues
-  } = stats
-
-  // Memoized chart data
-  const baatStatusData = useMemo(() => [
-    { name: 'Voltooid', value: completedBaten, color: '#22c55e' },
-    { name: 'In uitvoering', value: inProgressBaten, color: '#3b82f6' },
-    { name: 'Gepland', value: pendingBaten, color: '#eab308' }
-  ].filter(item => item.value > 0), [completedBaten, inProgressBaten, pendingBaten])
-
-  const domeinData = useMemo(() => [
-    { name: 'Mens', inspanningen: inspanningen?.filter(i => i.domein === 'Mens')?.length || 0 },
-    { name: 'Proces', inspanningen: inspanningen?.filter(i => i.domein === 'Proces')?.length || 0 },
-    { name: 'Systeem', inspanningen: inspanningen?.filter(i => i.domein === 'Systeem')?.length || 0 },
-    { name: 'Cultuur', inspanningen: inspanningen?.filter(i => i.domein === 'Cultuur')?.length || 0 }
-  ].filter(item => item.inspanningen > 0), [inspanningen])
-
-  const faseData = useMemo(() => [
-    {
-      fase: 'Fundament',
-      gepland: inspanningen?.filter(i => i.fase === 'Fundament' && i.status === 'planned')?.length || 0,
-      actief: inspanningen?.filter(i => i.fase === 'Fundament' && i.status === 'in_progress')?.length || 0
-    },
-    {
-      fase: 'Implementatie',
-      gepland: inspanningen?.filter(i => i.fase === 'Implementatie' && i.status === 'planned')?.length || 0,
-      actief: inspanningen?.filter(i => i.fase === 'Implementatie' && i.status === 'in_progress')?.length || 0
-    },
-    {
-      fase: 'Verankering',
-      gepland: inspanningen?.filter(i => i.fase === 'Verankering' && i.status === 'planned')?.length || 0,
-      actief: inspanningen?.filter(i => i.fase === 'Verankering' && i.status === 'in_progress')?.length || 0
-    }
-  ], [inspanningen])
-
-  // Memoized recent activities
-  const recentActivities = useMemo(() => [
-    ...(inspanningen?.filter(i => i.status === 'in_progress')?.slice(0, 2)?.map(i => ({
-      icon: Target,
-      title: 'Inspanning actief',
-      description: `${i.naam} - ${i.eigenaar}`,
-      time: 'Actief',
-      color: 'bg-blue-500'
-    })) || []),
-    ...(risicos?.filter(r => r.score >= 15)?.slice(0, 1)?.map(r => ({
-      icon: AlertCircle,
-      title: 'Hoog risico',
-      description: r.titel,
-      time: r.trend,
-      color: 'bg-red-500'
-    })) || []),
-    ...(issues?.filter(i => i.prioriteit === 'hoog' || i.prioriteit === 'kritiek')?.slice(0, 1)?.map(i => ({
-      icon: AlertCircle,
-      title: `Issue: ${i.prioriteit}`,
-      description: i.titel,
-      time: i.status,
-      color: 'bg-amber-500'
-    })) || [])
-  ].slice(0, 4), [inspanningen, risicos, issues])
-
-  // Completion percentage
-  const completionRate = useMemo(() =>
-    totalBaten > 0 ? Math.round((completedBaten / totalBaten) * 100) : 0
-  , [totalBaten, completedBaten])
-
-  // Dekkingsgraad: % baten met gekoppelde inspanningen
-  const dekkingsgraad = useMemo(() => {
-    if (baten?.length === 0) return 0
-    const batenMetKoppeling = baten?.filter(baat =>
-      inspanningen?.some(insp => insp.gekoppeldeBaten?.includes(String(baat.id)))
-    )?.length || 0
-    return Math.round((batenMetKoppeling / baten.length) * 100)
-  }, [baten, inspanningen])
-
-  // Baten-Inspanningen netwerk data
-  const batenMetInspanningen = useMemo(() => {
-    return baten?.map(baat => ({
-      ...baat,
-      inspanningen: inspanningen?.filter(
-        insp => insp.gekoppeldeBaten?.includes(String(baat.id))
-      ) || []
-    })) || []
-  }, [baten, inspanningen])
-
-  const ongekoppeldeInspanningen = useMemo(() => {
-    return inspanningen?.filter(
-      insp => !insp.gekoppeldeBaten || insp.gekoppeldeBaten.length === 0
+  const filteredInspanningen = useMemo(() => {
+    if (sectorFilter === 'alle') return inspanningen || []
+    const sectorBatenIds = filteredBaten.map(b => String(b.id))
+    return inspanningen?.filter(i =>
+      i.gekoppeldeBaten?.some(baatId => sectorBatenIds.includes(baatId))
     ) || []
-  }, [inspanningen])
+  }, [inspanningen, sectorFilter, filteredBaten])
+
+  // Kerngetallen
+  const kpis = useMemo(() => {
+    const fb = filteredBaten
+    const fi = filteredInspanningen
+    const fr = risicos || []
+    const fis = issues || []
+
+    // NPS
+    const npsHuidig = fb.length > 0
+      ? Math.round(fb.reduce((sum, b) => sum + (b.huidigeWaarde || 0), 0) / fb.length)
+      : 0
+    const npsDoel = fb.length > 0
+      ? Math.round(fb.reduce((sum, b) => sum + (b.doelWaarde || 0), 0) / fb.length)
+      : 0
+
+    // Dekkingsgraad
+    const batenMetKoppeling = fb.filter(baat =>
+      fi.some(insp => insp.gekoppeldeBaten?.includes(String(baat.id)))
+    ).length
+    const dekking = fb.length > 0 ? Math.round((batenMetKoppeling / fb.length) * 100) : 0
+
+    // Inspanningen
+    const inspActief = fi.filter(i => i.status === 'in_progress').length
+    const inspGepland = fi.filter(i => i.status === 'planned').length
+    const inspVoltooid = fi.filter(i => i.status === 'completed').length
+
+    // Risico's
+    const risicoHoog = fr.filter(r => (r.score || 0) >= 15).length
+    const risicoOpen = fr.filter(r => r.status === 'open' || r.status === 'in_behandeling').length
+    const issuesOpen = fis.filter(i => i.status !== 'opgelost').length
+
+    // Go/No-Go Gereedheid
+    const cyclusVoortgang = getCyclusVoortgang ? getCyclusVoortgang() : { percentage: 50 }
+    const stuurparamsOk = stuurparameters?.filter(p => p.status === 'groen').length || 0
+    const stuurparamsTotal = stuurparameters?.length || 5
+    const risicoScore = risicoHoog > 0 ? 0 : risicoOpen > 2 ? 50 : 100
+
+    const gereedheid = Math.round(
+      (cyclusVoortgang.percentage * 0.4) +
+      ((stuurparamsOk / stuurparamsTotal) * 100 * 0.3) +
+      (dekking * 0.2) +
+      (risicoScore * 0.1)
+    )
+
+    return {
+      batenCount: fb.length,
+      inspanningenCount: fi.length,
+      npsHuidig,
+      npsDoel,
+      npsDelta: npsDoel - npsHuidig,
+      dekkingsgraad: dekking,
+      inspActief,
+      inspGepland,
+      inspVoltooid,
+      risicoHoog,
+      risicoOpen,
+      issuesOpen,
+      gereedheid: Math.min(100, Math.max(0, gereedheid)),
+      stuurparamsOk,
+      stuurparamsTotal
+    }
+  }, [filteredBaten, filteredInspanningen, risicos, issues, getCyclusVoortgang, stuurparameters])
+
+  // Sector stats
+  const sectorStats = useMemo(() => {
+    return sectoren.map(sector => {
+      const sectorBaten = baten?.filter(b => b.sector === sector.naam) || []
+      const huidigeNPS = sectorBaten.length > 0
+        ? Math.round(sectorBaten.reduce((sum, b) => sum + (b.huidigeWaarde || 0), 0) / sectorBaten.length)
+        : 0
+      const doelNPS = sectorBaten.length > 0
+        ? Math.round(sectorBaten.reduce((sum, b) => sum + (b.doelWaarde || 0), 0) / sectorBaten.length)
+        : 0
+      return { ...sector, batenCount: sectorBaten.length, huidigeNPS, doelNPS }
+    })
+  }, [baten])
+
+  // Actionable Insights - Iteratie 5
+  const insights = useMemo(() => {
+    const items = []
+
+    if (kpis.risicoHoog > 0) {
+      items.push({
+        type: 'error',
+        title: `${kpis.risicoHoog} hoog risico`,
+        action: 'Directe actie vereist',
+        link: '/inspanningen'
+      })
+    }
+    if (kpis.dekkingsgraad < 50 && kpis.batenCount > 0) {
+      items.push({
+        type: 'warning',
+        title: 'Lage dekkingsgraad',
+        action: 'Koppel inspanningen aan baten',
+        link: '/inspanningen'
+      })
+    }
+    if (kpis.batenCount === 0) {
+      items.push({
+        type: 'info',
+        title: 'Geen baten gedefinieerd',
+        action: 'Definieer NPS doelen per sector',
+        link: '/baten'
+      })
+    }
+    if (kpis.gereedheid >= 80) {
+      items.push({
+        type: 'success',
+        title: 'Gereed voor Go/No-Go',
+        action: 'Plan Sponsorgroep meeting',
+        link: '/governance'
+      })
+    }
+
+    return items
+  }, [kpis])
+
+  const hasData = kpis.batenCount > 0 || kpis.inspanningenCount > 0
+
+  // === RENDER ===
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="space-y-4">
+      {/* HEADER - Compact met sector filter */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
-          <p className="text-slate-500 mt-1">Overzicht van alle trajecten en acties</p>
+          <h1 className="text-xl font-bold text-slate-900">Programma Dashboard</h1>
+          <p className="text-sm text-slate-500">
+            Cyclus: <span className="font-medium text-slate-700">{voortgang?.huidigeCyclus || 'Verkennen'}</span>
+          </p>
         </div>
-        <div className="flex items-center gap-2 text-sm text-slate-500">
-          <Clock className="w-4 h-4" />
-          <span>Laatst bijgewerkt: vandaag, {new Date().toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })}</span>
-        </div>
-      </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        <StatCard
-          icon={Target}
-          label="Baten"
-          value={totalBaten}
-          subValue={`${inProgressBaten} in uitvoering`}
-          color="bg-gradient-to-br from-blue-500 to-blue-600"
-          trend={inProgressBaten > 0 ? 'up' : undefined}
-          trendValue={inProgressBaten > 0 ? `${inProgressBaten} actief` : undefined}
-          onClick={() => navigate('/baten')}
-        />
-        <StatCard
-          icon={ListTodo}
-          label="Inspanningen"
-          value={totalInspanningen}
-          subValue={`${activeInspanningen} actief, ${plannedInspanningen} gepland`}
-          color="bg-gradient-to-br from-purple-500 to-purple-600"
-          trend={activeInspanningen > 0 ? 'up' : undefined}
-          trendValue={activeInspanningen > 0 ? `${activeInspanningen} actief` : undefined}
-          onClick={() => navigate('/inspanningen')}
-        />
-        <StatCard
-          icon={AlertCircle}
-          label="Risico's & Issues"
-          value={openRisicos + openIssues}
-          subValue={`${hoogRisicos} hoog risico, ${openIssues} issues`}
-          color="bg-gradient-to-br from-amber-500 to-orange-500"
-          trend={hoogRisicos > 0 ? 'down' : 'up'}
-          trendValue={hoogRisicos > 0 ? `${hoogRisicos} kritiek` : 'Onder controle'}
-        />
-        <StatCard
-          icon={CheckCircle2}
-          label="Baten Voortgang"
-          value={`${completionRate}%`}
-          subValue={`${completedBaten} van ${totalBaten} gerealiseerd`}
-          color="bg-gradient-to-br from-green-500 to-green-600"
-          trend={completionRate > 0 ? 'up' : undefined}
-          trendValue={completionRate > 0 ? `${completionRate}%` : undefined}
-          onClick={() => navigate('/baten')}
-        />
-        <StatCard
-          icon={Activity}
-          label="Dekkingsgraad"
-          value={`${dekkingsgraad}%`}
-          subValue="Baten met gekoppelde inspanningen"
-          color="bg-gradient-to-br from-indigo-500 to-indigo-600"
-          trend={dekkingsgraad >= 75 ? 'up' : dekkingsgraad >= 50 ? undefined : 'down'}
-          trendValue={dekkingsgraad >= 75 ? 'Goed' : dekkingsgraad >= 50 ? 'Matig' : 'Laag'}
-          onClick={() => navigate('/programmaplan')}
-        />
-      </div>
-
-      {/* Stuurparameters */}
-      <ChartCard
-        title="Stuurparameters"
-        subtitle="5 kernparameters voor programmasturing"
-      >
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-          {stuurparameters?.map((param) => (
-            <StuurparameterCard key={param.id} parameter={param} />
+        {/* Sector Filter - Compact */}
+        <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-0.5">
+          <button
+            onClick={() => setSectorFilter('alle')}
+            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+              sectorFilter === 'alle' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'
+            }`}
+          >
+            Alle
+          </button>
+          {sectoren.map(sector => (
+            <button
+              key={sector.id}
+              onClick={() => setSectorFilter(sector.id)}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                sectorFilter === sector.id ? 'bg-white shadow-sm' : 'text-slate-500 hover:text-slate-700'
+              }`}
+              style={sectorFilter === sector.id ? { color: sector.kleur } : {}}
+            >
+              {sector.afkorting}
+            </button>
           ))}
         </div>
-      </ChartCard>
-
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Bar Chart - Inspanningen per Fase */}
-        <ChartCard
-          title="Inspanningen per Fase"
-          subtitle="Gepland vs actief per programmafase"
-        >
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={faseData}>
-                <defs>
-                  <linearGradient id="colorGepland" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#94a3b8" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#94a3b8" stopOpacity={0.4}/>
-                  </linearGradient>
-                  <linearGradient id="colorActief" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.4}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                <XAxis dataKey="fase" tick={{ fontSize: 11 }} stroke="#94a3b8" />
-                <YAxis tick={{ fontSize: 12 }} stroke="#94a3b8" />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'white',
-                    border: '1px solid #e2e8f0',
-                    borderRadius: '8px',
-                    fontSize: '12px'
-                  }}
-                />
-                <Bar dataKey="gepland" fill="url(#colorGepland)" name="Gepland" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="actief" fill="url(#colorActief)" name="Actief" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </ChartCard>
-
-        {/* Pie Chart - Baten Status */}
-        <ChartCard
-          title="Baten per Status"
-          subtitle="Verdeling van baten statussen"
-        >
-          <div className="h-64 flex items-center justify-center">
-            {baatStatusData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={baatStatusData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={50}
-                    outerRadius={80}
-                    paddingAngle={3}
-                    dataKey="value"
-                  >
-                    {baatStatusData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'white',
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '8px',
-                      fontSize: '12px'
-                    }}
-                  />
-                  <Legend
-                    verticalAlign="bottom"
-                    height={36}
-                    formatter={(value) => <span className="text-xs text-slate-600">{value}</span>}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="text-center text-slate-400">
-                <BarChart3 className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">Geen baten beschikbaar</p>
-              </div>
-            )}
-          </div>
-        </ChartCard>
-
-        {/* Bar Chart - Inspanningen per Domein */}
-        <ChartCard
-          title="Inspanningen per Domein"
-          subtitle="Verdeling over domeinen"
-        >
-          <div className="h-64">
-            {domeinData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={domeinData} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" horizontal={false} />
-                  <XAxis type="number" tick={{ fontSize: 12 }} stroke="#94a3b8" />
-                  <YAxis dataKey="name" type="category" tick={{ fontSize: 12 }} stroke="#94a3b8" width={70} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'white',
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '8px',
-                      fontSize: '12px'
-                    }}
-                  />
-                  <Bar dataKey="inspanningen" fill="#003366" radius={[0, 4, 4, 0]} name="Inspanningen" />
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-full flex items-center justify-center text-slate-400">
-                <div className="text-center">
-                  <BarChart3 className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">Geen inspanningen beschikbaar</p>
-                </div>
-              </div>
-            )}
-          </div>
-        </ChartCard>
       </div>
 
-      {/* Bottom Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Activity */}
-        <ChartCard
-          title="Recente Activiteit"
-          subtitle="Laatste wijzigingen in het systeem"
-        >
-          <div className="space-y-1">
-            {recentActivities.map((activity, index) => (
-              <RecentActivityItem key={index} {...activity} />
-            ))}
-          </div>
-        </ChartCard>
+      {/* ITERATIE 5: Actionable Insights - Alerts bovenaan */}
+      {insights.length > 0 && (
+        <div className="flex gap-2">
+          {insights.map((insight, i) => (
+            <button
+              key={i}
+              onClick={() => navigate(insight.link)}
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                insight.type === 'error' ? 'bg-red-50 text-red-700 border border-red-200 hover:bg-red-100' :
+                insight.type === 'warning' ? 'bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100' :
+                insight.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200 hover:bg-green-100' :
+                'bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100'
+              }`}
+            >
+              {insight.type === 'error' ? <AlertCircle className="w-3.5 h-3.5" /> :
+               insight.type === 'warning' ? <AlertTriangle className="w-3.5 h-3.5" /> :
+               insight.type === 'success' ? <CheckCircle className="w-3.5 h-3.5" /> :
+               <Info className="w-3.5 h-3.5" />}
+              <span>{insight.title}</span>
+              <ChevronRight className="w-3 h-3 opacity-50" />
+            </button>
+          ))}
+        </div>
+      )}
 
-        {/* Programma Cyclus Voortgang */}
-        <ChartCard
-          title="Programma Cyclus"
-          subtitle={`Huidige cyclus: ${voortgang?.huidigeCyclus || 'Verkennen'}`}
-        >
-          <div className="space-y-4">
-            {[
-              { naam: 'Verkennen', id: 'verkennen', color: '#003366' },
-              { naam: 'Opbouwen', id: 'opbouwen', color: '#0066cc' },
-              { naam: 'Uitvoeren', id: 'uitvoeren', color: '#0088ee' },
-              { naam: 'Verankeren', id: 'verankeren', color: '#00aaff' }
-            ].map((cyclus, index) => {
-              const isActive = voortgang?.huidigeCyclus === cyclus.id
-              const isPast = ['verkennen', 'opbouwen', 'uitvoeren', 'verankeren'].indexOf(voortgang?.huidigeCyclus || 'verkennen') > index
-              const progress = isPast ? 100 : isActive ? 50 : 0
-              return (
-                <div key={cyclus.id} className="space-y-1.5">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className={`font-medium ${isActive ? 'text-blue-600' : 'text-slate-700'}`}>
-                      {cyclus.naam}
-                      {isActive && <span className="ml-2 text-xs text-blue-500">(actief)</span>}
-                    </span>
-                    <span className="text-slate-500">{progress}%</span>
-                  </div>
-                  <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all duration-500"
-                      style={{
-                        width: `${progress}%`,
-                        backgroundColor: cyclus.color
-                      }}
-                    />
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-
-          {/* Stakeholders overview */}
-          <div className="mt-6 pt-4 border-t border-slate-100">
-            <p className="text-xs text-slate-500 mb-2">Stakeholders ({stakeholders?.length || 0})</p>
-            <div className="flex flex-wrap gap-2">
-              {stakeholders?.slice(0, 4)?.map((s, i) => (
-                <span key={i} className="px-2 py-1 bg-slate-100 rounded text-xs text-slate-600">
-                  {s.naam}
-                </span>
-              ))}
-            </div>
-          </div>
-        </ChartCard>
-      </div>
-
-      {/* Baten-Inspanningen Netwerk */}
-      <div className="bg-white rounded-xl border border-slate-100 p-5">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <GitBranch className="w-5 h-5 text-purple-600" />
-            </div>
+      {/* ITERATIE 1: Primaire KPI - Go/No-Go Gereedheid altijd zichtbaar */}
+      <div className="grid grid-cols-5 gap-3">
+        {/* Go/No-Go Gereedheid - Hoofdkaart */}
+        <div className="col-span-2 bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-4 text-white">
+          <div className="flex items-start justify-between mb-3">
             <div>
-              <h3 className="text-sm font-semibold text-slate-900">Baten-Inspanningen Netwerk</h3>
-              <p className="text-xs text-slate-500">Welke inspanningen dragen bij aan welke baten?</p>
+              <div className="text-xs text-white/60 uppercase tracking-wide">Go/No-Go Gereedheid</div>
+              <div className="text-4xl font-bold mt-1">{kpis.gereedheid}%</div>
             </div>
+            <Gauge className="w-8 h-8 text-white/40" />
           </div>
-          <div className="flex items-center gap-4 text-xs">
-            <span className="text-slate-500">{batenMetInspanningen.length} baten</span>
-            <span className="text-slate-500">{inspanningen?.length || 0} inspanningen</span>
-            <span className="font-medium text-purple-600">{dekkingsgraad}% dekking</span>
+          <div className="h-2 bg-white/20 rounded-full overflow-hidden">
+            <div
+              className={`h-full rounded-full transition-all ${
+                kpis.gereedheid >= 80 ? 'bg-green-400' : kpis.gereedheid >= 60 ? 'bg-amber-400' : 'bg-red-400'
+              }`}
+              style={{ width: `${kpis.gereedheid}%` }}
+            />
+          </div>
+          <div className="flex items-center justify-between mt-3 text-xs">
+            <span className="text-white/60">Stuurparameters: {kpis.stuurparamsOk}/{kpis.stuurparamsTotal} OK</span>
+            <span className={`px-2 py-0.5 rounded ${
+              kpis.gereedheid >= 80 ? 'bg-green-500/30 text-green-300' :
+              kpis.gereedheid >= 60 ? 'bg-amber-500/30 text-amber-300' :
+              'bg-red-500/30 text-red-300'
+            }`}>
+              {kpis.gereedheid >= 80 ? 'Gereed' : kpis.gereedheid >= 60 ? 'Bijna' : 'Niet gereed'}
+            </span>
           </div>
         </div>
 
-        {batenMetInspanningen.length > 0 ? (
-          <div className="space-y-3 max-h-96 overflow-y-auto">
-            {batenMetInspanningen.map((baat) => (
-              <div key={baat.id} className="border border-slate-200 rounded-lg overflow-hidden">
-                <div className="bg-purple-50 p-3 flex items-center gap-3">
-                  <Target className="w-4 h-4 text-purple-600" />
-                  <div className="flex-1 min-w-0">
-                    <div className="font-medium text-sm text-slate-800 truncate">{baat.naam}</div>
-                    <div className="text-xs text-slate-500">{baat.sector} • {baat.indicator}</div>
+        {/* ITERATIE 3: Compacte data cards - Secundaire KPIs */}
+        {/* NPS Delta */}
+        <div className="bg-white rounded-xl border border-slate-200 p-4">
+          <div className="flex items-center gap-2 text-xs text-slate-500 mb-2">
+            <TrendingUp className="w-3.5 h-3.5" />
+            <span>NPS Delta</span>
+          </div>
+          <div className="flex items-baseline gap-1">
+            <span className="text-2xl font-bold text-slate-800">+{kpis.npsHuidig}</span>
+            <ArrowRight className="w-3 h-3 text-slate-400 mx-1" />
+            <span className="text-lg font-bold text-green-600">+{kpis.npsDoel}</span>
+          </div>
+          <div className="text-xs text-blue-600 mt-1">+{kpis.npsDelta} te realiseren</div>
+        </div>
+
+        {/* Dekkingsgraad */}
+        <div className="bg-white rounded-xl border border-slate-200 p-4">
+          <div className="flex items-center gap-2 text-xs text-slate-500 mb-2">
+            <GitBranch className="w-3.5 h-3.5" />
+            <span>Dekking</span>
+          </div>
+          <div className="text-2xl font-bold text-slate-800">{kpis.dekkingsgraad}%</div>
+          <div className="h-1.5 bg-slate-100 rounded-full mt-2 overflow-hidden">
+            <div
+              className={`h-full rounded-full ${kpis.dekkingsgraad >= 80 ? 'bg-green-500' : 'bg-amber-500'}`}
+              style={{ width: `${kpis.dekkingsgraad}%` }}
+            />
+          </div>
+          <div className="text-xs text-slate-500 mt-1">Baten met inspanningen</div>
+        </div>
+
+        {/* Risico's */}
+        <div className={`rounded-xl border p-4 ${
+          kpis.risicoHoog > 0 ? 'bg-red-50 border-red-200' : 'bg-white border-slate-200'
+        }`}>
+          <div className="flex items-center gap-2 text-xs text-slate-500 mb-2">
+            <Flag className="w-3.5 h-3.5" />
+            <span>Risico's</span>
+          </div>
+          <div className="flex items-baseline gap-3">
+            <div>
+              <span className="text-2xl font-bold text-slate-800">{kpis.risicoOpen}</span>
+              <span className="text-xs text-slate-500 ml-1">open</span>
+            </div>
+            {kpis.risicoHoog > 0 && (
+              <div className="text-red-600">
+                <span className="text-lg font-bold">{kpis.risicoHoog}</span>
+                <span className="text-xs ml-1">hoog</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ITERATIE 2: Stuurparameters met visuele indicatoren */}
+      <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-semibold text-slate-700">Stuurparameters</h3>
+          <span className="text-xs text-slate-500">
+            {kpis.stuurparamsOk} van {kpis.stuurparamsTotal} op groen
+          </span>
+        </div>
+        <div className="grid grid-cols-5 gap-2">
+          {stuurparameters?.map((param) => (
+            <div
+              key={param.id}
+              className={`rounded-lg p-2.5 border ${
+                param.status === 'groen' ? 'bg-green-50 border-green-200' :
+                param.status === 'geel' ? 'bg-yellow-50 border-yellow-200' :
+                'bg-red-50 border-red-200'
+              }`}
+            >
+              <div className="flex items-center gap-1.5 mb-1">
+                <div className={`w-2 h-2 rounded-full ${
+                  param.status === 'groen' ? 'bg-green-500' :
+                  param.status === 'geel' ? 'bg-yellow-500' : 'bg-red-500'
+                }`} />
+                <span className="text-xs font-medium text-slate-700 truncate">{param.naam}</span>
+              </div>
+              <p className="text-[10px] text-slate-500 line-clamp-2">{param.toelichting}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ITERATIE 3: Sector Overzicht - Compacte grid */}
+      {sectorFilter === 'alle' && (
+        <div className="bg-white rounded-xl border border-slate-200 p-4">
+          <h3 className="text-sm font-semibold text-slate-700 mb-3">Per Sector</h3>
+          <div className="grid grid-cols-3 gap-3">
+            {sectorStats.map(sector => (
+              <button
+                key={sector.id}
+                onClick={() => setSectorFilter(sector.id)}
+                className="p-3 rounded-lg border-l-4 text-left hover:shadow-md transition-all bg-slate-50 hover:bg-white"
+                style={{ borderColor: sector.kleur }}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="w-6 h-6 rounded flex items-center justify-center text-white text-xs font-bold"
+                      style={{ backgroundColor: sector.kleur }}
+                    >
+                      {sector.afkorting}
+                    </div>
+                    <span className="text-sm font-medium text-slate-800">{sector.naam}</span>
                   </div>
-                  <div className="text-right text-xs">
-                    <span className="text-slate-600">+{baat.huidigeWaarde}</span>
-                    <span className="text-slate-400 mx-1">→</span>
+                  <span className="text-xs text-slate-500">{sector.batenCount} baten</span>
+                </div>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-xl font-bold text-slate-800">+{sector.huidigeNPS}</span>
+                  <ArrowRight className="w-3 h-3 text-slate-400" />
+                  <span className="text-sm font-semibold text-green-600">+{sector.doelNPS}</span>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Detail data - Baten en Inspanningen */}
+      {hasData && (
+        <div className="grid grid-cols-2 gap-3">
+          {/* Baten */}
+          <div className="bg-white rounded-xl border border-slate-200 p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Target className="w-4 h-4 text-blue-500" />
+                <h3 className="text-sm font-semibold text-slate-700">Baten</h3>
+              </div>
+              <button
+                onClick={() => navigate('/baten')}
+                className="text-xs text-blue-600 hover:underline flex items-center gap-1"
+              >
+                Beheren <ChevronRight className="w-3 h-3" />
+              </button>
+            </div>
+            <div className="space-y-1.5 max-h-48 overflow-y-auto">
+              {filteredBaten.slice(0, 5).map(baat => (
+                <div key={baat.id} className="flex items-center justify-between p-2 bg-slate-50 rounded-lg text-sm">
+                  <span className="text-slate-700 truncate flex-1 mr-2">{baat.naam}</span>
+                  <div className="flex items-center gap-1 text-xs whitespace-nowrap">
+                    <span className="text-slate-500">+{baat.huidigeWaarde}</span>
+                    <ArrowRight className="w-2.5 h-2.5 text-slate-400" />
                     <span className="text-green-600 font-medium">+{baat.doelWaarde}</span>
                   </div>
                 </div>
-                <div className="p-3 bg-white">
-                  {baat.inspanningen.length > 0 ? (
-                    <div className="flex flex-wrap gap-1.5">
-                      {baat.inspanningen.map((insp) => (
-                        <span
-                          key={insp.id}
-                          className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs"
-                          style={{
-                            backgroundColor: insp.type === 'project' ? '#3b82f620' : insp.type === 'leer' ? '#10b98120' : insp.type === 'proces' ? '#8b5cf620' : '#f59e0b20',
-                            color: insp.type === 'project' ? '#3b82f6' : insp.type === 'leer' ? '#10b981' : insp.type === 'proces' ? '#8b5cf6' : '#f59e0b'
-                          }}
-                        >
-                          <Briefcase className="w-3 h-3" />
-                          {insp.naam}
-                        </span>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-xs text-slate-400 italic flex items-center gap-1">
-                      <Circle className="w-2.5 h-2.5" />
-                      Geen inspanningen gekoppeld
-                    </div>
-                  )}
+              ))}
+              {filteredBaten.length === 0 && (
+                <div className="text-center py-4 text-slate-400 text-sm">
+                  Geen baten
                 </div>
-              </div>
-            ))}
+              )}
+            </div>
+          </div>
 
-            {ongekoppeldeInspanningen.length > 0 && (
-              <div className="border border-amber-200 rounded-lg overflow-hidden">
-                <div className="bg-amber-50 p-3 flex items-center gap-2">
-                  <Lightbulb className="w-4 h-4 text-amber-600" />
-                  <span className="text-sm font-medium text-amber-800">Ongekoppelde inspanningen ({ongekoppeldeInspanningen.length})</span>
-                </div>
-                <div className="p-3 bg-white">
-                  <div className="flex flex-wrap gap-1.5">
-                    {ongekoppeldeInspanningen.map((insp) => (
-                      <span key={insp.id} className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs bg-slate-100 text-slate-600">
-                        <Briefcase className="w-3 h-3" />
-                        {insp.naam}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+          {/* Inspanningen */}
+          <div className="bg-white rounded-xl border border-slate-200 p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Briefcase className="w-4 h-4 text-purple-500" />
+                <h3 className="text-sm font-semibold text-slate-700">Inspanningen</h3>
               </div>
-            )}
+              <button
+                onClick={() => navigate('/inspanningen')}
+                className="text-xs text-purple-600 hover:underline flex items-center gap-1"
+              >
+                Beheren <ChevronRight className="w-3 h-3" />
+              </button>
+            </div>
+            <div className="flex gap-4 mb-3 text-xs">
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 rounded-full bg-blue-500" />
+                <span className="text-slate-600">Actief: {kpis.inspActief}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 rounded-full bg-amber-500" />
+                <span className="text-slate-600">Gepland: {kpis.inspGepland}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 rounded-full bg-green-500" />
+                <span className="text-slate-600">Voltooid: {kpis.inspVoltooid}</span>
+              </div>
+            </div>
+            <div className="space-y-1.5 max-h-32 overflow-y-auto">
+              {filteredInspanningen.slice(0, 4).map(insp => (
+                <div key={insp.id} className="flex items-center justify-between p-2 bg-slate-50 rounded-lg text-sm">
+                  <span className="text-slate-700 truncate flex-1 mr-2">{insp.naam}</span>
+                  <span className={`text-xs px-1.5 py-0.5 rounded ${
+                    insp.status === 'in_progress' ? 'bg-blue-100 text-blue-700' :
+                    insp.status === 'completed' ? 'bg-green-100 text-green-700' :
+                    'bg-amber-100 text-amber-700'
+                  }`}>
+                    {insp.status === 'in_progress' ? 'Actief' :
+                     insp.status === 'completed' ? 'Klaar' : 'Gepland'}
+                  </span>
+                </div>
+              ))}
+              {filteredInspanningen.length === 0 && (
+                <div className="text-center py-4 text-slate-400 text-sm">
+                  Geen inspanningen
+                </div>
+              )}
+            </div>
           </div>
-        ) : (
-          <div className="text-center py-8 text-slate-400">
-            <GitBranch className="w-10 h-10 mx-auto mb-2 opacity-50" />
-            <p className="text-sm">Nog geen baten gedefinieerd</p>
+        </div>
+      )}
+
+      {/* Geen data - Onboarding */}
+      {!hasData && (
+        <div className="bg-gradient-to-br from-blue-50 to-slate-50 border border-blue-200 rounded-xl p-8 text-center">
+          <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+            <Target className="w-6 h-6 text-blue-600" />
           </div>
-        )}
+          <h3 className="font-semibold text-slate-800 mb-2">Begin met het definiëren van baten</h3>
+          <p className="text-sm text-slate-600 mb-4 max-w-md mx-auto">
+            Voeg NPS doelen per sector toe om dit dashboard met stuurinformatie te vullen.
+          </p>
+          <button
+            onClick={() => navigate('/baten')}
+            className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Baten toevoegen
+          </button>
+        </div>
+      )}
+
+      {/* Snelle navigatie - Footer */}
+      <div className="flex items-center justify-between pt-2 border-t border-slate-200">
+        <div className="flex gap-2">
+          {[
+            { path: '/baten', icon: Target, label: 'Baten', color: 'blue' },
+            { path: '/inspanningen', icon: ListTodo, label: 'Inspanningen', color: 'purple' },
+            { path: '/roadmap', icon: Calendar, label: 'Roadmap', color: 'green' },
+            { path: '/governance', icon: Users, label: 'Governance', color: 'amber' }
+          ].map(item => (
+            <button
+              key={item.path}
+              onClick={() => navigate(item.path)}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs text-slate-600 hover:bg-${item.color}-50 hover:text-${item.color}-700 transition-all`}
+            >
+              <item.icon className="w-3.5 h-3.5" />
+              {item.label}
+            </button>
+          ))}
+        </div>
+        <div className="text-xs text-slate-400">
+          Filter: {sectorFilter === 'alle' ? 'Alle sectoren' : sectoren.find(s => s.id === sectorFilter)?.naam}
+        </div>
       </div>
     </div>
   )

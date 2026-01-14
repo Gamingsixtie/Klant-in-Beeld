@@ -305,6 +305,148 @@ const initialIssues = [
   }
 ]
 
+// Programma Visie (komt van organisatiestrategie)
+const initialVisie = {
+  programmaVisie: 'Cito zet de klant centraal in alles wat we doen',
+  missie: 'Wij helpen onderwijsprofessionals om leerlingen beter te begrijpen en te ondersteunen door betrouwbare toetsen en inzichten te bieden die aansluiten bij hun behoeften.',
+  horizon: '2025-2027',
+  bronDocument: 'Cito Strategie 2025-2027'
+}
+
+// Strategische Doelen (afgeleid van organisatiestrategie)
+const initialStrategischeDoelen = [
+  {
+    id: '1',
+    titel: 'Verhogen klanttevredenheid',
+    beschrijving: 'De klanttevredenheid verhogen over alle sectoren heen door betere dienstverlening en communicatie',
+    indicator: 'NPS score',
+    huidigeWaarde: '+15',
+    doelWaarde: '+40',
+    prioriteit: 'high',
+    tijdshorizon: 'Q4 2026',
+    eigenaar: 'Directeur Klantrelaties',
+    status: 'actief'
+  },
+  {
+    id: '2',
+    titel: 'Verbeteren klantinzicht',
+    beschrijving: 'Een 360-graden beeld van onze klanten opbouwen om beter te kunnen anticiperen op hun behoeften',
+    indicator: 'Data completeness %',
+    huidigeWaarde: '45%',
+    doelWaarde: '90%',
+    prioriteit: 'high',
+    tijdshorizon: 'Q2 2026',
+    eigenaar: 'IT-directeur',
+    status: 'actief'
+  },
+  {
+    id: '3',
+    titel: 'Efficiëntere klantprocessen',
+    beschrijving: 'De doorlooptijd van klantinteracties halveren door procesoptimalisatie en automatisering',
+    indicator: 'Gemiddelde doorlooptijd',
+    huidigeWaarde: '5 dagen',
+    doelWaarde: '2 dagen',
+    prioriteit: 'medium',
+    tijdshorizon: 'Q4 2026',
+    eigenaar: 'COO',
+    status: 'actief'
+  },
+  {
+    id: '4',
+    titel: 'Klantgerichte cultuur',
+    beschrijving: 'Een outside-in mindset verankeren in de organisatiecultuur waarbij de klant centraal staat in besluitvorming',
+    indicator: 'MTO klantgerichtheid score',
+    huidigeWaarde: '6.5',
+    doelWaarde: '8.0',
+    prioriteit: 'medium',
+    tijdshorizon: 'Q4 2027',
+    eigenaar: 'HR-directeur',
+    status: 'actief'
+  }
+]
+
+// Vermogens (Capabilities) - de brug tussen doelen en inspanningen
+const initialVermogens = [
+  {
+    id: '1',
+    naam: 'Klantinzicht Competentie',
+    beschrijving: 'Het vermogen om klantdata te verzamelen, analyseren en gebruiken voor betere besluitvorming',
+    type: 'Inhoudelijk',
+    domein: 'Systeem',
+    volwassenheidHuidig: 2, // 1-5 schaal
+    volwassenheidDoel: 4,
+    gekoppeldeDoelen: ['2'], // Verbeteren klantinzicht
+    gekoppeldeInspanningen: ['1', '5'], // CRM, Data-integratie
+    eigenaar: 'Data Manager',
+    status: 'in_ontwikkeling'
+  },
+  {
+    id: '2',
+    naam: 'Klantgerichte Dienstverlening',
+    beschrijving: 'Het vermogen om consistent hoogwaardige en persoonlijke service te bieden aan alle klanten',
+    type: 'Organisatorisch',
+    domein: 'Proces',
+    volwassenheidHuidig: 2,
+    volwassenheidDoel: 4,
+    gekoppeldeDoelen: ['1', '3'], // Verhogen klanttevredenheid, Efficiëntere processen
+    gekoppeldeInspanningen: ['3', '4', '9'], // Klantreis optimalisatie, Customer Journey Mapping, Klachtenafhandeling
+    eigenaar: 'Operations Manager',
+    status: 'in_ontwikkeling'
+  },
+  {
+    id: '3',
+    naam: 'Outside-in Cultuur',
+    beschrijving: 'Het vermogen van de organisatie om vanuit klantperspectief te denken en handelen',
+    type: 'Cultureel',
+    domein: 'Cultuur',
+    volwassenheidHuidig: 2,
+    volwassenheidDoel: 4,
+    gekoppeldeDoelen: ['4'], // Klantgerichte cultuur
+    gekoppeldeInspanningen: ['2'], // Outside-in Mindset Training
+    eigenaar: 'HR-directeur',
+    status: 'in_ontwikkeling'
+  },
+  {
+    id: '4',
+    naam: 'Geïntegreerd CRM Platform',
+    beschrijving: 'Een technisch platform dat alle klantinteracties en -data centraal beheert',
+    type: 'Technisch',
+    domein: 'Systeem',
+    volwassenheidHuidig: 1,
+    volwassenheidDoel: 5,
+    gekoppeldeDoelen: ['1', '2'], // Klanttevredenheid, Klantinzicht
+    gekoppeldeInspanningen: ['1'], // CRM Implementatie
+    eigenaar: 'IT-directeur',
+    status: 'in_ontwikkeling'
+  },
+  {
+    id: '5',
+    naam: 'Klantfeedback Management',
+    beschrijving: 'Het systematisch verzamelen, analyseren en acteren op klantfeedback',
+    type: 'Organisatorisch',
+    domein: 'Proces',
+    volwassenheidHuidig: 2,
+    volwassenheidDoel: 4,
+    gekoppeldeDoelen: ['1'], // Verhogen klanttevredenheid
+    gekoppeldeInspanningen: ['6', '8'], // NPS Implementatie, Voice of Customer
+    eigenaar: 'Kwaliteitsmanager',
+    status: 'in_ontwikkeling'
+  },
+  {
+    id: '6',
+    naam: 'Cross-functionele Samenwerking',
+    beschrijving: 'Het vermogen van teams om over afdelingen heen samen te werken voor klantwaarde',
+    type: 'Menselijk',
+    domein: 'Mens',
+    volwassenheidHuidig: 2,
+    volwassenheidDoel: 4,
+    gekoppeldeDoelen: ['3', '4'], // Efficiëntie, Cultuur
+    gekoppeldeInspanningen: ['2', '7'], // Training, Ambassadeurs
+    eigenaar: 'HR-directeur',
+    status: 'gepland'
+  }
+]
+
 export const useAppStore = create((set, get) => ({
   // State
   baten: initialBaten,
@@ -312,6 +454,9 @@ export const useAppStore = create((set, get) => ({
   stakeholders: initialStakeholders,
   risicos: initialRisicos,
   issues: initialIssues,
+  visie: initialVisie,
+  strategischeDoelen: initialStrategischeDoelen,
+  vermogens: initialVermogens,
 
   // Loading & error state
   isLoading: false,
@@ -588,6 +733,124 @@ export const useAppStore = create((set, get) => ({
         console.error('Error deleting issue:', error)
       }
     }
+  },
+
+  // ==================== VISIE ====================
+  updateVisie: (updates) => {
+    const state = get()
+    set({ visie: { ...state.visie, ...updates } })
+  },
+
+  // ==================== STRATEGISCHE DOELEN ====================
+  addStrategischDoel: (doel) => {
+    const state = get()
+    const newDoel = { ...doel, id: `doel-${Date.now()}` }
+    set({ strategischeDoelen: [...state.strategischeDoelen, newDoel] })
+  },
+
+  updateStrategischDoel: (id, updates) => {
+    const state = get()
+    set({
+      strategischeDoelen: state.strategischeDoelen.map(d =>
+        d.id === id ? { ...d, ...updates } : d
+      )
+    })
+  },
+
+  deleteStrategischDoel: (id) => {
+    const state = get()
+    // Also remove this doel from vermogens gekoppeldeDoelen
+    const updatedVermogens = state.vermogens.map(v => ({
+      ...v,
+      gekoppeldeDoelen: (v.gekoppeldeDoelen || []).filter(did => did !== id)
+    }))
+    set({
+      strategischeDoelen: state.strategischeDoelen.filter(d => d.id !== id),
+      vermogens: updatedVermogens
+    })
+  },
+
+  // ==================== VERMOGENS ====================
+  addVermogen: (vermogen) => {
+    const state = get()
+    const newVermogen = { ...vermogen, id: `vermogen-${Date.now()}` }
+    set({ vermogens: [...state.vermogens, newVermogen] })
+  },
+
+  updateVermogen: (id, updates) => {
+    const state = get()
+    set({
+      vermogens: state.vermogens.map(v =>
+        v.id === id ? { ...v, ...updates } : v
+      )
+    })
+  },
+
+  deleteVermogen: (id) => {
+    const state = get()
+    set({ vermogens: state.vermogens.filter(v => v.id !== id) })
+  },
+
+  // Link vermogen to doel
+  linkVermogenToDoel: (vermogenId, doelId) => {
+    const state = get()
+    set({
+      vermogens: state.vermogens.map(v => {
+        if (v.id === vermogenId) {
+          const gekoppeldeDoelen = v.gekoppeldeDoelen || []
+          if (!gekoppeldeDoelen.includes(doelId)) {
+            return { ...v, gekoppeldeDoelen: [...gekoppeldeDoelen, doelId] }
+          }
+        }
+        return v
+      })
+    })
+  },
+
+  unlinkVermogenFromDoel: (vermogenId, doelId) => {
+    const state = get()
+    set({
+      vermogens: state.vermogens.map(v => {
+        if (v.id === vermogenId) {
+          return {
+            ...v,
+            gekoppeldeDoelen: (v.gekoppeldeDoelen || []).filter(id => id !== doelId)
+          }
+        }
+        return v
+      })
+    })
+  },
+
+  // Link vermogen to inspanning
+  linkVermogenToInspanning: (vermogenId, inspanningId) => {
+    const state = get()
+    set({
+      vermogens: state.vermogens.map(v => {
+        if (v.id === vermogenId) {
+          const gekoppeldeInspanningen = v.gekoppeldeInspanningen || []
+          if (!gekoppeldeInspanningen.includes(inspanningId)) {
+            return { ...v, gekoppeldeInspanningen: [...gekoppeldeInspanningen, inspanningId] }
+          }
+        }
+        return v
+      })
+    })
+  },
+
+  unlinkVermogenFromInspanning: (vermogenId, inspanningId) => {
+    const state = get()
+    set({
+      vermogens: state.vermogens.map(v => {
+        if (v.id === vermogenId) {
+          return {
+            ...v,
+            gekoppeldeInspanningen: (v.gekoppeldeInspanningen || []).filter(id => id !== inspanningId)
+          }
+        }
+        return v
+      })
+    })
   },
 
   // ==================== COMPUTED VALUES ====================

@@ -365,292 +365,302 @@ function Governance() {
       {/* Organigram Tab */}
       {activeTab === 'organigram' && (
         <>
-      <div className="bg-white rounded-xl border border-slate-100 hover:shadow-md transition-all duration-200 p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-slate-800">Organigram Klant in Beeld</h2>
-          <p className="text-xs text-slate-500">Klik op een rol om stakeholder te bewerken</p>
-        </div>
+      {/* Visueel Organigram */}
+      <div className="bg-white rounded-xl border border-slate-100 p-6">
+        <h2 className="text-lg font-semibold text-slate-800 mb-6">Organigram</h2>
 
         <div className="flex flex-col items-center">
-          {/* Niveau 1: Programma-eigenaar */}
-          <div className="w-full max-w-md">
-            <div
-              className="bg-amber-100 border-2 border-amber-400 rounded-xl p-4 text-center cursor-pointer hover:shadow-lg transition-shadow"
-              onClick={() => programmaEigenaar ? handleEditStakeholder(programmaEigenaar) : setShowStakeholderForm(true)}
-            >
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <Crown className="w-6 h-6 text-amber-600" />
+          {/* Sponsorgroep - Top */}
+          <div className="w-full max-w-md mb-3">
+            <div className="bg-gradient-to-r from-slate-700 to-slate-800 rounded-xl p-4 text-center text-white">
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <Shield className="w-5 h-5" />
+                <span className="font-bold">Sponsorgroep</span>
+                <span className="text-xs bg-amber-400 text-amber-900 px-2 py-0.5 rounded ml-2">n.t.b.</span>
+              </div>
+              <div className="text-xs text-white/70">Go/No-Go & Strategie</div>
+            </div>
+          </div>
+
+          <ArrowDown className="w-4 h-4 text-slate-400 my-1" />
+
+          {/* Programma-eigenaar */}
+          <div
+            className="w-full max-w-sm mb-3 cursor-pointer"
+            onClick={() => programmaEigenaar ? handleEditStakeholder(programmaEigenaar) : setShowStakeholderForm(true)}
+          >
+            <div className="bg-amber-100 border-2 border-amber-400 rounded-xl p-3 text-center hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-center gap-2">
+                <Crown className="w-5 h-5 text-amber-600" />
                 <span className="font-bold text-amber-800">Programma-eigenaar</span>
-                <Edit2 className="w-4 h-4 text-amber-400" />
               </div>
-              {programmaEigenaar ? (
-                <>
-                  <div className="text-lg font-semibold text-slate-800">{programmaEigenaar.naam}</div>
-                  <div className="text-sm text-amber-600">{programmaEigenaar.functie}</div>
-                </>
-              ) : (
-                <div className="text-sm text-amber-600 italic">Klik om toe te voegen</div>
-              )}
+              <div className="text-sm text-slate-700 mt-1">{programmaEigenaar?.naam || 'Klik om toe te voegen'}</div>
             </div>
           </div>
 
-          {/* Pijl */}
-          <div className="flex flex-col items-center py-2">
-            <div className="w-0.5 h-4 bg-slate-300"></div>
-            <ArrowDown className="w-5 h-5 text-slate-400" />
-          </div>
+          <ArrowDown className="w-4 h-4 text-slate-400 my-1" />
 
-          {/* Niveau 2: Programmamanager */}
-          <div className="w-full max-w-md">
-            <div
-              className="bg-blue-100 border-2 border-blue-400 rounded-xl p-4 text-center cursor-pointer hover:shadow-lg transition-shadow"
-              onClick={() => programmaManager ? handleEditStakeholder(programmaManager) : setShowStakeholderForm(true)}
-            >
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <User className="w-6 h-6 text-blue-600" />
+          {/* Programmamanager */}
+          <div
+            className="w-full max-w-sm mb-3 cursor-pointer"
+            onClick={() => programmaManager ? handleEditStakeholder(programmaManager) : setShowStakeholderForm(true)}
+          >
+            <div className="bg-blue-100 border-2 border-blue-400 rounded-xl p-3 text-center hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-center gap-2">
+                <User className="w-5 h-5 text-blue-600" />
                 <span className="font-bold text-blue-800">Programmamanager</span>
-                <Edit2 className="w-4 h-4 text-blue-400" />
               </div>
-              {programmaManager ? (
-                <>
-                  <div className="text-lg font-semibold text-slate-800">{programmaManager.naam}</div>
-                  <div className="text-sm text-blue-600">{programmaManager.functie}</div>
-                  {programmaManager.email && (
-                    <div className="text-xs text-slate-500 mt-1">{programmaManager.email}</div>
-                  )}
-                </>
-              ) : (
-                <div className="text-sm text-blue-600 italic">Klik om toe te voegen</div>
-              )}
+              <div className="text-sm text-slate-700 mt-1">{governanceStructuur.programmaManager.naam}</div>
             </div>
           </div>
 
-          {/* Pijl naar beide kanten */}
-          <div className="flex items-center w-full max-w-3xl py-2">
-            <div className="flex-1 flex justify-end pr-4">
-              <div className="w-32 h-0.5 bg-slate-300"></div>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="w-0.5 h-4 bg-slate-300"></div>
-              <ArrowDown className="w-5 h-5 text-slate-400" />
-            </div>
-            <div className="flex-1 flex justify-start pl-4">
-              <div className="w-32 h-0.5 bg-slate-300"></div>
-            </div>
-          </div>
+          <ArrowDown className="w-4 h-4 text-slate-400 my-1" />
 
-          {/* Niveau 3: Programmaraad en Baateigenaren */}
-          <div className="w-full flex flex-col md:flex-row justify-center gap-4 md:gap-8">
-            {/* Programmaraad */}
-            <div className="w-64">
-              <div className="bg-purple-100 border-2 border-purple-400 rounded-xl p-4 text-center">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <Users className="w-5 h-5 text-purple-600" />
-                  <span className="font-bold text-purple-800">Programmaraad</span>
+          {/* Programmaraad + Baateigenaren naast elkaar */}
+          <div className="flex gap-6 mb-3">
+            <div className="w-48">
+              <div className="bg-purple-100 border-2 border-purple-400 rounded-xl p-3 text-center">
+                <div className="flex items-center justify-center gap-2">
+                  <Users className="w-4 h-4 text-purple-600" />
+                  <span className="font-semibold text-purple-800 text-sm">Programmaraad</span>
                 </div>
-                <div className="text-sm font-medium text-slate-700">Maandelijks</div>
-                <div className="mt-2 space-y-1">
-                  {programmaraadLeden.length > 0 ? (
-                    programmaraadLeden.map(lid => (
-                      <div
-                        key={lid.id}
-                        className="text-xs text-purple-700 cursor-pointer hover:underline"
-                        onClick={() => handleEditStakeholder(lid)}
-                      >
-                        • {lid.naam}
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-xs text-purple-600 italic">Geen leden toegevoegd</div>
-                  )}
-                </div>
-                <div className="mt-2 pt-2 border-t border-purple-200">
-                  <div className="text-xs text-slate-600">
-                    {programmaraadLeden.length} leden
-                  </div>
-                </div>
+                <div className="text-xs text-slate-600 mt-1">{governanceStructuur.programmaRaad.leden.length} leden</div>
               </div>
             </div>
-
-            {/* Baateigenaren */}
-            <div className="w-64">
-              <div className="bg-green-100 border-2 border-green-400 rounded-xl p-4 text-center">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <Target className="w-5 h-5 text-green-600" />
-                  <span className="font-bold text-green-800">Baateigenaren</span>
+            <div className="w-48">
+              <div className="bg-green-100 border-2 border-green-400 rounded-xl p-3 text-center">
+                <div className="flex items-center justify-center gap-2">
+                  <Target className="w-4 h-4 text-green-600" />
+                  <span className="font-semibold text-green-800 text-sm">Baateigenaren</span>
                 </div>
-                <div className="text-sm font-medium text-slate-700">{baateigenaren.length} Sectormanagers</div>
-                <div className="mt-2 space-y-1">
-                  {baateigenaren.length > 0 ? (
-                    baateigenaren.map(be => (
-                      <div
-                        key={be.id}
-                        className="text-xs text-green-700 cursor-pointer hover:underline"
-                        onClick={() => handleEditStakeholder(be)}
-                      >
-                        • {be.naam} ({be.afdeling || 'Sector'})
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-xs text-green-600 italic">Geen baateigenaren</div>
-                  )}
-                </div>
+                <div className="text-xs text-slate-600 mt-1">{sectoren.length} sectoren</div>
               </div>
             </div>
           </div>
 
-          {/* Pijl naar Inspanningsleiders */}
-          <div className="flex flex-col items-center py-2">
-            <div className="w-0.5 h-4 bg-slate-300"></div>
-            <ArrowDown className="w-5 h-5 text-slate-400" />
-          </div>
+          <ArrowDown className="w-4 h-4 text-slate-400 my-1" />
 
-          {/* Niveau 4: Inspanningsleiders */}
-          <div className="w-full max-w-2xl">
-            <div className="bg-slate-100 border-2 border-slate-300 rounded-xl p-4">
-              <div className="flex items-center justify-center gap-2 mb-3">
-                <Briefcase className="w-5 h-5 text-slate-600" />
-                <span className="font-bold text-slate-700">Inspanningsleiders ({inspanningsleiders.length})</span>
+          {/* Inspanningsleiders */}
+          <div className="w-full max-w-lg">
+            <div className="bg-slate-100 border-2 border-slate-300 rounded-xl p-3 text-center">
+              <div className="flex items-center justify-center gap-2">
+                <Briefcase className="w-4 h-4 text-slate-600" />
+                <span className="font-semibold text-slate-700 text-sm">Inspanningsleiders</span>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {inspanningsleiders.length > 0 ? (
-                  inspanningsleiders.map(il => (
-                    <div
-                      key={il.id}
-                      className="bg-white rounded-lg p-2 text-center text-xs text-slate-600 border border-slate-200 cursor-pointer hover:border-slate-400 hover:shadow transition-all"
-                      onClick={() => handleEditStakeholder(il)}
-                    >
-                      <div className="font-medium text-slate-800">{il.naam}</div>
-                      <div className="text-slate-500">{il.afdeling || il.functie}</div>
-                    </div>
-                  ))
-                ) : (
-                  governanceStructuur.inspanningsLeiders.rollen.map((rol, i) => (
-                    <div key={i} className="bg-white rounded-lg p-2 text-center text-xs text-slate-600 border border-slate-200">
-                      {rol}
-                    </div>
-                  ))
-                )}
+              <div className="flex justify-center gap-2 mt-2 flex-wrap">
+                {governanceStructuur.inspanningsLeiders.rollen.map((rol, i) => (
+                  <span key={i} className="text-xs bg-white px-2 py-1 rounded border border-slate-200">{rol}</span>
+                ))}
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Rollen Detail */}
-      <div className="grid grid-cols-2 gap-5">
-        {/* Programma-eigenaar */}
-        <div className="bg-white rounded-xl border border-slate-100 hover:shadow-md transition-all duration-200 p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-amber-100 rounded-lg">
-              <Crown className="w-6 h-6 text-amber-600" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-slate-800">Programma-eigenaar</h3>
-              <p className="text-sm text-slate-500">{governanceStructuur.programmaEigenaar.functie}</p>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <div className="text-sm font-medium text-slate-700 mb-2">Verantwoordelijkheden:</div>
-            {governanceStructuur.programmaEigenaar.verantwoordelijkheden.map((v, i) => (
-              <div key={i} className="flex items-start gap-2 text-sm text-slate-600">
-                <CheckCircle className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
-                <span>{v}</span>
+      {/* Rollen toelichting - Uitgebreid */}
+      <div className="bg-white rounded-xl border border-slate-200 p-5">
+        <h2 className="text-lg font-semibold text-slate-800 mb-4">Rollen & Verantwoordelijkheden</h2>
+
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Sponsorgroep */}
+          <div className="bg-slate-50 rounded-xl border border-slate-200 p-4 hover:shadow-md transition-all">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="p-2 bg-slate-700 rounded-lg">
+                <Shield className="w-5 h-5 text-white" />
               </div>
-            ))}
+              <div>
+                <h3 className="font-semibold text-slate-800">Sponsorgroep</h3>
+                <span className="text-xs text-slate-500">Strategisch niveau</span>
+              </div>
+            </div>
+            <p className="text-sm text-slate-600 mb-3">Beslist <strong>OVER</strong> het programma - niet erin</p>
+            <div className="space-y-1 text-xs text-slate-500 mb-3">
+              <div className="flex items-start gap-1.5">
+                <CheckCircle className="w-3 h-3 text-green-500 mt-0.5 shrink-0" />
+                <span>Go/No-Go besluiten tussen cycli</span>
+              </div>
+              <div className="flex items-start gap-1.5">
+                <CheckCircle className="w-3 h-3 text-green-500 mt-0.5 shrink-0" />
+                <span>Budget en resources vrijgeven</span>
+              </div>
+              <div className="flex items-start gap-1.5">
+                <CheckCircle className="w-3 h-3 text-green-500 mt-0.5 shrink-0" />
+                <span>Strategische richting bepalen</span>
+              </div>
+            </div>
+            <div className="text-xs text-amber-600 font-medium">Leden n.t.b.</div>
           </div>
-          <div className="mt-4 pt-4 border-t border-slate-100">
-            <div className="text-xs text-slate-500">Thema's: Vormgeven, Beslissen</div>
+
+          {/* Programma-eigenaar */}
+          <div
+            className="bg-amber-50 rounded-xl border border-amber-200 p-4 hover:shadow-md transition-all cursor-pointer"
+            onClick={() => programmaEigenaar ? handleEditStakeholder(programmaEigenaar) : setShowStakeholderForm(true)}
+          >
+            <div className="flex items-center gap-2 mb-3">
+              <div className="p-2 bg-amber-500 rounded-lg">
+                <Crown className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-slate-800">Programma-eigenaar</h3>
+                <span className="text-xs text-slate-500">Eindverantwoordelijk</span>
+              </div>
+            </div>
+            <p className="text-sm text-slate-600 mb-3">Stuurt op <strong>batenrealisatie</strong> en draagt programma</p>
+            <div className="space-y-1 text-xs text-slate-500 mb-3">
+              <div className="flex items-start gap-1.5">
+                <CheckCircle className="w-3 h-3 text-green-500 mt-0.5 shrink-0" />
+                <span>Bewaakt visie en doelstellingen</span>
+              </div>
+              <div className="flex items-start gap-1.5">
+                <CheckCircle className="w-3 h-3 text-green-500 mt-0.5 shrink-0" />
+                <span>Escaleert naar Sponsorgroep</span>
+              </div>
+              <div className="flex items-start gap-1.5">
+                <CheckCircle className="w-3 h-3 text-green-500 mt-0.5 shrink-0" />
+                <span>Aanjager van organisatieverandering</span>
+              </div>
+            </div>
+            <div className="text-xs text-amber-700">{programmaEigenaar?.naam || 'Klik om toe te voegen'}</div>
+          </div>
+
+          {/* Programmamanager */}
+          <div
+            className="bg-blue-50 rounded-xl border border-blue-200 p-4 hover:shadow-md transition-all cursor-pointer"
+            onClick={() => programmaManager ? handleEditStakeholder(programmaManager) : setShowStakeholderForm(true)}
+          >
+            <div className="flex items-center gap-2 mb-3">
+              <div className="p-2 bg-blue-500 rounded-lg">
+                <User className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-slate-800">Programmamanager</h3>
+                <span className="text-xs text-slate-500">Dagelijkse coördinatie</span>
+              </div>
+            </div>
+            <p className="text-sm text-slate-600 mb-3">Coördineert, rapporteert en <strong>houdt overzicht</strong></p>
+            <div className="space-y-1 text-xs text-slate-500 mb-3">
+              <div className="flex items-start gap-1.5">
+                <CheckCircle className="w-3 h-3 text-green-500 mt-0.5 shrink-0" />
+                <span>Leidt Programmaraad vergaderingen</span>
+              </div>
+              <div className="flex items-start gap-1.5">
+                <CheckCircle className="w-3 h-3 text-green-500 mt-0.5 shrink-0" />
+                <span>Bewaakt voortgang en stuurparameters</span>
+              </div>
+              <div className="flex items-start gap-1.5">
+                <CheckCircle className="w-3 h-3 text-green-500 mt-0.5 shrink-0" />
+                <span>Coördineert tussen sectoren</span>
+              </div>
+            </div>
+            <div className="text-xs text-blue-700">{governanceStructuur.programmaManager.naam}</div>
+          </div>
+
+          {/* Programmaraad */}
+          <div className="bg-purple-50 rounded-xl border border-purple-200 p-4 hover:shadow-md transition-all">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="p-2 bg-purple-500 rounded-lg">
+                <Users className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-slate-800">Programmaraad</h3>
+                <span className="text-xs text-slate-500">Tactisch niveau</span>
+              </div>
+            </div>
+            <p className="text-sm text-slate-600 mb-3">Beslist <strong>BINNEN</strong> het programma</p>
+            <div className="space-y-1 text-xs text-slate-500 mb-3">
+              <div className="flex items-start gap-1.5">
+                <CheckCircle className="w-3 h-3 text-green-500 mt-0.5 shrink-0" />
+                <span>Prioriteiten stellen en bijsturen</span>
+              </div>
+              <div className="flex items-start gap-1.5">
+                <CheckCircle className="w-3 h-3 text-green-500 mt-0.5 shrink-0" />
+                <span>Budget allocatie binnen programma</span>
+              </div>
+              <div className="flex items-start gap-1.5">
+                <CheckCircle className="w-3 h-3 text-green-500 mt-0.5 shrink-0" />
+                <span>Operationele knelpunten oplossen</span>
+              </div>
+            </div>
+            <div className="text-xs text-purple-700">{governanceStructuur.programmaRaad.leden.length} leden • {governanceStructuur.programmaRaad.frequentie}</div>
+          </div>
+
+          {/* Baateigenaren */}
+          <div className="bg-green-50 rounded-xl border border-green-200 p-4 hover:shadow-md transition-all">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="p-2 bg-green-500 rounded-lg">
+                <Target className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-slate-800">Baateigenaren</h3>
+                <span className="text-xs text-slate-500">Per sector</span>
+              </div>
+            </div>
+            <p className="text-sm text-slate-600 mb-3">Verantwoordelijk voor <strong>NPS verbetering</strong> in hun sector</p>
+            <div className="space-y-1 text-xs text-slate-500 mb-3">
+              <div className="flex items-start gap-1.5">
+                <CheckCircle className="w-3 h-3 text-green-500 mt-0.5 shrink-0" />
+                <span>Definieert baten voor sector</span>
+              </div>
+              <div className="flex items-start gap-1.5">
+                <CheckCircle className="w-3 h-3 text-green-500 mt-0.5 shrink-0" />
+                <span>Stuurt klantreisverbeteringen aan</span>
+              </div>
+              <div className="flex items-start gap-1.5">
+                <CheckCircle className="w-3 h-3 text-green-500 mt-0.5 shrink-0" />
+                <span>Meet en rapporteert batenrealisatie</span>
+              </div>
+            </div>
+            <div className="flex gap-1">
+              {sectoren.map(s => (
+                <span key={s.id} className="text-[10px] px-1.5 py-0.5 rounded text-white font-medium" style={{ backgroundColor: s.kleur }}>{s.afkorting}</span>
+              ))}
+            </div>
+          </div>
+
+          {/* Inspanningsleiders */}
+          <div className="bg-slate-50 rounded-xl border border-slate-200 p-4 hover:shadow-md transition-all">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="p-2 bg-slate-500 rounded-lg">
+                <Briefcase className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-slate-800">Inspanningsleiders</h3>
+                <span className="text-xs text-slate-500">Uitvoerend niveau</span>
+              </div>
+            </div>
+            <p className="text-sm text-slate-600 mb-3">Leiden <strong>projecten en trajecten</strong> die baten realiseren</p>
+            <div className="space-y-1 text-xs text-slate-500 mb-3">
+              <div className="flex items-start gap-1.5">
+                <CheckCircle className="w-3 h-3 text-green-500 mt-0.5 shrink-0" />
+                <span>Voert inspanning uit en rapporteert</span>
+              </div>
+              <div className="flex items-start gap-1.5">
+                <CheckCircle className="w-3 h-3 text-green-500 mt-0.5 shrink-0" />
+                <span>Signaleert risico's en issues</span>
+              </div>
+              <div className="flex items-start gap-1.5">
+                <CheckCircle className="w-3 h-3 text-green-500 mt-0.5 shrink-0" />
+                <span>Koppelt resultaat aan baten</span>
+              </div>
+            </div>
+            <div className="text-xs text-slate-500">{inspanningsleiders.length || governanceStructuur.inspanningsLeiders.rollen.length} rollen gedefinieerd</div>
           </div>
         </div>
+      </div>
 
-        {/* Programmamanager */}
-        <div className="bg-white rounded-xl border border-slate-100 hover:shadow-md transition-all duration-200 p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <User className="w-6 h-6 text-blue-600" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-slate-800">
-                {governanceStructuur.programmaManager.naam || 'Programmamanager'}
-              </h3>
-              <p className="text-sm text-slate-500">
-                {governanceStructuur.programmaManager.naam ? 'Programmamanager' : ''} - {governanceStructuur.programmaManager.functie}
-              </p>
-            </div>
+      {/* Verschil Sponsorgroep vs Programmaraad - Compact */}
+      <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+        <h3 className="text-sm font-semibold text-slate-700 mb-3">Sponsorgroep vs Programmaraad</h3>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-white rounded-lg p-3 border-l-4 border-slate-600">
+            <div className="font-semibold text-sm text-slate-800 mb-1">Sponsorgroep</div>
+            <p className="text-xs text-slate-600">Beslist <strong>OVER</strong> het programma</p>
+            <div className="text-[10px] text-slate-400 mt-1">Go/No-Go, budget, strategie</div>
           </div>
-          <div className="space-y-2">
-            <div className="text-sm font-medium text-slate-700 mb-2">Verantwoordelijkheden:</div>
-            {governanceStructuur.programmaManager.verantwoordelijkheden.map((v, i) => (
-              <div key={i} className="flex items-start gap-2 text-sm text-slate-600">
-                <CheckCircle className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
-                <span>{v}</span>
-              </div>
-            ))}
-          </div>
-          <div className="mt-4 pt-4 border-t border-slate-100">
-            <div className="text-xs text-slate-500">Thema's: Organiseren, Sturen, Samenwerken</div>
-          </div>
-        </div>
-
-        {/* Programmaraad */}
-        <div className="bg-white rounded-xl border border-slate-100 hover:shadow-md transition-all duration-200 p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <Users className="w-6 h-6 text-purple-600" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-slate-800">Programmaraad</h3>
-              <p className="text-sm text-slate-500">{governanceStructuur.programmaRaad.frequentie}</p>
-            </div>
-          </div>
-          <div className="space-y-2 mb-4">
-            <div className="text-sm font-medium text-slate-700 mb-2">Leden:</div>
-            {governanceStructuur.programmaRaad.leden.map((lid, i) => (
-              <div key={i} className="flex items-center gap-2 text-sm text-slate-600">
-                <Circle className="w-2 h-2 text-purple-400 shrink-0" />
-                <span className="font-medium">{lid.functie}</span>
-                <span className="text-slate-400">({lid.rol})</span>
-              </div>
-            ))}
-          </div>
-          <div className="mt-4 pt-4 border-t border-slate-100">
-            <div className="text-xs text-slate-500">Thema's: Beslissen, Sturen</div>
-          </div>
-        </div>
-
-        {/* Baateigenaren */}
-        <div className="bg-white rounded-xl border border-slate-100 hover:shadow-md transition-all duration-200 p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <Target className="w-6 h-6 text-green-600" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-slate-800">Baateigenaren (Sectormanagers)</h3>
-              <p className="text-sm text-slate-500">Verantwoordelijk voor batenrealisatie</p>
-            </div>
-          </div>
-          <div className="space-y-3">
-            {sectoren.map(sector => (
-              <div
-                key={sector.id}
-                className="p-3 rounded-lg border-l-4"
-                style={{ borderColor: sector.kleur, backgroundColor: `${sector.kleur}10` }}
-              >
-                <div className="flex items-center gap-2">
-                  <div
-                    className="w-8 h-8 rounded flex items-center justify-center text-white font-bold text-sm"
-                    style={{ backgroundColor: sector.kleur }}
-                  >
-                    {sector.afkorting}
-                  </div>
-                  <div>
-                    <div className="font-medium text-slate-800">{sector.baateigenaar.naam}</div>
-                    <div className="text-xs text-slate-500">{sector.naam}</div>
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="bg-white rounded-lg p-3 border-l-4 border-purple-500">
+            <div className="font-semibold text-sm text-slate-800 mb-1">Programmaraad</div>
+            <p className="text-xs text-slate-600">Beslist <strong>BINNEN</strong> het programma</p>
+            <div className="text-[10px] text-slate-400 mt-1">Prioriteiten, voortgang, operatie</div>
           </div>
         </div>
       </div>

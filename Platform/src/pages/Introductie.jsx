@@ -22,7 +22,9 @@ import {
   Gauge,
   BookOpen,
   Eye,
-  FileText
+  FileText,
+  GitBranch,
+  ArrowDown
 } from 'lucide-react'
 import { kernprincipes } from '../data/programmaData'
 
@@ -304,7 +306,254 @@ function Introductie() {
         </div>
       </section>
 
-      {/* SECTIE 4: De 4 Domeinen (Klant in Beeld specifiek) */}
+      {/* SECTIE 4: Het Doelen-Inspanningennetwerk (DIN) */}
+      <section className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+        <div className="bg-cyan-50 px-8 py-6 border-b border-cyan-100">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-cyan-500 rounded-xl shadow-lg">
+              <GitBranch className="w-7 h-7 text-white" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-cyan-900">4. Het Doelen-Inspanningennetwerk</h2>
+              <p className="text-base text-cyan-700 mt-1">Van strategie naar uitvoering via vermogens</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-6">
+          <p className="text-sm text-slate-600 mb-6">
+            Het DIN (Doelen-Inspanningennetwerk) visualiseert de logische keten van het programma:
+            hoe leiden concrete inspanningen uiteindelijk tot de gewenste strategische doelen?
+            De keten maakt expliciet <strong>waarom</strong> we dingen doen en <strong>hoe</strong> ze samenhangen.
+          </p>
+
+          {/* De Keten - Visueel Diagram */}
+          <div className="relative mb-8 p-6 bg-gradient-to-b from-slate-50 to-white rounded-xl border border-slate-200">
+            {/* Visie - EERST */}
+            <div className="flex justify-center mb-2">
+              <div className="px-6 py-3 bg-[#003366] text-white rounded-xl text-center max-w-md">
+                <div className="text-xs text-white/60 uppercase tracking-wide">Programma Visie</div>
+                <div className="font-semibold text-sm">"Cito zet de klant centraal in alles wat we doen"</div>
+              </div>
+            </div>
+            <div className="text-center text-[10px] text-slate-400 mb-2">
+              Startpunt: wat wil het programma bereiken?
+            </div>
+
+            <div className="flex justify-center mb-3">
+              <ArrowDown className="w-5 h-5 text-slate-400" />
+            </div>
+
+            {/* Strategische Doelen */}
+            <div className="flex justify-center mb-2">
+              <div className="px-6 py-3 bg-slate-700 text-white rounded-xl text-center">
+                <div className="text-xs text-white/60 uppercase tracking-wide">Strategische Doelen</div>
+                <div className="font-semibold text-sm">Welke organisatiedoelen ondersteunen we?</div>
+              </div>
+            </div>
+            <div className="text-center text-[10px] text-slate-400 mb-2">
+              Deze staan vast vanuit de organisatiestrategie - het programma kiest welke het ondersteunt
+            </div>
+
+            <div className="flex justify-center mb-3">
+              <ArrowDown className="w-5 h-5 text-slate-400" />
+            </div>
+
+            {/* Baten */}
+            <div className="flex flex-wrap justify-center gap-2 mb-2">
+              {[
+                'Hogere klanttevredenheid',
+                'Lagere klantuitstroom',
+                'Consistente klantbeleving'
+              ].map((baat, i) => (
+                <div key={i} className="px-3 py-2 bg-emerald-100 text-emerald-800 rounded-lg text-xs font-medium border border-emerald-200">
+                  {baat}
+                </div>
+              ))}
+            </div>
+            <div className="text-center text-xs text-emerald-600 font-medium mb-3">Baten - meetbare gewenste effecten</div>
+
+            <div className="flex justify-center mb-3">
+              <ArrowDown className="w-5 h-5 text-slate-400" />
+            </div>
+
+            {/* Vermogens - highlighted */}
+            <div className="flex flex-wrap justify-center gap-2 mb-2">
+              {[
+                'Klantinzicht competentie',
+                'Geïntegreerd CRM systeem',
+                'Outside-in werkwijze'
+              ].map((vermogen, i) => (
+                <div key={i} className="px-3 py-2 bg-cyan-500 text-white rounded-lg text-xs font-medium shadow-sm">
+                  {vermogen}
+                </div>
+              ))}
+            </div>
+            <div className="text-center text-xs text-cyan-600 font-medium mb-3">Vermogens - wat moet de organisatie kunnen?</div>
+
+            <div className="flex justify-center mb-3">
+              <ArrowDown className="w-5 h-5 text-slate-400" />
+            </div>
+
+            {/* Inspanningen */}
+            <div className="flex flex-wrap justify-center gap-2 mb-2">
+              {[
+                'CRM implementatie',
+                'Outside-in training',
+                'Klantproces herontwerp'
+              ].map((insp, i) => (
+                <div key={i} className="px-3 py-2 bg-violet-100 text-violet-800 rounded-lg text-xs font-medium border border-violet-200">
+                  {insp}
+                </div>
+              ))}
+            </div>
+            <div className="text-center text-xs text-violet-600 font-medium">Inspanningen - projecten, trajecten, procesverbeteringen</div>
+          </div>
+
+          {/* Vermogens Uitleg */}
+          <div className="bg-cyan-50 rounded-xl p-4 mb-6 border border-cyan-200">
+            <h3 className="font-semibold text-cyan-800 mb-3 flex items-center gap-2">
+              <Lightbulb className="w-4 h-4" />
+              Wat is een Vermogen (Capability)?
+            </h3>
+            <p className="text-sm text-slate-600 mb-3">
+              Een <strong>vermogen</strong> is een organisatorische bekwaamheid die nodig is om baten te realiseren.
+              Het is de brug tussen "wat willen we bereiken" (baten) en "wat gaan we doen" (inspanningen).
+            </p>
+            <div className="bg-white rounded-lg p-3 border border-cyan-200">
+              <div className="text-xs text-slate-500 mb-2">Voorbeeld:</div>
+              <div className="grid grid-cols-3 gap-3 text-xs">
+                <div className="text-center">
+                  <div className="font-semibold text-emerald-700 mb-1">Baat</div>
+                  <div className="text-slate-600">"Hogere klanttevredenheid"</div>
+                </div>
+                <div className="text-center">
+                  <div className="font-semibold text-cyan-700 mb-1">Vermogen nodig</div>
+                  <div className="text-slate-600">"Klantinzicht competentie"</div>
+                </div>
+                <div className="text-center">
+                  <div className="font-semibold text-violet-700 mb-1">Inspanningen</div>
+                  <div className="text-slate-600">"Data-analyse training, Klantpanels"</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 6 Soorten Vermogens */}
+          <h3 className="font-semibold text-slate-800 mb-3">De 6 Soorten Vermogens</h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 mb-6">
+            {[
+              { naam: 'Organisatorisch', desc: 'Structuur, rollen', color: 'slate' },
+              { naam: 'Inhoudelijk', desc: 'Kennis, expertise', color: 'blue' },
+              { naam: 'Menselijk', desc: 'Competenties, capaciteit', color: 'emerald' },
+              { naam: 'Financieel', desc: 'Budget, middelen', color: 'amber' },
+              { naam: 'Technisch', desc: 'Systemen, data', color: 'violet' },
+              { naam: 'Cultureel', desc: 'Gedrag, eigenaarschap', color: 'rose' }
+            ].map(v => {
+              const colors = {
+                slate: 'bg-slate-100 text-slate-700 border-slate-200',
+                blue: 'bg-blue-100 text-blue-700 border-blue-200',
+                emerald: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+                amber: 'bg-amber-100 text-amber-700 border-amber-200',
+                violet: 'bg-violet-100 text-violet-700 border-violet-200',
+                rose: 'bg-rose-100 text-rose-700 border-rose-200'
+              }[v.color]
+              return (
+                <div key={v.naam} className={`${colors} rounded-lg p-2 border text-center`}>
+                  <div className="font-semibold text-xs">{v.naam}</div>
+                  <div className="text-[10px] opacity-70">{v.desc}</div>
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Proces: Hoe stel je het DIN op? */}
+          <h3 className="font-semibold text-slate-800 mb-3">Proces: Hoe stel je het DIN op?</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold">1</div>
+                <h4 className="font-semibold text-blue-800 text-sm">Sessie met Programma-eigenaar</h4>
+              </div>
+              <ul className="text-xs text-slate-600 space-y-1 ml-8">
+                <li>• Wat is de programmavisie? (formuleren)</li>
+                <li>• Welke strategische doelen ondersteunen we? (kiezen)</li>
+                <li>• Wat is de scope en ambitie van het programma?</li>
+              </ul>
+            </div>
+            <div className="bg-green-50 rounded-xl p-4 border border-green-200">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold">2</div>
+                <h4 className="font-semibold text-green-800 text-sm">Sessie met Sectormanagers</h4>
+              </div>
+              <ul className="text-xs text-slate-600 space-y-1 ml-8">
+                <li>• Welke baten willen we per sector realiseren?</li>
+                <li>• Welke vermogens zijn daarvoor nodig?</li>
+                <li>• Via welke inspanningen bouwen we die vermogens?</li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Waarom Vermogens */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-green-50 rounded-xl p-4 border border-green-200">
+              <h4 className="font-semibold text-green-800 mb-2 flex items-center gap-2">
+                <CheckCircle className="w-4 h-4" />
+                Met Vermogens in je DIN
+              </h4>
+              <ul className="text-xs text-slate-600 space-y-1.5">
+                <li className="flex items-start gap-2">
+                  <span className="text-green-600 mt-0.5">✓</span>
+                  <span><strong>Traceerbaarheid:</strong> waarom doen we dit project?</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-green-600 mt-0.5">✓</span>
+                  <span><strong>Bundeling:</strong> meerdere inspanningen bouwen 1 vermogen</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-green-600 mt-0.5">✓</span>
+                  <span><strong>Prioritering:</strong> welke vermogens zijn kritisch?</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-green-600 mt-0.5">✓</span>
+                  <span><strong>Meting:</strong> is het vermogen operationeel?</span>
+                </li>
+              </ul>
+            </div>
+            <div className="bg-red-50 rounded-xl p-4 border border-red-200">
+              <h4 className="font-semibold text-red-800 mb-2">Zonder Vermogens</h4>
+              <ul className="text-xs text-slate-600 space-y-1.5">
+                <li className="flex items-start gap-2">
+                  <span className="text-red-600 mt-0.5">✗</span>
+                  <span>Directe link inspanning → baat is vaag</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-red-600 mt-0.5">✗</span>
+                  <span>Onduidelijk HOE je de baat bereikt</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-red-600 mt-0.5">✗</span>
+                  <span>Moeilijker om te prioriteren</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-red-600 mt-0.5">✗</span>
+                  <span>Geen bundeling van gerelateerde activiteiten</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="mt-4 p-3 bg-cyan-50 rounded-lg border border-cyan-200">
+            <p className="text-xs text-cyan-800">
+              <strong>Bron:</strong> Het DIN wordt opgesteld tijdens de <em>Opbouwen</em>-fase en is onderdeel
+              van de verplichte programma-documentatie. Zie Hoofdstuk 10-11 van "Werken aan Programma's" en
+              de template "Doelen-Inspanningennetwerk (DIN)".
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTIE 5: De 4 Domeinen (Klant in Beeld specifiek) */}
       <section className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
         <div className="bg-[#003366]/10 px-8 py-6 border-b border-[#003366]/20">
           <div className="flex items-center gap-4">
@@ -312,8 +561,8 @@ function Introductie() {
               <Layers className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-[#003366]">4. De 4 Domeinen</h2>
-              <p className="text-base text-slate-600 mt-1">Structuur voor baten en inspanningen</p>
+              <h2 className="text-2xl font-bold text-[#003366]">5. De 4 Domeinen</h2>
+              <p className="text-base text-slate-600 mt-1">Structuur voor baten, vermogens en inspanningen</p>
             </div>
           </div>
         </div>
@@ -416,30 +665,37 @@ function Introductie() {
             {/* Rol van sectoren */}
             <div className="bg-slate-50 rounded-xl p-4">
               <p className="text-sm text-slate-600 mb-3">
-                Elke sector definieert eigen <strong>baten</strong> per domein en voert <strong>inspanningen</strong> uit om deze te realiseren.
+                Elke sector definieert eigen <strong>baten</strong> per domein, bepaalt welke <strong>vermogens</strong> nodig zijn,
+                en voert <strong>inspanningen</strong> uit om deze vermogens te ontwikkelen.
               </p>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-xs">
                 <div className="flex items-center gap-2 bg-white rounded-lg p-2">
-                  <div className="w-5 h-5 bg-blue-500 rounded flex items-center justify-center flex-shrink-0">
+                  <div className="w-5 h-5 bg-emerald-500 rounded flex items-center justify-center flex-shrink-0">
                     <span className="text-white font-bold text-xs">1</span>
                   </div>
                   <span className="text-slate-700">Baten definiëren</span>
                 </div>
                 <div className="flex items-center gap-2 bg-white rounded-lg p-2">
-                  <div className="w-5 h-5 bg-violet-500 rounded flex items-center justify-center flex-shrink-0">
+                  <div className="w-5 h-5 bg-cyan-500 rounded flex items-center justify-center flex-shrink-0">
                     <span className="text-white font-bold text-xs">2</span>
+                  </div>
+                  <span className="text-slate-700">Vermogens bepalen</span>
+                </div>
+                <div className="flex items-center gap-2 bg-white rounded-lg p-2">
+                  <div className="w-5 h-5 bg-violet-500 rounded flex items-center justify-center flex-shrink-0">
+                    <span className="text-white font-bold text-xs">3</span>
                   </div>
                   <span className="text-slate-700">Inspanningen uitvoeren</span>
                 </div>
                 <div className="flex items-center gap-2 bg-white rounded-lg p-2">
-                  <div className="w-5 h-5 bg-green-500 rounded flex items-center justify-center flex-shrink-0">
-                    <span className="text-white font-bold text-xs">3</span>
+                  <div className="w-5 h-5 bg-blue-500 rounded flex items-center justify-center flex-shrink-0">
+                    <span className="text-white font-bold text-xs">4</span>
                   </div>
                   <span className="text-slate-700">Voortgang monitoren</span>
                 </div>
                 <div className="flex items-center gap-2 bg-white rounded-lg p-2">
                   <div className="w-5 h-5 bg-amber-500 rounded flex items-center justify-center flex-shrink-0">
-                    <span className="text-white font-bold text-xs">4</span>
+                    <span className="text-white font-bold text-xs">5</span>
                   </div>
                   <span className="text-slate-700">Kennis delen</span>
                 </div>
@@ -449,7 +705,7 @@ function Introductie() {
         </div>
       </section>
 
-      {/* SECTIE 5: De 5 Stuurparameters */}
+      {/* SECTIE 6: De 5 Stuurparameters */}
       <section className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
         <div className="bg-green-50 px-8 py-6 border-b border-green-100">
           <div className="flex items-center gap-4">
@@ -457,7 +713,7 @@ function Introductie() {
               <Gauge className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-green-900">5. De 5 Stuurparameters</h2>
+              <h2 className="text-2xl font-bold text-green-900">6. De 5 Stuurparameters</h2>
               <p className="text-base text-green-700 mt-1">Waarop we het programma monitoren en bijsturen</p>
             </div>
           </div>
@@ -507,7 +763,7 @@ function Introductie() {
         </div>
       </section>
 
-      {/* SECTIE 6: Governance Structuur */}
+      {/* SECTIE 7: Governance Structuur */}
       <section className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
         <div className="bg-amber-50 px-8 py-6 border-b border-amber-100">
           <div className="flex items-center gap-4">
@@ -515,7 +771,7 @@ function Introductie() {
               <Users className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-amber-900">6. Governance Structuur</h2>
+              <h2 className="text-2xl font-bold text-amber-900">7. Governance Structuur</h2>
               <p className="text-base text-amber-700 mt-1">Wie is verantwoordelijk waarvoor</p>
             </div>
           </div>

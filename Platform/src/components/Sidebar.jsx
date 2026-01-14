@@ -13,7 +13,9 @@ import {
   Layers,
   FileText,
   Play,
-  Scale
+  Scale,
+  Eye,
+  Zap
 } from 'lucide-react'
 
 const navItems = [
@@ -27,12 +29,16 @@ const navItems = [
   { path: '/sector/po', label: 'PO', description: 'Primair Onderwijs', color: '#3b82f6' },
   { path: '/sector/vo', label: 'VO', description: 'Voortgezet Onderwijs', color: '#8b5cf6' },
   { path: '/sector/professionals', label: 'ZAK', description: 'Professionals', color: '#f59e0b' },
-  // Data & Tools - operationeel
-  { type: 'divider', label: 'Data' },
-  { path: '/dashboard', icon: TrendingUp, label: 'Dashboard', description: 'Status overzicht' },
-  { path: '/baten', icon: Target, label: 'Baten' },
-  { path: '/inspanningen', icon: ListTodo, label: 'Inspanningen' },
-  { path: '/roadmap', icon: CalendarDays, label: 'Roadmap' },
+  // DIN Keten - juiste volgorde
+  { type: 'divider', label: 'DIN Keten' },
+  { path: '/visie-doelen', icon: Eye, label: 'Visie & Doelen', description: '1. Strategische richting' },
+  { path: '/baten', icon: Target, label: 'Baten', description: '2. Meetbare resultaten' },
+  { path: '/vermogens', icon: Zap, label: 'Vermogens', description: '3. Capabilities' },
+  { path: '/inspanningen', icon: ListTodo, label: 'Inspanningen', description: '4. Projecten & processen' },
+  // Tools
+  { type: 'divider', label: 'Tools' },
+  { path: '/dashboard', icon: TrendingUp, label: 'AI Dashboard', description: 'Vraag & Visualiseer' },
+  { path: '/roadmap', icon: CalendarDays, label: 'Roadmap', description: 'Planning' },
   { path: '/templates', icon: FileText, label: 'Templates', description: 'Werkvormen' },
   { path: '/sessies', icon: Play, label: 'Sessies', description: 'Facilitatie' },
 ]

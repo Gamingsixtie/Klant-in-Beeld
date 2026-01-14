@@ -112,11 +112,11 @@ function ProgrammaVsLijn() {
   const totalAnswered = Object.values(answers).filter(a => a !== null).length
   const programmaPercentage = totalAnswered > 0 ? Math.round((programmaScore / (programmaScore + lijnScore || 1)) * 100) : 50
 
-  // Bepaal advies
+  // Bepaal advies (na 3 vragen al een indicatie geven)
   const getAdvies = () => {
-    if (totalAnswered < 4) return null
-    if (programmaPercentage >= 70) return 'programma'
-    if (programmaPercentage <= 30) return 'lijn'
+    if (totalAnswered < 3) return null
+    if (programmaPercentage >= 65) return 'programma'
+    if (programmaPercentage <= 35) return 'lijn'
     return 'twijfel'
   }
 
@@ -163,11 +163,22 @@ function ProgrammaVsLijn() {
         </div>
       </div>
 
-      {/* Initiatief invoer */}
+      {/* Initiatief invoer + voortgang */}
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-        <label className="block text-sm font-medium text-slate-700 mb-2">
-          Wat is het initiatief/idee dat je wilt toetsen?
-        </label>
+        <div className="flex items-center justify-between mb-4">
+          <label className="block text-sm font-medium text-slate-700">
+            Wat is het initiatief/idee dat je wilt toetsen?
+          </label>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-500">{totalAnswered}/{vragen.length} beantwoord</span>
+            <div className="w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-[#003366] to-green-500 transition-all duration-300"
+                style={{ width: `${(totalAnswered / vragen.length) * 100}%` }}
+              />
+            </div>
+          </div>
+        </div>
         <input
           type="text"
           value={initiatief}
@@ -179,8 +190,19 @@ function ProgrammaVsLijn() {
 
       {/* Vragen */}
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-        <h2 className="font-semibold text-slate-800 mb-4">Beantwoord de vragen</h2>
-        <div className="space-y-4">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-semibold text-slate-800">Beantwoord de vragen</h2>
+          {totalAnswered > 0 && (
+            <button
+              onClick={resetForm}
+              className="text-xs text-slate-500 hover:text-slate-700 flex items-center gap-1"
+            >
+              <RefreshCw className="w-3 h-3" />
+              Reset
+            </button>
+          )}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
           {vragen.map((vraag) => {
             const Icon = vraag.icon
             const isJa = answers[vraag.id] === 'ja'
@@ -189,29 +211,29 @@ function ProgrammaVsLijn() {
             return (
               <div
                 key={vraag.id}
-                className={`p-4 rounded-lg border-2 transition-all ${
+                className={`p-3 rounded-lg border-2 transition-all ${
                   isJa && vraag.programma ? 'border-[#003366] bg-[#003366]/5' :
                   isJa && vraag.lijn ? 'border-green-500 bg-green-50' :
-                  isNee ? 'border-slate-200 bg-slate-50' :
+                  isNee ? 'border-slate-200 bg-slate-50/50' :
                   'border-slate-200 hover:border-slate-300'
                 }`}
               >
-                <div className="flex items-start gap-4">
-                  <div className={`p-2 rounded-lg ${
+                <div className="flex items-start gap-3">
+                  <div className={`p-1.5 rounded-lg flex-shrink-0 ${
                     vraag.programma ? 'bg-[#003366]/10' : 'bg-green-100'
                   }`}>
-                    <Icon className={`w-5 h-5 ${
+                    <Icon className={`w-4 h-4 ${
                       vraag.programma ? 'text-[#003366]' : 'text-green-600'
                     }`} />
                   </div>
-                  <div className="flex-1">
-                    <div className="font-medium text-slate-800">{vraag.vraag}</div>
-                    <div className="text-sm text-slate-500 mt-1">{vraag.toelichting}</div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium text-sm text-slate-800">{vraag.vraag}</div>
+                    <div className="text-xs text-slate-500 mt-0.5">{vraag.toelichting}</div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-1 flex-shrink-0">
                     <button
                       onClick={() => toggleAnswer(vraag.id, 'ja')}
-                      className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                      className={`px-3 py-1.5 rounded text-sm font-medium transition-all ${
                         isJa
                           ? vraag.programma ? 'bg-[#003366] text-white' : 'bg-green-500 text-white'
                           : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -221,9 +243,9 @@ function ProgrammaVsLijn() {
                     </button>
                     <button
                       onClick={() => toggleAnswer(vraag.id, 'nee')}
-                      className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                      className={`px-3 py-1.5 rounded text-sm font-medium transition-all ${
                         isNee
-                          ? 'bg-slate-500 text-white'
+                          ? 'bg-slate-400 text-white'
                           : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                       }`}
                     >

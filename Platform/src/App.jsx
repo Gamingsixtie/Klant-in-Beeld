@@ -3,7 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import Sidebar from './components/Sidebar'
 import Methodologie from './pages/Methodologie'
 import ThemaDetail from './pages/ThemaDetail'
-import Dashboard from './pages/Dashboard'
+import AIDashboard from './pages/AIDashboard'
 import Baten from './pages/Baten'
 import Inspanningen from './pages/Inspanningen'
 import Governance from './pages/Governance'
@@ -14,6 +14,8 @@ import SectorDetail from './pages/SectorDetail'
 import Templates from './pages/Templates'
 import Sessies from './pages/Sessies'
 import ProgrammaVsLijn from './pages/ProgrammaVsLijn'
+import VisieEnDoelen from './pages/VisieEnDoelen'
+import Vermogens from './pages/Vermogens'
 import { useAppStore } from './stores/appStore'
 
 function App() {
@@ -53,11 +55,13 @@ function App() {
                             <Route path="/templates" element={<Templates />} />
               <Route path="/sessies" element={<Sessies />} />
               <Route path="/programma-vs-lijn" element={<ProgrammaVsLijn />} />
-              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/dashboard" element={<AIDashboard />} />
               <Route path="/baten" element={<Baten />} />
               <Route path="/inspanningen" element={<Inspanningen />} />
               <Route path="/governance" element={<Governance />} />
               <Route path="/roadmap" element={<Roadmap />} />
+              <Route path="/visie-doelen" element={<VisieEnDoelen />} />
+              <Route path="/vermogens" element={<Vermogens />} />
               <Route path="/settings" element={<Settings />} />
             </Routes>
           </div>

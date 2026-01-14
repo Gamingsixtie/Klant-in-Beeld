@@ -300,6 +300,8 @@ export const governanceStructuur = {
   },
   programmaRaad: {
     naam: 'Programmaraad',
+    beschrijving: 'Tactisch sturend orgaan voor dagelijkse programmavoortgang',
+    niveau: 'Tactisch',
     leden: [
       { rol: 'Voorzitter', functie: 'Programmamanager', naam: 'Pim de Burger' },
       { rol: 'Lid', functie: 'Programma-eigenaar' },
@@ -310,7 +312,35 @@ export const governanceStructuur = {
       { rol: 'Lid', functie: 'HR' }
     ],
     frequentie: '2-wekelijks',
+    verantwoordelijkheden: [
+      'Prioriteiten stellen en bijsturen',
+      'Voortgang bewaken en bespreken',
+      'Operationele knelpunten oplossen',
+      'Budgetallocatie binnen programma',
+      'Escalaties voorbereiden voor Sponsorgroep'
+    ],
     themasVerantwoordelijk: ['beslissen', 'sturen']
+  },
+  sponsorgroep: {
+    naam: 'Sponsorgroep',
+    beschrijving: 'Strategisch besluitvormend orgaan dat Go/No-Go besluiten neemt',
+    niveau: 'Strategisch',
+    leden: [
+      { rol: 'Voorzitter', functie: 'Directeur', naam: 'n.t.b.' },
+      { rol: 'Sponsor PO', functie: 'Directeur PO', naam: 'n.t.b.' },
+      { rol: 'Sponsor VO', functie: 'Directeur VO', naam: 'n.t.b.' },
+      { rol: 'Sponsor Zakelijk', functie: 'Directeur Zakelijk', naam: 'n.t.b.' },
+      { rol: 'Programma-eigenaar', functie: 'Commercieel Manager', naam: 'n.t.b.' }
+    ],
+    verantwoordelijkheden: [
+      'Goedkeuren Go/No-Go besluiten',
+      'Vrijgeven resources (budget, mensen)',
+      'Strategische koers bepalen',
+      'Escalaties oplossen',
+      'Draagvlak in de organisatie'
+    ],
+    frequentie: 'Per Go/No-Go moment + kwartaal',
+    themasVerantwoordelijk: ['beslissen', 'leiden']
   },
   inspanningsLeiders: {
     rollen: [
