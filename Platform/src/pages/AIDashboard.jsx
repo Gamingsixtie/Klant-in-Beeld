@@ -9,6 +9,7 @@ import DataTableWidget from '../components/ai-dashboard/widgets/DataTableWidget'
 import LineChartWidget from '../components/ai-dashboard/widgets/LineChartWidget'
 import ClarificationDialog from '../components/ai-dashboard/ClarificationDialog'
 import OnboardingTour from '../components/ai-dashboard/OnboardingTour'
+import WelcomePanel from '../components/ai-dashboard/WelcomePanel'
 import { exportToJSON, exportToPNG, exportReport } from '../services/exportService'
 import {
   Send,
@@ -93,6 +94,8 @@ export default function AIDashboard() {
     globalFilters,
     preferences,
     reportTemplates,
+    disclosureLevel,
+    isTransitioning,
     processQuery,
     removeWidget,
     clearWidgets,
@@ -107,7 +110,10 @@ export default function AIDashboard() {
     togglePanel,
     hideClarification,
     selectClarificationOption,
-    completeTour
+    completeTour,
+    resetToCleanSlate,
+    getVisibleWidgets,
+    isCleanSlate
   } = useDashboardStore()
 
   // Show tour for new users
@@ -128,12 +134,21 @@ export default function AIDashboard() {
     }
   }, [isMobile])
 
-  // Auto-load demo on first visit
+  // Sync disclosure level with existing widgets (for localStorage migration)
   useEffect(() => {
-    if (widgets.length === 0 && conversation.length === 0) {
-      loadDemo()
+    if (widgets.length > 0 && disclosureLevel === 0) {
+      // There are widgets but level is 0 - auto-advance to appropriate level
+      const hasChartOrTable = widgets.some(w =>
+        ['bar', 'line', 'pie', 'table'].includes(w.type)
+      )
+      let newLevel = 1
+      if (widgets.length > 6) newLevel = 3
+      else if (widgets.length > 3 || hasChartOrTable) newLevel = 2
+
+      // Use the store's setDisclosureLevel
+      useDashboardStore.getState().setDisclosureLevel(newLevel)
     }
-  }, [])
+  }, []) // Run once on mount
 
   // Auto-scroll conversation
   useEffect(() => {
@@ -233,9 +248,20 @@ export default function AIDashboard() {
     )
   }
 
-  const hasWidgets = widgets.length > 0
-  const kpiCount = widgets.filter(w => w.type === WIDGET_TYPES.KPI).length
-  const chartCount = widgets.filter(w => w.type === WIDGET_TYPES.BAR || w.type === WIDGET_TYPES.LINE).length
+  // Get visible widgets based on disclosure level
+  const visibleWidgets = getVisibleWidgets()
+  const hasWidgets = visibleWidgets.length > 0
+  const showCleanSlate = disclosureLevel === 0 && widgets.length === 0
+  const kpiCount = visibleWidgets.filter(w => w.type === WIDGET_TYPES.KPI).length
+  const chartCount = visibleWidgets.filter(w => w.type === WIDGET_TYPES.BAR || w.type === WIDGET_TYPES.LINE).length
+
+  // Disclosure level indicator text
+  const disclosureLevelText = {
+    0: 'Clean Slate',
+    1: 'Quick Insights',
+    2: 'Exploration',
+    3: 'Deep Analysis'
+  }[disclosureLevel]
 
   // Panel width based on state
   const panelWidthClass = {
@@ -448,13 +474,26 @@ export default function AIDashboard() {
                 <HelpCircle className="w-4 h-4" />
               </button>
 
+              {/* Disclosure Level Indicator */}
+              {hasWidgets && (
+                <div className="flex items-center gap-1.5 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-white/10">
+                  <span className="text-xs text-white/60">Level</span>
+                  <span className="text-xs text-white font-medium">{disclosureLevel}</span>
+                  <span className="text-[10px] text-white/40">({disclosureLevelText})</span>
+                </div>
+              )}
+
+              {/* Back to Start / Reset Button */}
               {hasWidgets && (
                 <button
-                  onClick={clearWidgets}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
+                  onClick={resetToCleanSlate}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-slate-300 hover:text-white hover:bg-white/10 rounded-lg transition-all"
+                  title="Terug naar startscherm"
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
-                  Reset
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                  Start
                 </button>
               )}
             </div>
@@ -463,144 +502,33 @@ export default function AIDashboard() {
 
         {/* Canvas Area */}
         <div ref={dashboardRef} className="flex-1 overflow-auto pr-2" data-tour="widget-grid">
-          {!hasWidgets && preferences.showWelcome ? (
-            // Welcome State - Premium with Report Templates
-            <div className="h-full flex flex-col px-4 py-6 overflow-auto">
-              {/* Header */}
-              <div className="text-center mb-8">
-                <div className="relative inline-block mb-4">
-                  <div className="w-20 h-20 bg-gradient-to-br from-[#003366] via-[#004080] to-[#002855] rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-900/30 rotate-3">
-                    <Wand2 className="w-10 h-10 text-white" />
-                  </div>
-                  <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-emerald-500 rounded-xl flex items-center justify-center shadow-lg -rotate-6">
-                    <Sparkles className="w-3.5 h-3.5 text-white" />
-                  </div>
-                </div>
-                <h2 className="text-2xl font-bold text-slate-800 mb-2">
-                  AI Dashboard
-                </h2>
-                <p className="text-sm text-slate-500 max-w-md mx-auto">
-                  Kies een rapport sjabloon of stel een vraag om te beginnen
-                </p>
-              </div>
-
-              {/* Report Templates */}
-              <div className="mb-8">
-                <div className="flex items-center gap-2 mb-4">
-                  <BookOpen className="w-4 h-4 text-slate-400" />
-                  <h3 className="text-sm font-semibold text-slate-700">Rapport Sjablonen</h3>
-                  <span className="text-xs text-slate-400">(Opgeslagen voorkeuren)</span>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  {reportTemplates?.map(template => (
-                    <button
-                      key={template.id}
-                      onClick={() => loadReport(template.id)}
-                      className={`flex items-start gap-3 p-4 bg-white border rounded-xl text-left hover:border-[#003366]/30 hover:bg-blue-50/30 hover:shadow-lg transition-all group ${
-                        preferences.lastUsedReport === template.id ? 'border-[#003366]/30 bg-blue-50/30' : 'border-slate-200'
-                      }`}
-                    >
-                      <div className="p-2 bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg group-hover:from-blue-100 group-hover:to-blue-200 transition-colors">
-                        <span className="text-lg">{template.icon}</span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-semibold text-slate-800 group-hover:text-slate-900">
-                            {template.name}
-                          </span>
-                          {preferences.lastUsedReport === template.id && (
-                            <span className="text-[10px] bg-blue-100 text-[#003366] px-1.5 py-0.5 rounded-full">Recent</span>
-                          )}
-                        </div>
-                        <p className="text-xs text-slate-500 mt-0.5 truncate">{template.description}</p>
-                        <div className="flex items-center gap-1 mt-1.5">
-                          <Layers className="w-3 h-3 text-slate-400" />
-                          <span className="text-[10px] text-slate-400">{template.widgets.length} widgets</span>
-                        </div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Recent Queries */}
-              {preferences.recentQueries?.length > 0 && (
-                <div className="mb-8">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Clock className="w-4 h-4 text-slate-400" />
-                    <h3 className="text-sm font-semibold text-slate-700">Recente vragen</h3>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {preferences.recentQueries.slice(0, 6).map((query, i) => (
-                      <button
-                        key={i}
-                        onClick={() => processQuery(query)}
-                        className="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-600 hover:border-[#003366]/30 hover:bg-blue-50 transition-all"
-                      >
-                        <Clock className="w-3 h-3 text-slate-400" />
-                        {query}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Quick Suggestions */}
-              <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <Sparkles className="w-4 h-4 text-[#003366]" />
-                  <h3 className="text-sm font-semibold text-slate-700">Snelle vragen</h3>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  {suggestions.slice(0, 6).map(suggestion => (
-                    <button
-                      key={suggestion.id}
-                      onClick={() => handleSuggestionClick(suggestion)}
-                      className="flex items-center gap-2 px-4 py-3 bg-white border border-slate-200 rounded-xl text-left hover:border-[#003366]/30 hover:bg-blue-50/50 transition-all group"
-                    >
-                      <span className="text-base">{suggestion.icon}</span>
-                      <span className="text-xs text-slate-700 group-hover:text-slate-900 font-medium flex-1">
-                        {suggestion.query}
-                      </span>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); toggleFavoriteQuery(suggestion.query); }}
-                        className="p-1 hover:bg-blue-100 rounded transition-colors"
-                      >
-                        <Heart className={`w-3.5 h-3.5 ${isFavoriteQuery(suggestion.query) ? 'fill-rose-500 text-rose-500' : 'text-slate-300'}`} />
-                      </button>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Demo Link */}
-              <div className="mt-8 pt-6 border-t border-slate-100 text-center">
-                <button
-                  onClick={loadDemo}
-                  className="inline-flex items-center gap-2 text-xs text-slate-500 hover:text-slate-700 transition-colors"
-                >
-                  <LayoutGrid className="w-3.5 h-3.5" />
-                  Of bekijk de demo met 9 widgets
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
+          {/* Clean Slate / Welcome Panel (Level 0) */}
+          {showCleanSlate ? (
+            <div className={`transition-opacity duration-300 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
+              <WelcomePanel
+                inputRef={inputRef}
+                onQuerySubmit={async (query) => {
+                  await processQuery(query)
+                }}
+              />
             </div>
           ) : (
-            // Widget Canvas - Responsive grid
+            // Widget Canvas - Responsive grid with transition
             <div
               ref={widgetGridRef}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-5 auto-rows-min pb-4"
+              className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-5 auto-rows-min pb-4 transition-opacity duration-300 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}
               role="grid"
               aria-label="Dashboard widgets"
               tabIndex={0}
-              onFocus={() => widgets.length > 0 && focusedWidgetIndex === -1 && setFocusedWidgetIndex(0)}
+              onFocus={() => visibleWidgets.length > 0 && focusedWidgetIndex === -1 && setFocusedWidgetIndex(0)}
             >
-              {widgets.map((widget, index) => (
+              {visibleWidgets.map((widget, index) => (
                 <div
                   key={widget.id}
                   className={`${sizeClasses[widget.size || 'md']} ${
                     focusedWidgetIndex === index ? 'ring-2 ring-[#003366] ring-offset-2 rounded-2xl' : ''
-                  }`}
+                  } animate-fadeIn`}
+                  style={{ animationDelay: `${index * 50}ms` }}
                   role="gridcell"
                   tabIndex={focusedWidgetIndex === index ? 0 : -1}
                   aria-selected={focusedWidgetIndex === index}
@@ -608,6 +536,15 @@ export default function AIDashboard() {
                   {renderWidget(widget)}
                 </div>
               ))}
+
+              {/* Show "more widgets available" indicator when not all widgets are visible */}
+              {widgets.length > visibleWidgets.length && (
+                <div className="col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4 py-4 text-center">
+                  <p className="text-xs text-slate-400">
+                    +{widgets.length - visibleWidgets.length} meer widgets beschikbaar
+                  </p>
+                </div>
+              )}
 
               {!hasWidgets && (
                 <div className="col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4 py-16 text-center">

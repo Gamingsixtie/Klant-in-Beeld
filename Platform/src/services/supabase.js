@@ -254,18 +254,134 @@ export async function testConnection() {
   }
 }
 
+// ==================== STRATEGISCHE DOELEN ====================
+export async function fetchStrategischeDoelen() {
+  if (!supabase) return []
+  const { data, error } = await supabase
+    .from('strategische_doelen')
+    .select('*')
+    .order('prioriteit')
+  if (error) {
+    console.warn('Tabel strategische_doelen niet gevonden, gebruik lokale data')
+    return null
+  }
+  return toCamelCase(data)
+}
+
+export async function createStrategischDoel(doel) {
+  if (!supabase) return null
+  const { data, error } = await supabase
+    .from('strategische_doelen')
+    .insert([toSnakeCase(doel)])
+    .select()
+    .single()
+  if (error) throw error
+  return toCamelCase(data)
+}
+
+export async function updateStrategischDoel(id, updates) {
+  if (!supabase) return null
+  const { data, error } = await supabase
+    .from('strategische_doelen')
+    .update(toSnakeCase(updates))
+    .eq('id', id)
+    .select()
+    .single()
+  if (error) throw error
+  return toCamelCase(data)
+}
+
+export async function deleteStrategischDoel(id) {
+  if (!supabase) return
+  const { error } = await supabase.from('strategische_doelen').delete().eq('id', id)
+  if (error) throw error
+}
+
+// ==================== VERMOGENS ====================
+export async function fetchVermogens() {
+  if (!supabase) return []
+  const { data, error } = await supabase
+    .from('vermogens')
+    .select('*')
+    .order('naam')
+  if (error) {
+    console.warn('Tabel vermogens niet gevonden, gebruik lokale data')
+    return null
+  }
+  return toCamelCase(data)
+}
+
+export async function createVermogen(vermogen) {
+  if (!supabase) return null
+  const { data, error } = await supabase
+    .from('vermogens')
+    .insert([toSnakeCase(vermogen)])
+    .select()
+    .single()
+  if (error) throw error
+  return toCamelCase(data)
+}
+
+export async function updateVermogen(id, updates) {
+  if (!supabase) return null
+  const { data, error } = await supabase
+    .from('vermogens')
+    .update(toSnakeCase(updates))
+    .eq('id', id)
+    .select()
+    .single()
+  if (error) throw error
+  return toCamelCase(data)
+}
+
+export async function deleteVermogen(id) {
+  if (!supabase) return
+  const { error } = await supabase.from('vermogens').delete().eq('id', id)
+  if (error) throw error
+}
+
+// ==================== VISIE ====================
+export async function fetchVisie() {
+  if (!supabase) return null
+  const { data, error } = await supabase
+    .from('visie')
+    .select('*')
+    .limit(1)
+    .single()
+  if (error) {
+    console.warn('Tabel visie niet gevonden, gebruik lokale data')
+    return null
+  }
+  return toCamelCase(data)
+}
+
+export async function upsertVisie(visie) {
+  if (!supabase) return null
+  // Upsert: insert or update if exists
+  const { data, error } = await supabase
+    .from('visie')
+    .upsert([{ id: 1, ...toSnakeCase(visie) }])
+    .select()
+    .single()
+  if (error) throw error
+  return toCamelCase(data)
+}
+
 // ==================== FETCH ALL DATA ====================
 export async function fetchAllData() {
   if (!supabase) return null
   try {
-    const [baten, inspanningen, stakeholders, risicos, issues] = await Promise.all([
+    const [baten, inspanningen, stakeholders, risicos, issues, strategischeDoelen, vermogens, visie] = await Promise.all([
       fetchBaten(),
       fetchInspanningen(),
       fetchStakeholders(),
       fetchRisicos(),
-      fetchIssues()
+      fetchIssues(),
+      fetchStrategischeDoelen(),
+      fetchVermogens(),
+      fetchVisie()
     ])
-    return { baten, inspanningen, stakeholders, risicos, issues }
+    return { baten, inspanningen, stakeholders, risicos, issues, strategischeDoelen, vermogens, visie }
   } catch (error) {
     console.error('Error fetching all data:', error)
     return null

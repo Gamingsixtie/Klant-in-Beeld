@@ -227,6 +227,19 @@ button:active:not(:disabled) {
   }
 }
 
+/* Utility classes for animations */
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-fadeUp {
+  animation: staggerIn 0.3s ease-out forwards;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.25s ease-out forwards;
+}
+
 /* Card grid animation */
 .card-grid > * {
   animation: staggerIn 0.3s ease backwards;

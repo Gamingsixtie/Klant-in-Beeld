@@ -471,11 +471,14 @@ export const useAppStore = create((set, get) => ({
       const data = await db.fetchAllData()
       if (data) {
         set({
-          baten: data.baten.length > 0 ? data.baten : initialBaten,
-          inspanningen: data.inspanningen.length > 0 ? data.inspanningen : initialInspanningen,
-          stakeholders: data.stakeholders.length > 0 ? data.stakeholders : initialStakeholders,
-          risicos: data.risicos,
-          issues: data.issues,
+          baten: data.baten?.length > 0 ? data.baten : initialBaten,
+          inspanningen: data.inspanningen?.length > 0 ? data.inspanningen : initialInspanningen,
+          stakeholders: data.stakeholders?.length > 0 ? data.stakeholders : initialStakeholders,
+          risicos: data.risicos || initialRisicos,
+          issues: data.issues || initialIssues,
+          strategischeDoelen: data.strategischeDoelen?.length > 0 ? data.strategischeDoelen : initialStrategischeDoelen,
+          vermogens: data.vermogens?.length > 0 ? data.vermogens : initialVermogens,
+          visie: data.visie || initialVisie,
           isInitialized: true,
           isLoading: false,
           useSupabase: true
@@ -736,152 +739,311 @@ export const useAppStore = create((set, get) => ({
   },
 
   // ==================== VISIE ====================
-  updateVisie: (updates) => {
+  updateVisie: async (updates) => {
     const state = get()
-    set({ visie: { ...state.visie, ...updates } })
+    const newVisie = { ...state.visie, ...updates }
+
+    // Optimistic update
+    set({ visie: newVisie })
+
+    if (state.useSupabase) {
+      try {
+        await db.upsertVisie(newVisie)
+        console.log('✅ Visie opgeslagen')
+      } catch (error) {
+        console.error('Error updating visie:', error)
+      }
+    }
   },
 
   // ==================== STRATEGISCHE DOELEN ====================
-  addStrategischDoel: (doel) => {
+  addStrategischDoel: async (doel) => {
     const state = get()
-    const newDoel = { ...doel, id: `doel-${Date.now()}` }
+    const tempId = `temp-${Date.now()}`
+    const newDoel = { ...doel, id: tempId }
+
+    // Optimistic update
     set({ strategischeDoelen: [...state.strategischeDoelen, newDoel] })
+
+    if (state.useSupabase) {
+      try {
+        const created = await db.createStrategischDoel(doel)
+        if (created) {
+          // Replace temp with real data
+          set({
+            strategischeDoelen: state.strategischeDoelen
+              .filter(d => d.id !== tempId)
+              .concat(created)
+          })
+          console.log('✅ Strategisch doel opgeslagen')
+        }
+      } catch (error) {
+        console.error('Error creating strategisch doel:', error)
+      }
+    }
   },
 
-  updateStrategischDoel: (id, updates) => {
+  updateStrategischDoel: async (id, updates) => {
     const state = get()
+
+    // Optimistic update
     set({
       strategischeDoelen: state.strategischeDoelen.map(d =>
         d.id === id ? { ...d, ...updates } : d
       )
     })
+
+    if (state.useSupabase) {
+      try {
+        await db.updateStrategischDoel(id, updates)
+        console.log('✅ Strategisch doel bijgewerkt')
+      } catch (error) {
+        console.error('Error updating strategisch doel:', error)
+      }
+    }
   },
 
-  deleteStrategischDoel: (id) => {
+  deleteStrategischDoel: async (id) => {
     const state = get()
     // Also remove this doel from vermogens gekoppeldeDoelen
     const updatedVermogens = state.vermogens.map(v => ({
       ...v,
       gekoppeldeDoelen: (v.gekoppeldeDoelen || []).filter(did => did !== id)
     }))
+
+    // Optimistic update
     set({
       strategischeDoelen: state.strategischeDoelen.filter(d => d.id !== id),
       vermogens: updatedVermogens
     })
+
+    if (state.useSupabase) {
+      try {
+        await db.deleteStrategischDoel(id)
+        // Update vermogens in DB too
+        for (const v of updatedVermogens) {
+          if (state.vermogens.find(ov => ov.id === v.id)?.gekoppeldeDoelen?.includes(id)) {
+            await db.updateVermogen(v.id, { gekoppeldeDoelen: v.gekoppeldeDoelen })
+          }
+        }
+        console.log('✅ Strategisch doel verwijderd')
+      } catch (error) {
+        console.error('Error deleting strategisch doel:', error)
+      }
+    }
   },
 
   // ==================== VERMOGENS ====================
-  addVermogen: (vermogen) => {
+  addVermogen: async (vermogen) => {
     const state = get()
-    const newVermogen = { ...vermogen, id: `vermogen-${Date.now()}` }
+    const tempId = `temp-${Date.now()}`
+    const newVermogen = { ...vermogen, id: tempId }
+
+    // Optimistic update
     set({ vermogens: [...state.vermogens, newVermogen] })
+
+    if (state.useSupabase) {
+      try {
+        const created = await db.createVermogen(vermogen)
+        if (created) {
+          // Replace temp with real data
+          set({
+            vermogens: state.vermogens
+              .filter(v => v.id !== tempId)
+              .concat(created)
+          })
+          console.log('✅ Vermogen opgeslagen')
+        }
+      } catch (error) {
+        console.error('Error creating vermogen:', error)
+      }
+    }
   },
 
-  updateVermogen: (id, updates) => {
+  updateVermogen: async (id, updates) => {
     const state = get()
+
+    // Optimistic update
     set({
       vermogens: state.vermogens.map(v =>
         v.id === id ? { ...v, ...updates } : v
       )
     })
+
+    if (state.useSupabase) {
+      try {
+        await db.updateVermogen(id, updates)
+        console.log('✅ Vermogen bijgewerkt')
+      } catch (error) {
+        console.error('Error updating vermogen:', error)
+      }
+    }
   },
 
-  deleteVermogen: (id) => {
+  deleteVermogen: async (id) => {
     const state = get()
+
+    // Optimistic update
     set({ vermogens: state.vermogens.filter(v => v.id !== id) })
+
+    if (state.useSupabase) {
+      try {
+        await db.deleteVermogen(id)
+        console.log('✅ Vermogen verwijderd')
+      } catch (error) {
+        console.error('Error deleting vermogen:', error)
+      }
+    }
   },
 
   // Link vermogen to doel
-  linkVermogenToDoel: (vermogenId, doelId) => {
+  linkVermogenToDoel: async (vermogenId, doelId) => {
     const state = get()
+    const vermogen = state.vermogens.find(v => v.id === vermogenId)
+    if (!vermogen) return
+
+    const gekoppeldeDoelen = vermogen.gekoppeldeDoelen || []
+    if (gekoppeldeDoelen.includes(doelId)) return
+
+    const newGekoppeldeDoelen = [...gekoppeldeDoelen, doelId]
+
+    // Optimistic update
     set({
-      vermogens: state.vermogens.map(v => {
-        if (v.id === vermogenId) {
-          const gekoppeldeDoelen = v.gekoppeldeDoelen || []
-          if (!gekoppeldeDoelen.includes(doelId)) {
-            return { ...v, gekoppeldeDoelen: [...gekoppeldeDoelen, doelId] }
-          }
-        }
-        return v
-      })
+      vermogens: state.vermogens.map(v =>
+        v.id === vermogenId ? { ...v, gekoppeldeDoelen: newGekoppeldeDoelen } : v
+      )
     })
+
+    if (state.useSupabase) {
+      try {
+        await db.updateVermogen(vermogenId, { gekoppeldeDoelen: newGekoppeldeDoelen })
+      } catch (error) {
+        console.error('Error linking vermogen to doel:', error)
+      }
+    }
   },
 
-  unlinkVermogenFromDoel: (vermogenId, doelId) => {
+  unlinkVermogenFromDoel: async (vermogenId, doelId) => {
     const state = get()
+    const vermogen = state.vermogens.find(v => v.id === vermogenId)
+    if (!vermogen) return
+
+    const newGekoppeldeDoelen = (vermogen.gekoppeldeDoelen || []).filter(id => id !== doelId)
+
+    // Optimistic update
     set({
-      vermogens: state.vermogens.map(v => {
-        if (v.id === vermogenId) {
-          return {
-            ...v,
-            gekoppeldeDoelen: (v.gekoppeldeDoelen || []).filter(id => id !== doelId)
-          }
-        }
-        return v
-      })
+      vermogens: state.vermogens.map(v =>
+        v.id === vermogenId ? { ...v, gekoppeldeDoelen: newGekoppeldeDoelen } : v
+      )
     })
+
+    if (state.useSupabase) {
+      try {
+        await db.updateVermogen(vermogenId, { gekoppeldeDoelen: newGekoppeldeDoelen })
+      } catch (error) {
+        console.error('Error unlinking vermogen from doel:', error)
+      }
+    }
   },
 
   // Link vermogen to inspanning
-  linkVermogenToInspanning: (vermogenId, inspanningId) => {
+  linkVermogenToInspanning: async (vermogenId, inspanningId) => {
     const state = get()
+    const vermogen = state.vermogens.find(v => v.id === vermogenId)
+    if (!vermogen) return
+
+    const gekoppeldeInspanningen = vermogen.gekoppeldeInspanningen || []
+    if (gekoppeldeInspanningen.includes(inspanningId)) return
+
+    const newGekoppeldeInspanningen = [...gekoppeldeInspanningen, inspanningId]
+
+    // Optimistic update
     set({
-      vermogens: state.vermogens.map(v => {
-        if (v.id === vermogenId) {
-          const gekoppeldeInspanningen = v.gekoppeldeInspanningen || []
-          if (!gekoppeldeInspanningen.includes(inspanningId)) {
-            return { ...v, gekoppeldeInspanningen: [...gekoppeldeInspanningen, inspanningId] }
-          }
-        }
-        return v
-      })
+      vermogens: state.vermogens.map(v =>
+        v.id === vermogenId ? { ...v, gekoppeldeInspanningen: newGekoppeldeInspanningen } : v
+      )
     })
+
+    if (state.useSupabase) {
+      try {
+        await db.updateVermogen(vermogenId, { gekoppeldeInspanningen: newGekoppeldeInspanningen })
+      } catch (error) {
+        console.error('Error linking vermogen to inspanning:', error)
+      }
+    }
   },
 
-  unlinkVermogenFromInspanning: (vermogenId, inspanningId) => {
+  unlinkVermogenFromInspanning: async (vermogenId, inspanningId) => {
     const state = get()
+    const vermogen = state.vermogens.find(v => v.id === vermogenId)
+    if (!vermogen) return
+
+    const newGekoppeldeInspanningen = (vermogen.gekoppeldeInspanningen || []).filter(id => id !== inspanningId)
+
+    // Optimistic update
     set({
-      vermogens: state.vermogens.map(v => {
-        if (v.id === vermogenId) {
-          return {
-            ...v,
-            gekoppeldeInspanningen: (v.gekoppeldeInspanningen || []).filter(id => id !== inspanningId)
-          }
-        }
-        return v
-      })
+      vermogens: state.vermogens.map(v =>
+        v.id === vermogenId ? { ...v, gekoppeldeInspanningen: newGekoppeldeInspanningen } : v
+      )
     })
+
+    if (state.useSupabase) {
+      try {
+        await db.updateVermogen(vermogenId, { gekoppeldeInspanningen: newGekoppeldeInspanningen })
+      } catch (error) {
+        console.error('Error unlinking vermogen from inspanning:', error)
+      }
+    }
   },
 
   // Link vermogen to baat (voor DIN keten flow)
-  linkVermogenToBaat: (vermogenId, baatId) => {
+  linkVermogenToBaat: async (vermogenId, baatId) => {
     const state = get()
+    const vermogen = state.vermogens.find(v => v.id === vermogenId)
+    if (!vermogen) return
+
+    const gekoppeldeBaten = vermogen.gekoppeldeBaten || []
+    if (gekoppeldeBaten.includes(baatId)) return
+
+    const newGekoppeldeBaten = [...gekoppeldeBaten, baatId]
+
+    // Optimistic update
     set({
-      vermogens: state.vermogens.map(v => {
-        if (v.id === vermogenId) {
-          const gekoppeldeBaten = v.gekoppeldeBaten || []
-          if (!gekoppeldeBaten.includes(baatId)) {
-            return { ...v, gekoppeldeBaten: [...gekoppeldeBaten, baatId] }
-          }
-        }
-        return v
-      })
+      vermogens: state.vermogens.map(v =>
+        v.id === vermogenId ? { ...v, gekoppeldeBaten: newGekoppeldeBaten } : v
+      )
     })
+
+    if (state.useSupabase) {
+      try {
+        await db.updateVermogen(vermogenId, { gekoppeldeBaten: newGekoppeldeBaten })
+      } catch (error) {
+        console.error('Error linking vermogen to baat:', error)
+      }
+    }
   },
 
-  unlinkVermogenFromBaat: (vermogenId, baatId) => {
+  unlinkVermogenFromBaat: async (vermogenId, baatId) => {
     const state = get()
+    const vermogen = state.vermogens.find(v => v.id === vermogenId)
+    if (!vermogen) return
+
+    const newGekoppeldeBaten = (vermogen.gekoppeldeBaten || []).filter(id => id !== baatId)
+
+    // Optimistic update
     set({
-      vermogens: state.vermogens.map(v => {
-        if (v.id === vermogenId) {
-          return {
-            ...v,
-            gekoppeldeBaten: (v.gekoppeldeBaten || []).filter(id => id !== baatId)
-          }
-        }
-        return v
-      })
+      vermogens: state.vermogens.map(v =>
+        v.id === vermogenId ? { ...v, gekoppeldeBaten: newGekoppeldeBaten } : v
+      )
     })
+
+    if (state.useSupabase) {
+      try {
+        await db.updateVermogen(vermogenId, { gekoppeldeBaten: newGekoppeldeBaten })
+      } catch (error) {
+        console.error('Error unlinking vermogen from baat:', error)
+      }
+    }
   },
 
   // Helper: Get strategische doelen zonder gekoppelde baat (voor DIN keten meldingen)
@@ -927,12 +1089,16 @@ export const useAppStore = create((set, get) => ({
         const data = await db.fetchAllData()
         if (data) {
           set({
-            baten: data.baten,
-            inspanningen: data.inspanningen,
-            stakeholders: data.stakeholders,
-            risicos: data.risicos,
-            issues: data.issues
+            baten: data.baten?.length > 0 ? data.baten : state.baten,
+            inspanningen: data.inspanningen?.length > 0 ? data.inspanningen : state.inspanningen,
+            stakeholders: data.stakeholders?.length > 0 ? data.stakeholders : state.stakeholders,
+            risicos: data.risicos || state.risicos,
+            issues: data.issues || state.issues,
+            strategischeDoelen: data.strategischeDoelen?.length > 0 ? data.strategischeDoelen : state.strategischeDoelen,
+            vermogens: data.vermogens?.length > 0 ? data.vermogens : state.vermogens,
+            visie: data.visie || state.visie
           })
+          console.log('✅ Data gerefreshed')
         }
       } catch (error) {
         console.error('Error refreshing data:', error)

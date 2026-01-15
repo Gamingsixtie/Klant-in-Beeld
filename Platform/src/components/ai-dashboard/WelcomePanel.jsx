@@ -40,6 +40,7 @@ export default function WelcomePanel({ onQuerySubmit, inputRef }) {
   const {
     processQuery,
     loadReport,
+    loadDemo,
     preferences,
     reportTemplates
   } = useDashboardStore()
@@ -198,7 +199,7 @@ export default function WelcomePanel({ onQuerySubmit, inputRef }) {
 
       {/* Recent Queries (if any) */}
       {preferences.recentQueries?.length > 0 && (
-        <div className="w-full max-w-2xl">
+        <div className="w-full max-w-2xl mb-6">
           <h3 className="text-xs font-medium text-slate-400 mb-2 text-center uppercase tracking-wide">
             Recent
           </h3>
@@ -218,6 +219,22 @@ export default function WelcomePanel({ onQuerySubmit, inputRef }) {
           </div>
         </div>
       )}
+
+      {/* Demo Link */}
+      <div className="pt-6 border-t border-slate-100 text-center">
+        <button
+          onClick={loadDemo}
+          className="inline-flex items-center gap-2 text-xs text-slate-500 hover:text-slate-700 transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+          </svg>
+          Bekijk de demo met voorbeelddata
+          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
     </div>
   )
 }

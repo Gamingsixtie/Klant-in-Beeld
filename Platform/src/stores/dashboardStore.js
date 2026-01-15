@@ -368,8 +368,11 @@ export const useDashboardStore = create(
         setTimeout(() => {
           set({
             widgets: [],
+            conversation: [],
             disclosureLevel: 0,
             isTransitioning: false,
+            error: null,
+            suggestions: initialSuggestions,
             conversationContext: {
               lastEntities: [],
               lastMetrics: [],
@@ -506,9 +509,16 @@ export const useDashboardStore = create(
       loadLayout: (layoutId) => {
         const layout = get().preferences.savedLayouts.find(l => l.id === layoutId)
         if (layout) {
+          // Calculate appropriate disclosure level based on widget count
+          const widgetCount = layout.widgets.length
+          let newLevel = 1
+          if (widgetCount > 6) newLevel = 3
+          else if (widgetCount > 3) newLevel = 2
+
           set({
             widgets: layout.widgets,
-            globalFilters: layout.filters
+            globalFilters: layout.filters,
+            disclosureLevel: newLevel
           })
         }
       },
@@ -586,8 +596,16 @@ export const useDashboardStore = create(
             ...w,
             id: `${reportId}-widget-${i}-${Date.now()}`
           }))
+
+          // Calculate appropriate disclosure level based on widget count
+          const widgetCount = widgets.length
+          let newLevel = 1
+          if (widgetCount > 6) newLevel = 3
+          else if (widgetCount > 3) newLevel = 2
+
           set({
             widgets,
+            disclosureLevel: newLevel,
             preferences: {
               ...get().preferences,
               lastUsedReport: reportId,
@@ -613,9 +631,16 @@ export const useDashboardStore = create(
 
       // Load demo dashboard
       loadDemo: () => {
+        // Calculate appropriate disclosure level based on demo widget count
+        const widgetCount = demoWidgets.length
+        let newLevel = 1
+        if (widgetCount > 6) newLevel = 3
+        else if (widgetCount > 3) newLevel = 2
+
         set({
           widgets: demoWidgets,
           conversation: demoConversation,
+          disclosureLevel: newLevel,
           preferences: {
             ...get().preferences,
             showWelcome: false
