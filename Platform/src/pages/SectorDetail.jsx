@@ -9,12 +9,11 @@
  * - Klantreizen overzicht
  */
 
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import {
   sectoren,
   werkfases,
   toolkit,
-  batenProfielen,
   domeinen
 } from '../data/programmaData'
 import { useAppStore } from '../stores/appStore'
@@ -35,25 +34,104 @@ import {
   ExternalLink,
   TrendingUp,
   Briefcase,
-  Activity
+  Activity,
+  Eye,
+  Zap,
+  Link2,
+  Plus
 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 
 function SectorDetail() {
   const { sectorId } = useParams()
+  const navigate = useNavigate()
   const sector = sectoren.find(s => s.id === sectorId)
-  const { baten, inspanningen } = useAppStore()
+  const { baten, inspanningen, vermogens, strategischeDoelen } = useAppStore()
 
   // State voor checklist items (in productie zou dit uit database komen)
   const [completedItems, setCompletedItems] = useState({})
 
-  // Filter baten en inspanningen voor deze sector
-  const sectorBaten = baten.filter(b => b.sector === sector?.naam)
-  const sectorInspanningen = inspanningen.filter(i =>
-    i.gekoppeldeBaten?.some(baatId =>
-      sectorBaten.some(b => String(b.id) === baatId)
+  // Bereken DIN Keten data voor deze sector
+  const sectorDINData = useMemo(() => {
+    if (!sector) return null
+
+    // Filter baten voor deze sector
+    const sectorBaten = baten.filter(b => b.sector === sector.naam)
+    const sectorBaatIds = sectorBaten.map(b => b.id)
+
+    // Vind doelen gekoppeld aan baten van deze sector
+    const sectorDoelen = strategischeDoelen.filter(doel =>
+      sectorBaten.some(baat => baat.gekoppeldDoel === doel.id)
     )
-  )
+
+    // Vind vermogens gekoppeld aan baten van deze sector
+    const sectorVermogens = vermogens.filter(vermogen =>
+      vermogen.gekoppeldeBaten?.some(baatId =>
+        sectorBaatIds.includes(baatId)
+      )
+    )
+    const sectorVermogenIds = sectorVermogens.map(v => v.id)
+
+    // Vind inspanningen gekoppeld aan vermogens van deze sector
+    const sectorInspanningen = inspanningen.filter(insp =>
+      sectorVermogens.some(v =>
+        v.gekoppeldeInspanningen?.includes(insp.id)
+      )
+    )
+
+    // Bereken statistieken
+    const stats = {
+      doelen: {
+        total: sectorDoelen.length,
+        zonderBaat: sectorDoelen.filter(d =>
+          !sectorBaten.some(b => b.gekoppeldDoel === d.id)
+        ).length
+      },
+      baten: {
+        total: sectorBaten.length,
+        zonderVermogen: sectorBaten.filter(b =>
+          !sectorVermogens.some(v => v.gekoppeldeBaten?.includes(b.id))
+        ).length,
+        completed: sectorBaten.filter(b => b.status === 'completed').length,
+        inProgress: sectorBaten.filter(b => b.status === 'in_progress').length
+      },
+      vermogens: {
+        total: sectorVermogens.length,
+        zonderInspanning: sectorVermogens.filter(v =>
+          !v.gekoppeldeInspanningen || v.gekoppeldeInspanningen.length === 0
+        ).length
+      },
+      inspanningen: {
+        total: sectorInspanningen.length,
+        completed: sectorInspanningen.filter(i => i.status === 'completed').length,
+        inProgress: sectorInspanningen.filter(i => i.status === 'in_progress').length
+      }
+    }
+
+    // Bereken keten completeness
+    const ketenComplete = sectorBaten.filter(baat => {
+      const heeftVermogen = sectorVermogens.some(v => v.gekoppeldeBaten?.includes(baat.id))
+      if (!heeftVermogen) return false
+      const gekoppeldeVermogens = sectorVermogens.filter(v => v.gekoppeldeBaten?.includes(baat.id))
+      return gekoppeldeVermogens.some(v => v.gekoppeldeInspanningen?.length > 0)
+    }).length
+
+    return {
+      doelen: sectorDoelen,
+      baten: sectorBaten,
+      vermogens: sectorVermogens,
+      inspanningen: sectorInspanningen,
+      stats,
+      ketenComplete,
+      ketenPercentage: sectorBaten.length > 0
+        ? Math.round((ketenComplete / sectorBaten.length) * 100)
+        : 0
+    }
+  }, [sector, baten, vermogens, inspanningen, strategischeDoelen])
+
+  // Legacy compatibility
+  const sectorBaten = sectorDINData?.baten || []
+  const sectorInspanningen = sectorDINData?.inspanningen || []
 
   // Bereken sector NPS metrics
   const gemNPS = sectorBaten.length > 0
@@ -120,39 +198,129 @@ function SectorDetail() {
         </div>
       </div>
 
-      {/* Sector KPIs */}
-      <div className="grid grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <Target className="w-4 h-4 text-purple-500" />
-            <span className="text-xs text-slate-500">Baten</span>
+      {/* DIN Keten Overzicht voor deze sector */}
+      <div className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl border-2 border-blue-200 p-5">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg" style={{ backgroundColor: sector.kleur }}>
+              <Link2 className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="font-semibold text-slate-800">DIN Keten - {sector.afkorting}</h2>
+              <p className="text-xs text-slate-500">Doelen → Baten → Vermogens → Inspanningen</p>
+            </div>
           </div>
-          <div className="text-2xl font-bold text-slate-800">{sectorBaten.length}</div>
-          <div className="text-xs text-slate-400">gedefinieerd</div>
+          <div className="flex items-center gap-3">
+            <div className="text-right">
+              <div className="text-2xl font-bold" style={{ color: sector.kleur }}>{sectorDINData?.ketenPercentage || 0}%</div>
+              <div className="text-xs text-slate-500">keten compleet</div>
+            </div>
+            <button
+              onClick={() => navigate('/din-keten')}
+              className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors"
+            >
+              Volledig overzicht
+            </button>
+          </div>
         </div>
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <Briefcase className="w-4 h-4 text-pink-500" />
-            <span className="text-xs text-slate-500">Inspanningen</span>
+
+        {/* DIN Keten Flow */}
+        <div className="grid grid-cols-9 gap-2 items-center">
+          {/* Doelen */}
+          <div className="col-span-2 bg-white rounded-xl p-3 border border-teal-200">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="p-1.5 bg-teal-500 rounded-lg">
+                <Eye className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-xs font-medium text-slate-600">Doelen</span>
+            </div>
+            <div className="text-2xl font-bold text-slate-800">{sectorDINData?.stats.doelen.total || 0}</div>
+            <div className="text-xs text-slate-400">gekoppeld aan {sector.afkorting}</div>
           </div>
-          <div className="text-2xl font-bold text-slate-800">{sectorInspanningen.length}</div>
-          <div className="text-xs text-slate-400">gekoppeld</div>
+
+          <div className="flex justify-center">
+            <ArrowRight className="w-5 h-5 text-slate-300" />
+          </div>
+
+          {/* Baten */}
+          <div className="col-span-2 bg-white rounded-xl p-3 border border-amber-200">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="p-1.5 bg-amber-500 rounded-lg">
+                <Target className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-xs font-medium text-slate-600">Baten</span>
+            </div>
+            <div className="text-2xl font-bold text-slate-800">{sectorDINData?.stats.baten.total || 0}</div>
+            {sectorDINData?.stats.baten.zonderVermogen > 0 && (
+              <div className="text-xs text-amber-600">{sectorDINData.stats.baten.zonderVermogen} wacht op vermogen</div>
+            )}
+            {sectorDINData?.stats.baten.zonderVermogen === 0 && (
+              <div className="text-xs text-slate-400">allen gekoppeld</div>
+            )}
+          </div>
+
+          <div className="flex justify-center">
+            <ArrowRight className="w-5 h-5 text-slate-300" />
+          </div>
+
+          {/* Vermogens */}
+          <div className="col-span-2 bg-white rounded-xl p-3 border border-violet-200">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="p-1.5 bg-violet-500 rounded-lg">
+                <Zap className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-xs font-medium text-slate-600">Vermogens</span>
+            </div>
+            <div className="text-2xl font-bold text-slate-800">{sectorDINData?.stats.vermogens.total || 0}</div>
+            {sectorDINData?.stats.vermogens.zonderInspanning > 0 && (
+              <div className="text-xs text-violet-600">{sectorDINData.stats.vermogens.zonderInspanning} wacht op inspanning</div>
+            )}
+            {sectorDINData?.stats.vermogens.zonderInspanning === 0 && sectorDINData?.stats.vermogens.total > 0 && (
+              <div className="text-xs text-slate-400">allen gekoppeld</div>
+            )}
+          </div>
+
+          <div className="flex justify-center">
+            <ArrowRight className="w-5 h-5 text-slate-300" />
+          </div>
+
+          {/* Inspanningen */}
+          <div className="bg-white rounded-xl p-3 border border-blue-200">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="p-1.5 bg-blue-500 rounded-lg">
+                <Briefcase className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-xs font-medium text-slate-600">Insp.</span>
+            </div>
+            <div className="text-2xl font-bold text-slate-800">{sectorDINData?.stats.inspanningen.total || 0}</div>
+            <div className="text-xs text-slate-400">actief</div>
+          </div>
         </div>
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <TrendingUp className="w-4 h-4 text-blue-500" />
-            <span className="text-xs text-slate-500">Gem. NPS nu</span>
-          </div>
-          <div className="text-2xl font-bold text-slate-800">+{gemNPS}</div>
-          <div className="text-xs text-slate-400">huidige waarde</div>
-        </div>
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <Activity className="w-4 h-4 text-green-500" />
-            <span className="text-xs text-slate-500">Gem. NPS doel</span>
-          </div>
-          <div className="text-2xl font-bold text-green-600">+{doelNPS}</div>
-          <div className="text-xs text-slate-400">te bereiken</div>
+
+        {/* Quick Actions */}
+        <div className="flex items-center gap-2 mt-4 pt-4 border-t border-slate-200">
+          <span className="text-xs text-slate-500 mr-2">Snel toevoegen:</span>
+          <button
+            onClick={() => navigate('/baten')}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-100 text-amber-700 rounded-lg text-xs font-medium hover:bg-amber-200 transition-colors"
+          >
+            <Plus className="w-3 h-3" />
+            Baat voor {sector.afkorting}
+          </button>
+          <button
+            onClick={() => navigate('/vermogens')}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-100 text-violet-700 rounded-lg text-xs font-medium hover:bg-violet-200 transition-colors"
+          >
+            <Plus className="w-3 h-3" />
+            Vermogen
+          </button>
+          <button
+            onClick={() => navigate('/inspanningen')}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg text-xs font-medium hover:bg-blue-200 transition-colors"
+          >
+            <Plus className="w-3 h-3" />
+            Inspanning
+          </button>
         </div>
       </div>
 
@@ -385,11 +553,185 @@ function SectorDetail() {
         </div>
       </div>
 
+      {/* Strategische Doelen voor deze sector */}
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-teal-500 rounded-lg">
+              <Eye className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="font-semibold text-slate-800">Strategische Doelen</h2>
+              <p className="text-xs text-slate-500">Doelen gekoppeld aan {sector.afkorting} baten</p>
+            </div>
+          </div>
+          <span className="text-xs bg-teal-100 text-teal-700 px-2 py-1 rounded-full">
+            {sectorDINData?.doelen.length || 0} doelen
+          </span>
+        </div>
+        {sectorDINData?.doelen.length > 0 ? (
+          <div className="space-y-3">
+            {sectorDINData.doelen.map(doel => {
+              const gekoppeldeBaten = sectorBaten.filter(b => b.gekoppeldDoel === doel.id)
+              return (
+                <div
+                  key={doel.id}
+                  className="p-4 rounded-lg border-2 border-teal-200 bg-teal-50/30"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-start gap-3">
+                      <Eye className="w-5 h-5 mt-0.5 text-teal-600" />
+                      <div>
+                        <div className="font-medium text-slate-800">{doel.titel}</div>
+                        {doel.beschrijving && (
+                          <div className="text-xs text-slate-500 mt-1">{doel.beschrijving}</div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-medium text-teal-700">
+                        {gekoppeldeBaten.length} {gekoppeldeBaten.length === 1 ? 'baat' : 'baten'}
+                      </div>
+                    </div>
+                  </div>
+                  {gekoppeldeBaten.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {gekoppeldeBaten.map(baat => (
+                        <span
+                          key={baat.id}
+                          className="text-xs px-2 py-1 rounded bg-amber-100 text-amber-700"
+                        >
+                          {baat.naam}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        ) : (
+          <div className="text-center py-6 text-slate-500">
+            <Eye className="w-8 h-8 mx-auto mb-2 text-slate-300" />
+            <p className="text-sm">Nog geen doelen gekoppeld aan {sector.afkorting} baten</p>
+            <p className="text-xs text-slate-400 mt-1">Koppel baten aan doelen via de Baten pagina</p>
+          </div>
+        )}
+        <Link
+          to="/visie-doelen"
+          className="inline-flex items-center gap-2 mt-4 text-sm text-teal-600 hover:text-teal-800"
+        >
+          Beheer Visie & Doelen <ExternalLink className="w-4 h-4" />
+        </Link>
+      </div>
+
+      {/* Vermogens voor deze sector */}
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-violet-500 rounded-lg">
+              <Zap className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="font-semibold text-slate-800">Vermogens (Capabilities)</h2>
+              <p className="text-xs text-slate-500">Gekoppeld aan {sector.afkorting} baten</p>
+            </div>
+          </div>
+          <span className="text-xs bg-violet-100 text-violet-700 px-2 py-1 rounded-full">
+            {sectorDINData?.vermogens.length || 0} vermogens
+          </span>
+        </div>
+        {sectorDINData?.vermogens.length > 0 ? (
+          <div className="space-y-3">
+            {sectorDINData.vermogens.map(vermogen => {
+              const gekoppeldeInspanningen = inspanningen.filter(i =>
+                vermogen.gekoppeldeInspanningen?.includes(i.id)
+              )
+              const gekoppeldeBatenNamen = vermogen.gekoppeldeBaten?.map(baatId =>
+                sectorBaten.find(b => b.id === baatId)?.naam
+              ).filter(Boolean) || []
+
+              return (
+                <div
+                  key={vermogen.id}
+                  className="p-4 rounded-lg border-2 border-violet-200 bg-violet-50/30"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-start gap-3">
+                      <Zap className="w-5 h-5 mt-0.5 text-violet-600" />
+                      <div>
+                        <div className="font-medium text-slate-800">{vermogen.naam}</div>
+                        {vermogen.beschrijving && (
+                          <div className="text-xs text-slate-500 mt-1 line-clamp-2">{vermogen.beschrijving}</div>
+                        )}
+                        <div className="flex items-center gap-2 mt-2">
+                          <span className="text-xs px-2 py-0.5 rounded bg-violet-100 text-violet-700">
+                            {vermogen.type}
+                          </span>
+                          <span className="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600">
+                            {vermogen.domein}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-medium text-violet-700">
+                        {gekoppeldeInspanningen.length} {gekoppeldeInspanningen.length === 1 ? 'inspanning' : 'inspanningen'}
+                      </div>
+                      {gekoppeldeBatenNamen.length > 0 && (
+                        <div className="text-xs text-slate-500 mt-1">
+                          Via: {gekoppeldeBatenNamen.slice(0, 2).join(', ')}
+                          {gekoppeldeBatenNamen.length > 2 && ` +${gekoppeldeBatenNamen.length - 2}`}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {gekoppeldeInspanningen.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {gekoppeldeInspanningen.map(insp => (
+                        <span
+                          key={insp.id}
+                          className="text-xs px-2 py-1 rounded bg-blue-100 text-blue-700"
+                        >
+                          {insp.naam}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        ) : (
+          <div className="text-center py-6 text-slate-500">
+            <Zap className="w-8 h-8 mx-auto mb-2 text-slate-300" />
+            <p className="text-sm">Nog geen vermogens gekoppeld aan {sector.afkorting} baten</p>
+            <p className="text-xs text-slate-400 mt-1">Koppel vermogens aan baten via de Vermogens pagina</p>
+          </div>
+        )}
+        <Link
+          to="/vermogens"
+          className="inline-flex items-center gap-2 mt-4 text-sm text-violet-600 hover:text-violet-800"
+        >
+          Beheer Vermogens <ExternalLink className="w-4 h-4" />
+        </Link>
+      </div>
+
       {/* Sector Baten (LIVE DATA) */}
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold text-slate-800">Baten voor {sector.naam}</h2>
-          <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Live data</span>
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-amber-500 rounded-lg">
+              <Target className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="font-semibold text-slate-800">Baten voor {sector.naam}</h2>
+              <p className="text-xs text-slate-500">Meetbare resultaten</p>
+            </div>
+          </div>
+          <span className="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full">
+            {sectorBaten.length} baten
+          </span>
         </div>
         {sectorBaten.length > 0 ? (
           <div className="space-y-3">
@@ -471,7 +813,7 @@ function SectorDetail() {
             <div>
               <div className="font-medium">Plan Go/No-Go moment</div>
               <div className="text-sm text-white/70">
-                Bespreek voortgang met {fase.eindverantwoordelijke} en programmaraad
+                Bespreek voortgang met {werkfases.find(f => f.id === sector.huidigeWerkfase)?.eindverantwoordelijke} en programmaraad
               </div>
             </div>
           </div>
