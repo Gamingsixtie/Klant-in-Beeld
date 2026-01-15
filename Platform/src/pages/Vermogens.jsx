@@ -120,6 +120,7 @@ function MaturityRing({ current, target, size = 80, color = '#8b5cf6' }) {
 export default function Vermogens() {
   const {
     vermogens,
+    baten,
     strategischeDoelen,
     inspanningen,
     addVermogen,
@@ -128,7 +129,9 @@ export default function Vermogens() {
     linkVermogenToDoel,
     unlinkVermogenFromDoel,
     linkVermogenToInspanning,
-    unlinkVermogenFromInspanning
+    unlinkVermogenFromInspanning,
+    linkVermogenToBaat,
+    getBatenZonderVermogen
   } = useAppStore()
 
   const [filterType, setFilterType] = useState(null)
@@ -137,6 +140,13 @@ export default function Vermogens() {
   const [editingVermogen, setEditingVermogen] = useState(null)
   const [linkingVermogen, setLinkingVermogen] = useState(null)
   const [linkingType, setLinkingType] = useState(null)
+  const [selectedBaatForVermogen, setSelectedBaatForVermogen] = useState(null) // Baat waarvoor vermogen wordt aangemaakt
+
+  // Baten zonder gekoppeld vermogen (voor DIN keten meldingen)
+  const batenZonderVermogen = useMemo(() => {
+    const allGekoppeldeBaten = vermogens.flatMap(v => v.gekoppeldeBaten || [])
+    return baten.filter(b => !allGekoppeldeBaten.includes(b.id))
+  }, [baten, vermogens])
 
   // Form state for new vermogen
   const [newVermogen, setNewVermogen] = useState({
@@ -149,7 +159,8 @@ export default function Vermogens() {
     volwassenheidDoel: 3,
     status: 'gepland',
     gekoppeldeDoelen: [],
-    gekoppeldeInspanningen: []
+    gekoppeldeInspanningen: [],
+    gekoppeldeBaten: []
   })
 
   // Statistics
@@ -191,6 +202,25 @@ export default function Vermogens() {
     return gekoppeldeInspanningen.map(id => inspanningen.find(i => i.id === id)).filter(Boolean)
   }
 
+  // Open formulier voor een specifieke baat
+  const handleOpenFormForBaat = (baat) => {
+    setSelectedBaatForVermogen(baat)
+    setNewVermogen({
+      naam: '',
+      beschrijving: `Vermogen nodig voor: ${baat.naam}`,
+      type: 'Organisatorisch',
+      domein: baat.domein || 'Proces',
+      eigenaar: baat.eigenaar || '',
+      volwassenheidHuidig: 1,
+      volwassenheidDoel: 3,
+      status: 'gepland',
+      gekoppeldeDoelen: [],
+      gekoppeldeInspanningen: [],
+      gekoppeldeBaten: [baat.id]
+    })
+    setShowAddForm(true)
+  }
+
   // Handlers
   const handleAddVermogen = () => {
     if (newVermogen.naam.trim()) {
@@ -198,9 +228,10 @@ export default function Vermogens() {
       setNewVermogen({
         naam: '', beschrijving: '', type: 'Organisatorisch', domein: 'Proces',
         eigenaar: '', volwassenheidHuidig: 1, volwassenheidDoel: 3, status: 'gepland',
-        gekoppeldeDoelen: [], gekoppeldeInspanningen: []
+        gekoppeldeDoelen: [], gekoppeldeInspanningen: [], gekoppeldeBaten: []
       })
       setShowAddForm(false)
+      setSelectedBaatForVermogen(null)
     }
   }
 
@@ -243,11 +274,11 @@ export default function Vermogens() {
 
   return (
     <div className="space-y-6">
-      {/* Premium Header */}
-      <div className="relative bg-gradient-to-br from-purple-600 via-fuchsia-600 to-violet-700 rounded-2xl p-8 text-white overflow-hidden">
+      {/* Premium Header - Corporate Blue consistent met VisieEnDoelen */}
+      <div className="relative bg-gradient-to-br from-[#003366] via-[#004080] to-[#002855] rounded-2xl p-8 text-white overflow-hidden">
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-fuchsia-500/20 rounded-full blur-3xl" />
+          <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
+          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-transparent via-white/5 to-transparent rotate-45" />
         </div>
 
@@ -262,13 +293,14 @@ export default function Vermogens() {
                 <p className="text-white/70 mt-1">Organisatorische bekwaamheden die baten realiseren</p>
               </div>
             </div>
-            <button
-              onClick={() => setShowAddForm(true)}
-              className="flex items-center gap-2 px-5 py-2.5 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl transition-all text-sm font-medium border border-white/20"
-            >
-              <Plus className="w-4 h-4" />
-              Vermogen toevoegen
-            </button>
+            {batenZonderVermogen.length > 0 && (
+              <div className="flex items-center gap-2 px-4 py-2 bg-amber-500/20 backdrop-blur-sm rounded-xl border border-amber-400/30">
+                <div className="w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center text-xs font-bold">
+                  {batenZonderVermogen.length}
+                </div>
+                <span className="text-sm text-amber-100">Baten wachten op vermogen</span>
+              </div>
+            )}
           </div>
 
           {/* Stats Row */}
@@ -330,8 +362,8 @@ export default function Vermogens() {
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-purple-400/30 rounded-lg">
-                  <Target className="w-5 h-5 text-purple-300" />
+                <div className="p-2 bg-blue-400/30 rounded-lg">
+                  <Target className="w-5 h-5 text-blue-300" />
                 </div>
                 <div>
                   <p className="text-3xl font-bold">{stats.avgTarget}</p>
@@ -345,18 +377,39 @@ export default function Vermogens() {
 
       {/* Add Form */}
       {showAddForm && (
-        <div className="bg-gradient-to-r from-purple-50 to-fuchsia-50 rounded-2xl border border-purple-200 p-6">
+        <div className="bg-slate-50 rounded-2xl border border-slate-200 p-6">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-br from-purple-500 to-fuchsia-600 rounded-lg shadow-lg shadow-purple-500/20">
+              <div className="p-2 bg-[#003366] rounded-lg shadow-lg shadow-slate-500/10">
                 <Sparkles className="w-5 h-5 text-white" />
               </div>
-              <h2 className="text-lg font-bold text-purple-800">Nieuw Vermogen</h2>
+              <div>
+                <h2 className="text-lg font-bold text-slate-800">Nieuw Vermogen</h2>
+                {selectedBaatForVermogen && (
+                  <p className="text-sm text-slate-500">Voor baat: <span className="font-medium text-amber-600">{selectedBaatForVermogen.naam}</span></p>
+                )}
+              </div>
             </div>
-            <button onClick={() => setShowAddForm(false)} className="p-2 hover:bg-white rounded-lg transition-colors">
+            <button onClick={() => { setShowAddForm(false); setSelectedBaatForVermogen(null); }} className="p-2 hover:bg-white rounded-lg transition-colors">
               <X className="w-5 h-5 text-slate-400" />
             </button>
           </div>
+
+          {/* Gekoppelde Baat indicator */}
+          {selectedBaatForVermogen && (
+            <div className="mb-5 p-4 bg-amber-50 rounded-xl border border-amber-200">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-amber-500 rounded-lg">
+                  <Link2 className="w-4 h-4 text-white" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-amber-800">Dit vermogen wordt gekoppeld aan:</p>
+                  <p className="text-xs text-amber-600 mt-0.5">{selectedBaatForVermogen.naam} ({selectedBaatForVermogen.sector} - {selectedBaatForVermogen.domein})</p>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="lg:col-span-2">
               <label className="block text-xs font-semibold text-slate-600 mb-1.5">Naam *</label>
@@ -364,7 +417,7 @@ export default function Vermogens() {
                 type="text"
                 value={newVermogen.naam}
                 onChange={(e) => setNewVermogen({ ...newVermogen, naam: e.target.value })}
-                className="w-full bg-white border border-purple-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#003366] focus:border-transparent"
                 placeholder="Vermogensnaam"
               />
             </div>
@@ -374,7 +427,7 @@ export default function Vermogens() {
                 type="text"
                 value={newVermogen.eigenaar}
                 onChange={(e) => setNewVermogen({ ...newVermogen, eigenaar: e.target.value })}
-                className="w-full bg-white border border-purple-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#003366] focus:border-transparent"
                 placeholder="Naam eigenaar"
               />
             </div>
@@ -383,7 +436,7 @@ export default function Vermogens() {
               <select
                 value={newVermogen.type}
                 onChange={(e) => setNewVermogen({ ...newVermogen, type: e.target.value })}
-                className="w-full bg-white border border-purple-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#003366] focus:border-transparent"
               >
                 {typeOptions.map(t => <option key={t} value={t}>{t}</option>)}
               </select>
@@ -393,7 +446,7 @@ export default function Vermogens() {
               <select
                 value={newVermogen.domein}
                 onChange={(e) => setNewVermogen({ ...newVermogen, domein: e.target.value })}
-                className="w-full bg-white border border-purple-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#003366] focus:border-transparent"
               >
                 {domeinOptions.map(d => <option key={d} value={d}>{d}</option>)}
               </select>
@@ -403,7 +456,7 @@ export default function Vermogens() {
               <select
                 value={newVermogen.status}
                 onChange={(e) => setNewVermogen({ ...newVermogen, status: e.target.value })}
-                className="w-full bg-white border border-purple-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#003366] focus:border-transparent"
               >
                 {statusOptions.map(s => <option key={s} value={s}>{statusConfig[s]?.label}</option>)}
               </select>
@@ -414,7 +467,7 @@ export default function Vermogens() {
                 type="number" min="1" max="5"
                 value={newVermogen.volwassenheidHuidig}
                 onChange={(e) => setNewVermogen({ ...newVermogen, volwassenheidHuidig: parseInt(e.target.value) || 1 })}
-                className="w-full bg-white border border-purple-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#003366] focus:border-transparent"
               />
             </div>
             <div>
@@ -423,7 +476,7 @@ export default function Vermogens() {
                 type="number" min="1" max="5"
                 value={newVermogen.volwassenheidDoel}
                 onChange={(e) => setNewVermogen({ ...newVermogen, volwassenheidDoel: parseInt(e.target.value) || 3 })}
-                className="w-full bg-white border border-purple-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#003366] focus:border-transparent"
               />
             </div>
             <div className="lg:col-span-3">
@@ -438,12 +491,12 @@ export default function Vermogens() {
             </div>
           </div>
           <div className="flex justify-end gap-3 mt-5">
-            <button onClick={() => setShowAddForm(false)} className="px-5 py-2.5 text-slate-600 hover:bg-white rounded-xl text-sm font-medium transition-colors">
+            <button onClick={() => { setShowAddForm(false); setSelectedBaatForVermogen(null); }} className="px-5 py-2.5 text-slate-600 hover:bg-white rounded-xl text-sm font-medium transition-colors">
               Annuleren
             </button>
             <button
               onClick={handleAddVermogen}
-              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-purple-500 to-fuchsia-600 text-white rounded-xl hover:from-purple-600 hover:to-fuchsia-700 text-sm font-medium transition-all shadow-lg shadow-purple-500/20"
+              className="flex items-center gap-2 px-5 py-2.5 bg-[#003366] text-white rounded-xl hover:bg-[#002855] text-sm font-medium transition-all shadow-lg shadow-slate-500/10"
             >
               <Save className="w-4 h-4" />
               Opslaan
@@ -461,7 +514,7 @@ export default function Vermogens() {
             <button
               onClick={() => setFilterDomein(null)}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                !filterDomein ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/20' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                !filterDomein ? 'bg-[#003366] text-white shadow-lg' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
             >
               Alle
@@ -489,7 +542,7 @@ export default function Vermogens() {
             <button
               onClick={() => setFilterType(null)}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                !filterType ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/20' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                !filterType ? 'bg-[#003366] text-white shadow-lg' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
             >
               Alle
@@ -516,11 +569,67 @@ export default function Vermogens() {
         </div>
       </div>
 
+      {/* DIN Keten Meldingen - Baten wachten op Vermogen */}
+      {batenZonderVermogen.length > 0 && (
+        <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl border-2 border-amber-200 overflow-hidden">
+          <div className="bg-amber-100/50 px-5 py-4 border-b border-amber-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-amber-500 rounded-xl">
+                  <Target className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="font-bold text-amber-900">Baten wachten op een Vermogen</h2>
+                  <p className="text-sm text-amber-700">Klik op een baat om een vermogen aan te maken dat hieraan bijdraagt</p>
+                </div>
+              </div>
+              <div className="px-3 py-1 bg-amber-500 text-white rounded-full text-sm font-bold">
+                {batenZonderVermogen.length}
+              </div>
+            </div>
+          </div>
+          <div className="p-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {batenZonderVermogen.map(baat => {
+                const dConfig = domeinConfig[baat.domein] || domeinConfig.Mens
+                return (
+                  <button
+                    key={baat.id}
+                    onClick={() => handleOpenFormForBaat(baat)}
+                    className="flex items-start gap-3 p-4 bg-white rounded-xl border-2 border-amber-200 hover:border-amber-400 hover:shadow-md transition-all text-left group"
+                  >
+                    <div className={`p-2 ${dConfig.bgLight} rounded-lg flex-shrink-0`}>
+                      <Target className={`w-5 h-5 ${dConfig.text}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-slate-800 group-hover:text-amber-700 transition-colors line-clamp-1">
+                        {baat.naam}
+                      </p>
+                      <p className="text-xs text-slate-500 mt-0.5">{baat.sector}</p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className={`px-2 py-0.5 text-xs rounded-full ${dConfig.bgLight} ${dConfig.text}`}>
+                          {baat.domein}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="p-2 bg-amber-100 rounded-lg">
+                        <Plus className="w-4 h-4 text-amber-600" />
+                      </div>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Linking Modal */}
       {linkingVermogen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[80vh] overflow-hidden">
-            <div className="bg-gradient-to-r from-purple-500 to-fuchsia-600 p-5">
+            <div className="bg-[#003366] p-5">
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-lg font-bold text-white">
@@ -593,7 +702,7 @@ export default function Vermogens() {
             <div className="p-5 border-t border-slate-200 bg-slate-50">
               <button
                 onClick={() => { setLinkingVermogen(null); setLinkingType(null); }}
-                className="w-full px-5 py-2.5 bg-gradient-to-r from-purple-500 to-fuchsia-600 text-white rounded-xl hover:from-purple-600 hover:to-fuchsia-700 font-medium transition-all shadow-lg shadow-purple-500/20"
+                className="w-full px-5 py-2.5 bg-[#003366] text-white rounded-xl hover:bg-[#002855] font-medium transition-all shadow-lg shadow-slate-500/10"
               >
                 Sluiten
               </button>
@@ -618,10 +727,10 @@ export default function Vermogens() {
             return (
               <div
                 key={vermogen.id}
-                className="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl hover:border-slate-300 transition-all duration-300 group"
+                className="relative bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl hover:border-slate-300 transition-all duration-300 group"
               >
-                {/* Color accent top */}
-                <div className={`h-1.5 bg-gradient-to-r ${tConfig.color}`} />
+                {/* Color accent top based on domein */}
+                <div className="h-1.5" style={{ backgroundColor: dConfig.color }} />
 
                 {isEditing ? (
                   <form id={`vermogen-form-${vermogen.id}`} className="p-5 space-y-4">
@@ -667,26 +776,20 @@ export default function Vermogens() {
                     </div>
                     <div className="flex justify-end gap-2">
                       <button type="button" onClick={() => setEditingVermogen(null)} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl text-sm font-medium">Annuleren</button>
-                      <button type="button" onClick={() => handleUpdateVermogen(vermogen.id)} className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-fuchsia-600 text-white rounded-xl text-sm font-medium shadow-lg shadow-purple-500/20">
+                      <button type="button" onClick={() => handleUpdateVermogen(vermogen.id)} className="flex items-center gap-2 px-4 py-2 bg-[#003366] text-white rounded-xl text-sm font-medium hover:bg-[#002855] transition-all">
                         <Save className="w-4 h-4" />Opslaan
                       </button>
                     </div>
                   </form>
                 ) : (
                   <div className="p-5">
-                    {/* Actions */}
-                    <div className="absolute top-14 right-4 flex gap-1 opacity-0 group-hover:opacity-100 transition-all">
-                      <button onClick={() => { setLinkingVermogen(vermogen); setLinkingType('doelen'); }} className="p-2 bg-emerald-50 hover:bg-emerald-100 rounded-lg" title="Koppel aan doelen">
-                        <Target className="w-4 h-4 text-emerald-600" />
+                    {/* Actions - positioned correctly */}
+                    <div className="absolute top-10 right-4 flex gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200 z-10">
+                      <button onClick={() => setEditingVermogen(vermogen.id)} className="p-2 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors" title="Bewerken">
+                        <Edit3 className="w-3.5 h-3.5 text-slate-600" />
                       </button>
-                      <button onClick={() => { setLinkingVermogen(vermogen); setLinkingType('inspanningen'); }} className="p-2 bg-blue-50 hover:bg-blue-100 rounded-lg" title="Koppel aan inspanningen">
-                        <Wrench className="w-4 h-4 text-blue-600" />
-                      </button>
-                      <button onClick={() => setEditingVermogen(vermogen.id)} className="p-2 bg-slate-100 hover:bg-slate-200 rounded-lg" title="Bewerken">
-                        <Edit3 className="w-4 h-4 text-slate-600" />
-                      </button>
-                      <button onClick={() => { if (confirm('Weet je zeker dat je dit vermogen wilt verwijderen?')) deleteVermogen(vermogen.id) }} className="p-2 bg-red-50 hover:bg-red-100 rounded-lg" title="Verwijderen">
-                        <Trash2 className="w-4 h-4 text-red-500" />
+                      <button onClick={() => { if (confirm('Weet je zeker dat je dit vermogen wilt verwijderen?')) deleteVermogen(vermogen.id) }} className="p-2 bg-red-50 hover:bg-red-100 rounded-lg transition-colors" title="Verwijderen">
+                        <Trash2 className="w-3.5 h-3.5 text-red-500" />
                       </button>
                     </div>
 
@@ -711,71 +814,52 @@ export default function Vermogens() {
                           </span>
                         </div>
 
-                        <h3 className="font-bold text-slate-800 mb-1 line-clamp-1">{vermogen.naam}</h3>
+                        <h3 className="font-bold text-slate-800 mb-1.5 pr-20 line-clamp-1 text-base">{vermogen.naam}</h3>
 
-                        <div className="flex items-center gap-2 text-xs text-slate-500 mb-2">
+                        <div className="flex items-center gap-2 text-xs text-slate-500 mb-3">
                           <TypeIcon className="w-3.5 h-3.5" />
                           <span>{vermogen.type}</span>
-                          {vermogen.eigenaar && (
-                            <>
-                              <span className="text-slate-300">|</span>
-                              <User className="w-3.5 h-3.5" />
-                              <span>{vermogen.eigenaar}</span>
-                            </>
-                          )}
                         </div>
 
                         {vermogen.beschrijving && (
-                          <p className="text-sm text-slate-500 line-clamp-2 mb-3">{vermogen.beschrijving}</p>
+                          <p className="text-sm text-slate-500 line-clamp-2 mb-4 leading-relaxed">{vermogen.beschrijving}</p>
                         )}
 
-                        {/* Maturity labels */}
-                        <div className="text-xs text-slate-400">
-                          <span className="font-medium text-slate-600">{volwassenheidLabels[vermogen.volwassenheidHuidig]}</span>
-                          <span className="mx-2">→</span>
-                          <span>{volwassenheidLabels[vermogen.volwassenheidDoel]}</span>
+                        {/* Maturity progress */}
+                        <div className="flex items-center gap-2 text-xs">
+                          <span className="text-slate-400">{volwassenheidLabels[vermogen.volwassenheidHuidig]}</span>
+                          <ArrowRight className="w-3 h-3 text-slate-300" />
+                          <span className="font-semibold text-slate-700">{volwassenheidLabels[vermogen.volwassenheidDoel]}</span>
                         </div>
                       </div>
                     </div>
 
-                    {/* Linked items */}
-                    <div className="mt-4 pt-4 border-t border-slate-100 grid grid-cols-2 gap-4">
-                      <div>
-                        <span className="text-xs text-slate-400 flex items-center gap-1.5 mb-2">
-                          <Target className="w-3.5 h-3.5" />
-                          Doelen ({linkedDoelen.length})
+                    {/* Meta section - consistent met VisieEnDoelen */}
+                    <div className="flex items-center gap-4 text-xs text-slate-500 pt-4 mt-4 border-t border-slate-100">
+                      <button
+                        onClick={() => { setLinkingVermogen(vermogen); setLinkingType('doelen'); }}
+                        className="flex items-center gap-1.5 hover:text-emerald-600 transition-colors"
+                      >
+                        <Target className="w-3.5 h-3.5 text-slate-400" />
+                        <span className={linkedDoelen.length > 0 ? 'text-emerald-600 font-medium' : ''}>
+                          {linkedDoelen.length} doelen
                         </span>
-                        {linkedDoelen.length > 0 ? (
-                          <div className="flex flex-wrap gap-1">
-                            {linkedDoelen.slice(0, 2).map(doel => (
-                              <span key={doel.id} className="px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded text-xs truncate max-w-[120px]">{doel.titel}</span>
-                            ))}
-                            {linkedDoelen.length > 2 && <span className="text-xs text-slate-400">+{linkedDoelen.length - 2}</span>}
-                          </div>
-                        ) : (
-                          <button onClick={() => { setLinkingVermogen(vermogen); setLinkingType('doelen'); }} className="text-xs text-purple-600 hover:text-purple-700 flex items-center gap-1">
-                            <Link2 className="w-3 h-3" />Koppelen
-                          </button>
-                        )}
-                      </div>
-                      <div>
-                        <span className="text-xs text-slate-400 flex items-center gap-1.5 mb-2">
-                          <Wrench className="w-3.5 h-3.5" />
-                          Inspanningen ({linkedInspanningen.length})
+                      </button>
+                      <button
+                        onClick={() => { setLinkingVermogen(vermogen); setLinkingType('inspanningen'); }}
+                        className="flex items-center gap-1.5 hover:text-blue-600 transition-colors"
+                      >
+                        <Wrench className="w-3.5 h-3.5 text-slate-400" />
+                        <span className={linkedInspanningen.length > 0 ? 'text-blue-600 font-medium' : ''}>
+                          {linkedInspanningen.length} inspanningen
                         </span>
-                        {linkedInspanningen.length > 0 ? (
-                          <div className="flex flex-wrap gap-1">
-                            {linkedInspanningen.slice(0, 2).map(insp => (
-                              <span key={insp.id} className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-xs truncate max-w-[120px]">{insp.naam}</span>
-                            ))}
-                            {linkedInspanningen.length > 2 && <span className="text-xs text-slate-400">+{linkedInspanningen.length - 2}</span>}
-                          </div>
-                        ) : (
-                          <button onClick={() => { setLinkingVermogen(vermogen); setLinkingType('inspanningen'); }} className="text-xs text-purple-600 hover:text-purple-700 flex items-center gap-1">
-                            <Link2 className="w-3 h-3" />Koppelen
-                          </button>
-                        )}
-                      </div>
+                      </button>
+                      {vermogen.eigenaar && (
+                        <span className="flex items-center gap-1.5 ml-auto">
+                          <User className="w-3.5 h-3.5 text-slate-400" />
+                          {vermogen.eigenaar}
+                        </span>
+                      )}
                     </div>
                   </div>
                 )}
@@ -785,20 +869,20 @@ export default function Vermogens() {
         </div>
       ) : (
         <div className="text-center py-16 bg-white rounded-2xl border border-slate-200">
-          <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-fuchsia-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Zap className="w-10 h-10 text-purple-500" />
+          <div className="w-20 h-20 bg-gradient-to-br from-slate-100 to-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Zap className="w-10 h-10 text-slate-400" />
           </div>
-          <h3 className="text-lg font-semibold text-slate-700 mb-2">Geen vermogens gevonden</h3>
-          <p className="text-slate-500 mb-6">
-            {filterType || filterDomein ? 'Probeer een andere filter' : 'Begin met het toevoegen van je eerste vermogen'}
+          <h3 className="text-lg font-semibold text-slate-700 mb-2">
+            {filterType || filterDomein ? 'Geen vermogens gevonden' : 'Nog geen vermogens'}
+          </h3>
+          <p className="text-slate-500 mb-2">
+            {filterType || filterDomein ? 'Probeer een andere filter' : 'Vermogens worden aangemaakt via de DIN keten'}
           </p>
-          <button
-            onClick={() => setShowAddForm(true)}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-purple-500 to-fuchsia-600 text-white rounded-xl font-medium hover:from-purple-600 hover:to-fuchsia-700 transition-all shadow-lg shadow-purple-500/20"
-          >
-            <Plus className="w-4 h-4" />
-            Vermogen toevoegen
-          </button>
+          {!filterType && !filterDomein && (
+            <p className="text-sm text-slate-400">
+              Voeg eerst een <a href="/baten" className="text-amber-600 hover:underline font-medium">baat</a> toe, daarna kun je hier een vermogen aanmaken
+            </p>
+          )}
         </div>
       )}
 
@@ -816,7 +900,7 @@ export default function Vermogens() {
             <div>
               <p className="text-xs uppercase tracking-wider text-white/70 font-medium mb-1">Volgende in DIN keten</p>
               <h3 className="text-xl font-bold">Inspanningen</h3>
-              <p className="text-sm text-white/80">Welke projecten bouwen deze vermogens?</p>
+              <p className="text-sm text-white/80">Welke inspanningen bouwen deze vermogens?</p>
             </div>
           </div>
           <a
@@ -832,7 +916,7 @@ export default function Vermogens() {
       {/* DIN Context */}
       <div className="bg-gradient-to-r from-slate-50 to-slate-100 rounded-xl p-5 border border-slate-200">
         <div className="flex items-start gap-4">
-          <div className="p-2.5 bg-gradient-to-br from-purple-500 to-fuchsia-600 rounded-xl shadow-lg shadow-purple-500/20">
+          <div className="p-2.5 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl shadow-lg shadow-cyan-500/20">
             <Award className="w-5 h-5 text-white" />
           </div>
           <div>

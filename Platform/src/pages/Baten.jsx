@@ -136,7 +136,7 @@ const DomeinImpactIndicator = ({ domeinImpact, primaryDomein, compact = false, s
   )
 }
 
-function BaatForm({ baat, onSave, onCancel }) {
+function BaatForm({ baat, onSave, onCancel, selectedDoel }) {
   const [form, setForm] = useState(baat || {
     sector: '',
     domein: '',
@@ -147,8 +147,11 @@ function BaatForm({ baat, onSave, onCancel }) {
     doelWaarde: '',
     eigenaar: '',
     status: 'pending',
-    domeinImpact: { mens: '', proces: '', systeem: '', cultuur: '' }
+    domeinImpact: { mens: '', proces: '', systeem: '', cultuur: '' },
+    gekoppeldDoel: selectedDoel?.id || null
   })
+
+  const isNew = baat?._isNew
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -162,15 +165,35 @@ function BaatForm({ baat, onSave, onCancel }) {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-xl font-semibold text-white">
-                {baat ? 'Baat bewerken' : 'Nieuwe baat toevoegen'}
+                {baat && !isNew ? 'Baat bewerken' : 'Nieuwe baat toevoegen'}
               </h2>
-              <p className="text-white/70 text-sm mt-1">Definieer een baat voor een sector</p>
+              <p className="text-white/70 text-sm mt-1">
+                {selectedDoel
+                  ? `Voor strategisch doel: ${selectedDoel.titel}`
+                  : 'Definieer een baat voor een sector'
+                }
+              </p>
             </div>
             <button onClick={onCancel} className="p-2 hover:bg-white/10 rounded-lg">
               <X className="w-5 h-5 text-white" />
             </button>
           </div>
         </div>
+
+        {/* Gekoppeld Doel indicator */}
+        {selectedDoel && (
+          <div className="mx-6 mt-4 p-4 bg-indigo-50 rounded-xl border border-indigo-200">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-indigo-500 rounded-lg">
+                <Link2 className="w-4 h-4 text-white" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-indigo-800">Deze baat wordt gekoppeld aan:</p>
+                <p className="text-xs text-indigo-600 mt-0.5">{selectedDoel.titel}</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           {/* Sector selectie */}
@@ -397,13 +420,20 @@ const getGekoppeldeInspanningen = (baatId, inspanningen) => {
 }
 
 function Baten() {
-  const { baten, inspanningen, addBaat, updateBaat, deleteBaat } = useAppStore()
+  const { baten, inspanningen, strategischeDoelen, addBaat, updateBaat, deleteBaat } = useAppStore()
   const [showForm, setShowForm] = useState(false)
   const [editingBaat, setEditingBaat] = useState(null)
   const [search, setSearch] = useState('')
   const [viewType, setViewType] = useState('sectoren') // 'sectoren' | 'matrix'
   const [expandedSectors, setExpandedSectors] = useState(sectoren)
   const [filters, setFilters] = useState({ status: 'all' })
+  const [selectedDoelForBaat, setSelectedDoelForBaat] = useState(null) // Doel waarvoor baat wordt aangemaakt
+
+  // Strategische Doelen zonder gekoppelde baat (voor DIN keten meldingen)
+  const doelenZonderBaat = useMemo(() => {
+    const doelenMetBaat = new Set(baten.map(b => b.gekoppeldDoel).filter(Boolean))
+    return strategischeDoelen.filter(d => !doelenMetBaat.has(d.id))
+  }, [baten, strategischeDoelen])
 
   // Filter baten
   const filteredBaten = useMemo(() => {
@@ -489,18 +519,40 @@ function Baten() {
     return { perDomein, overeenkomsten, impactPerSectorPerDomein }
   }, [filteredBaten])
 
+  // Open formulier voor een specifiek Strategisch Doel
+  const handleOpenFormForDoel = (doel) => {
+    setSelectedDoelForBaat(doel)
+    setEditingBaat({
+      naam: '',
+      beschrijving: `Baat voor doel: ${doel.titel}`,
+      sector: 'Primair onderwijs',
+      domein: 'Proces',
+      indicator: doel.indicator || '',
+      huidigeWaarde: '',
+      doelWaarde: '',
+      eigenaar: doel.eigenaar || '',
+      status: 'pending',
+      domeinImpact: {},
+      gekoppeldDoel: doel.id,
+      _isNew: true
+    })
+    setShowForm(true)
+  }
+
   const handleSave = (form) => {
-    if (editingBaat) {
+    if (editingBaat && !editingBaat._isNew) {
       updateBaat(editingBaat.id, form)
     } else {
       addBaat(form)
     }
     setShowForm(false)
     setEditingBaat(null)
+    setSelectedDoelForBaat(null)
   }
 
   const handleEdit = (baat) => {
     setEditingBaat(baat)
+    setSelectedDoelForBaat(null)
     setShowForm(true)
   }
 
@@ -559,6 +611,76 @@ function Baten() {
               </div>
             )
           })}
+        </div>
+      </div>
+
+      {/* DIN Keten Meldingen - Strategische Doelen wachten op Baat */}
+      {doelenZonderBaat.length > 0 && (
+        <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl border-2 border-amber-200 overflow-hidden">
+          <div className="bg-amber-100/50 px-5 py-4 border-b border-amber-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-amber-500 rounded-xl">
+                  <Target className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="font-bold text-amber-900">Strategische Doelen wachten op een Baat</h2>
+                  <p className="text-sm text-amber-700">Klik op een doel om een baat aan te maken die hieraan bijdraagt</p>
+                </div>
+              </div>
+              <div className="px-3 py-1 bg-amber-500 text-white rounded-full text-sm font-bold">
+                {doelenZonderBaat.length}
+              </div>
+            </div>
+          </div>
+          <div className="p-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {doelenZonderBaat.map(doel => (
+                <button
+                  key={doel.id}
+                  onClick={() => handleOpenFormForDoel(doel)}
+                  className="flex items-start gap-3 p-4 bg-white rounded-xl border-2 border-amber-200 hover:border-amber-400 hover:shadow-md transition-all text-left group"
+                >
+                  <div className="p-2 bg-indigo-50 rounded-lg flex-shrink-0">
+                    <Target className="w-5 h-5 text-indigo-600" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-slate-800 group-hover:text-amber-700 transition-colors line-clamp-1">
+                      {doel.titel}
+                    </p>
+                    <p className="text-xs text-slate-500 mt-0.5 line-clamp-1">{doel.beschrijving}</p>
+                    <div className="flex items-center gap-2 mt-2">
+                      {doel.indicator && (
+                        <span className="px-2 py-0.5 text-xs rounded-full bg-slate-100 text-slate-600">
+                          {doel.indicator}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="p-2 bg-amber-100 rounded-lg">
+                      <Plus className="w-4 h-4 text-amber-600" />
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* DIN Keten Info Banner */}
+      <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl border border-amber-200 p-4">
+        <div className="flex items-start gap-3">
+          <div className="p-2 bg-amber-500 rounded-lg flex-shrink-0">
+            <Target className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-amber-900 text-sm mb-1">DIN Keten: Strategisch Doel → Baat → Vermogen → Inspanning</h3>
+            <p className="text-xs text-amber-800 leading-relaxed">
+              <strong>Baten</strong> worden gekoppeld aan Strategische Doelen. Na het aanmaken verschijnt de baat als melding op de <a href="/vermogens" className="text-amber-600 hover:underline font-medium">Vermogens</a> pagina.
+            </p>
+          </div>
         </div>
       </div>
 
@@ -1030,7 +1152,8 @@ function Baten() {
         <BaatForm
           baat={editingBaat}
           onSave={handleSave}
-          onCancel={() => { setShowForm(false); setEditingBaat(null) }}
+          onCancel={() => { setShowForm(false); setEditingBaat(null); setSelectedDoelForBaat(null); }}
+          selectedDoel={selectedDoelForBaat}
         />
       )}
     </div>

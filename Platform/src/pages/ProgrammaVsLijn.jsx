@@ -130,35 +130,70 @@ function ProgrammaVsLijn() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-slate-700 to-slate-800 rounded-xl p-6 text-white">
-        <div className="flex items-center gap-2 mb-2">
-          <Scale className="w-5 h-5" />
-          <span className="text-white/80 text-sm">Beslissingstool</span>
+      <div className="bg-gradient-to-r from-[#003366] via-[#004080] to-[#003366] rounded-2xl p-6 shadow-xl overflow-hidden relative">
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-24 -right-24 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
+          <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-blue-400/10 rounded-full blur-3xl" />
         </div>
-        <h1 className="text-2xl font-bold">Programma of Lijn?</h1>
-        <p className="text-white/80 mt-2 max-w-3xl">
-          Bepaal of een initiatief thuishoort in het programma (tijdelijk, ontwikkelen)
-          of in de lijnorganisatie (permanent, uitvoeren).
-        </p>
+        <div className="relative z-10">
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-white/20 backdrop-blur-sm rounded-2xl shadow-lg">
+                <Scale className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-white/60 text-sm font-medium">Beslissingstool</span>
+                </div>
+                <h1 className="text-2xl font-bold text-white">Programma of Lijn?</h1>
+                <p className="text-white/70 mt-1 max-w-xl">
+                  Bepaal of een initiatief thuishoort in het programma of in de lijnorganisatie.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10 text-center">
+                <Briefcase className="w-5 h-5 text-white mx-auto mb-1" />
+                <div className="text-xs text-white/60">Programma</div>
+                <div className="text-sm font-semibold text-white">Tijdelijk</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10 text-center">
+                <Building className="w-5 h-5 text-white mx-auto mb-1" />
+                <div className="text-xs text-white/60">Lijn</div>
+                <div className="text-sm font-semibold text-white">Permanent</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* De Gouden Regel */}
-      <div className="p-6 bg-amber-50 rounded-xl border-2 border-amber-200">
-        <div className="flex items-center gap-3 mb-3">
-          <Lightbulb className="w-6 h-6 text-amber-600" />
-          <span className="font-bold text-amber-800 text-lg">De Gouden Regel</span>
-        </div>
-        <p className="text-amber-900 text-lg">
-          "Is dit iets <strong className="underline">NIEUWS</strong> dat ontwikkeld moet worden?"
-        </p>
-        <div className="flex gap-8 mt-4">
-          <div className="flex items-center gap-2">
-            <span className="text-2xl">→</span>
-            <span className="font-bold text-[#003366]">JA = PROGRAMMA</span>
+      <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl border-2 border-amber-300 overflow-hidden">
+        <div className="p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="p-2 bg-amber-500 rounded-xl">
+              <Lightbulb className="w-5 h-5 text-white" />
+            </div>
+            <span className="font-bold text-amber-900 text-lg">De Gouden Regel</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-2xl">→</span>
-            <span className="font-bold text-green-600">NEE = LIJN</span>
+          <p className="text-amber-900 text-xl font-medium">
+            "Is dit iets <span className="underline decoration-amber-500 decoration-2">NIEUWS</span> dat ontwikkeld moet worden?"
+          </p>
+        </div>
+        <div className="grid grid-cols-2 border-t border-amber-200">
+          <div className="p-4 bg-[#003366]/5 border-r border-amber-200 flex items-center gap-3">
+            <ArrowRight className="w-5 h-5 text-[#003366]" />
+            <div>
+              <span className="font-bold text-[#003366] text-lg">JA</span>
+              <span className="text-slate-600 ml-2">= Programma</span>
+            </div>
+          </div>
+          <div className="p-4 bg-green-50 flex items-center gap-3">
+            <ArrowRight className="w-5 h-5 text-green-600" />
+            <div>
+              <span className="font-bold text-green-600 text-lg">NEE</span>
+              <span className="text-slate-600 ml-2">= Lijn</span>
+            </div>
           </div>
         </div>
       </div>
@@ -261,58 +296,69 @@ function ProgrammaVsLijn() {
 
       {/* Resultaat */}
       {totalAnswered >= 4 && (
-        <div className={`rounded-xl p-6 ${
-          advies === 'programma' ? 'bg-[#003366] text-white' :
-          advies === 'lijn' ? 'bg-green-600 text-white' :
-          'bg-amber-500 text-white'
+        <div className={`rounded-2xl overflow-hidden shadow-lg ${
+          advies === 'programma' ? 'bg-gradient-to-br from-[#003366] to-[#004d99]' :
+          advies === 'lijn' ? 'bg-gradient-to-br from-green-600 to-green-700' :
+          'bg-gradient-to-br from-amber-500 to-amber-600'
         }`}>
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              {advies === 'programma' && <Briefcase className="w-8 h-8" />}
-              {advies === 'lijn' && <Building className="w-8 h-8" />}
-              {advies === 'twijfel' && <Scale className="w-8 h-8" />}
-              <div>
-                <h2 className="text-xl font-bold">
-                  {advies === 'programma' && 'Dit hoort bij het PROGRAMMA'}
-                  {advies === 'lijn' && 'Dit hoort bij de LIJN'}
-                  {advies === 'twijfel' && 'Dit vereist nadere analyse'}
-                </h2>
-                {initiatief && <p className="text-white/80">{initiatief}</p>}
+          <div className="p-6 text-white">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-white/20 rounded-xl">
+                  {advies === 'programma' && <Briefcase className="w-8 h-8" />}
+                  {advies === 'lijn' && <Building className="w-8 h-8" />}
+                  {advies === 'twijfel' && <Scale className="w-8 h-8" />}
+                </div>
+                <div>
+                  <div className="text-white/60 text-sm mb-1">Advies</div>
+                  <h2 className="text-2xl font-bold">
+                    {advies === 'programma' && 'Dit hoort bij het PROGRAMMA'}
+                    {advies === 'lijn' && 'Dit hoort bij de LIJN'}
+                    {advies === 'twijfel' && 'Dit vereist nadere analyse'}
+                  </h2>
+                  {initiatief && <p className="text-white/70 mt-1">"{initiatief}"</p>}
+                </div>
+              </div>
+              <div className="text-right bg-white/10 rounded-xl p-4">
+                <div className="text-4xl font-bold">{programmaPercentage}%</div>
+                <div className="text-white/60 text-sm">programma indicatie</div>
               </div>
             </div>
-            <div className="text-right">
-              <div className="text-3xl font-bold">{programmaPercentage}%</div>
-              <div className="text-white/70 text-sm">programma indicatie</div>
-            </div>
-          </div>
 
-          {/* Score balk */}
-          <div className="bg-white/20 rounded-full h-4 mb-4">
-            <div
-              className="h-full rounded-full transition-all duration-500 bg-white/40"
-              style={{ width: `${programmaPercentage}%` }}
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-white/80">
-              {advies === 'programma' && (
-                <>Dit initiatief heeft kenmerken van programmawerk: nieuw, tijdelijk, sectoroverstijgend.</>
-              )}
-              {advies === 'lijn' && (
-                <>Dit initiatief past beter in de reguliere organisatie: bestaand, continu, operationeel.</>
-              )}
-              {advies === 'twijfel' && (
-                <>Dit initiatief heeft kenmerken van beide. Bespreek met de programmamanager.</>
-              )}
+            {/* Score balk */}
+            <div className="relative mb-5">
+              <div className="flex justify-between text-xs text-white/60 mb-1">
+                <span>Lijn</span>
+                <span>Programma</span>
+              </div>
+              <div className="bg-white/20 rounded-full h-3 overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-500 bg-white/50"
+                  style={{ width: `${programmaPercentage}%` }}
+                />
+              </div>
             </div>
-            <button
-              onClick={resetForm}
-              className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-lg hover:bg-white/30 transition-colors"
-            >
-              <RefreshCw className="w-4 h-4" />
-              Opnieuw
-            </button>
+
+            <div className="flex items-center justify-between bg-white/10 rounded-xl p-4">
+              <div className="text-sm text-white/90">
+                {advies === 'programma' && (
+                  <>Dit initiatief heeft kenmerken van programmawerk: nieuw, tijdelijk, sectoroverstijgend.</>
+                )}
+                {advies === 'lijn' && (
+                  <>Dit initiatief past beter in de reguliere organisatie: bestaand, continu, operationeel.</>
+                )}
+                {advies === 'twijfel' && (
+                  <>Dit initiatief heeft kenmerken van beide. Bespreek met de programmamanager.</>
+                )}
+              </div>
+              <button
+                onClick={resetForm}
+                className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-lg hover:bg-white/30 transition-colors ml-4 flex-shrink-0"
+              >
+                <RefreshCw className="w-4 h-4" />
+                Opnieuw
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -386,21 +432,30 @@ function ProgrammaVsLijn() {
       </div>
 
       {/* Navigatie */}
-      <div className="flex justify-center gap-4">
-        <Link
-          to="/programmaplan"
-          className="flex items-center gap-2 text-slate-600 hover:text-slate-800"
-        >
-          <ArrowRight className="w-4 h-4" />
-          Naar Programmaplan
-        </Link>
-        <Link
-          to="/"
-          className="flex items-center gap-2 text-slate-600 hover:text-slate-800"
-        >
-          <ArrowRight className="w-4 h-4" />
-          Naar Programmaverloop
-        </Link>
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+        <div className="flex items-center justify-center gap-4">
+          <Link
+            to="/"
+            className="flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors"
+          >
+            <ArrowRight className="w-4 h-4" />
+            Programmaverloop
+          </Link>
+          <Link
+            to="/governance"
+            className="flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors"
+          >
+            <Users className="w-4 h-4" />
+            Governance
+          </Link>
+          <Link
+            to="/din-keten"
+            className="flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors"
+          >
+            <Target className="w-4 h-4" />
+            DIN Keten
+          </Link>
+        </div>
       </div>
     </div>
   )

@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { analyzeQuery, generateWidgetConfig, generateClarification, generateFollowUpSuggestions } from '../services/intentMapper'
 
 // Widget types
 export const WIDGET_TYPES = {
@@ -193,6 +194,34 @@ export const useDashboardStore = create(
       // AI Conversation
       conversation: [],
       isProcessing: false,
+      error: null,
+
+      // Progressive Disclosure Level (0-3)
+      // 0 = Clean Slate (no widgets, welcome screen)
+      // 1 = Quick Insights (1-3 KPIs)
+      // 2 = Exploration (4-6 mixed widgets)
+      // 3 = Deep Analysis (7+ widgets)
+      disclosureLevel: 0,
+      isTransitioning: false,
+
+      // AI Panel state: 'expanded' | 'collapsed' | 'hidden'
+      panelState: 'expanded',
+
+      // Conversation context for follow-up questions
+      conversationContext: {
+        lastEntities: [],
+        lastMetrics: [],
+        lastFilters: {},
+        lastWidgetType: null
+      },
+
+      // Clarification state
+      clarification: {
+        isOpen: false,
+        question: '',
+        options: [],
+        onSelect: null
+      },
 
       // Global filters
       globalFilters: {
@@ -211,7 +240,9 @@ export const useDashboardStore = create(
         favoriteQueries: [],
         lastUsedReport: null,
         autoLoadLastReport: true,
-        showWelcome: true
+        showWelcome: true,
+        hasSeenTour: false,
+        keyboardShortcutsEnabled: true
       },
 
       // Report templates
@@ -227,6 +258,10 @@ export const useDashboardStore = create(
           position: widget.position || { col: 0, row: get().widgets.length }
         }
         set({ widgets: [...get().widgets, newWidget] })
+
+        // Auto-advance disclosure level after adding widget
+        setTimeout(() => get().autoAdvanceLevel(), 100)
+
         return id
       },
 
@@ -243,7 +278,10 @@ export const useDashboardStore = create(
       },
 
       clearWidgets: () => {
-        set({ widgets: [] })
+        set({
+          widgets: [],
+          disclosureLevel: 0
+        })
       },
 
       // === CONVERSATION ACTIONS ===
@@ -262,8 +300,156 @@ export const useDashboardStore = create(
         set({ isProcessing })
       },
 
+      setError: (error) => {
+        set({ error })
+      },
+
+      clearError: () => {
+        set({ error: null })
+      },
+
       clearConversation: () => {
-        set({ conversation: [] })
+        set({ conversation: [], error: null })
+      },
+
+      // === PANEL STATE ACTIONS ===
+
+      setPanelState: (state) => {
+        set({ panelState: state })
+      },
+
+      togglePanel: () => {
+        const current = get().panelState
+        const newState = current === 'expanded' ? 'collapsed' : 'expanded'
+        set({ panelState: newState })
+      },
+
+      // === PROGRESSIVE DISCLOSURE ACTIONS ===
+
+      setDisclosureLevel: (level) => {
+        if (level < 0 || level > 3) return
+        set({ isTransitioning: true })
+        setTimeout(() => {
+          set({ disclosureLevel: level, isTransitioning: false })
+        }, 300)
+      },
+
+      // Automatically advance disclosure level based on widget count
+      autoAdvanceLevel: () => {
+        const { widgets, disclosureLevel } = get()
+        const widgetCount = widgets.length
+        const hasChartOrTable = widgets.some(w =>
+          ['bar', 'line', 'pie', 'table'].includes(w.type)
+        )
+
+        let newLevel = disclosureLevel
+
+        // Level 0 → 1: First widget added
+        if (widgetCount >= 1 && disclosureLevel === 0) {
+          newLevel = 1
+        }
+        // Level 1 → 2: More than 3 widgets OR has chart/table
+        else if ((widgetCount > 3 || hasChartOrTable) && disclosureLevel === 1) {
+          newLevel = 2
+        }
+        // Level 2 → 3: More than 6 widgets
+        else if (widgetCount > 6 && disclosureLevel === 2) {
+          newLevel = 3
+        }
+
+        if (newLevel !== disclosureLevel) {
+          get().setDisclosureLevel(newLevel)
+        }
+      },
+
+      // Reset to clean slate (level 0)
+      resetToCleanSlate: () => {
+        set({ isTransitioning: true })
+        setTimeout(() => {
+          set({
+            widgets: [],
+            disclosureLevel: 0,
+            isTransitioning: false,
+            conversationContext: {
+              lastEntities: [],
+              lastMetrics: [],
+              lastFilters: {},
+              lastWidgetType: null
+            }
+          })
+        }, 300)
+      },
+
+      // Get visible widgets based on disclosure level
+      getVisibleWidgets: () => {
+        const { widgets, disclosureLevel } = get()
+        switch (disclosureLevel) {
+          case 0: return []
+          case 1: return widgets.slice(0, 3)
+          case 2: return widgets.slice(0, 6)
+          case 3: return widgets
+          default: return widgets
+        }
+      },
+
+      // Check if we're in clean slate mode
+      isCleanSlate: () => {
+        const { widgets, disclosureLevel } = get()
+        return disclosureLevel === 0 && widgets.length === 0
+      },
+
+      // === CONVERSATION CONTEXT ACTIONS ===
+
+      updateConversationContext: (updates) => {
+        set({
+          conversationContext: {
+            ...get().conversationContext,
+            ...updates
+          }
+        })
+      },
+
+      clearConversationContext: () => {
+        set({
+          conversationContext: {
+            lastEntities: [],
+            lastMetrics: [],
+            lastFilters: {},
+            lastWidgetType: null
+          }
+        })
+      },
+
+      // === CLARIFICATION ACTIONS ===
+
+      showClarification: (question, options, onSelect) => {
+        set({
+          clarification: {
+            isOpen: true,
+            question,
+            options,
+            onSelect
+          }
+        })
+      },
+
+      hideClarification: () => {
+        set({
+          clarification: {
+            isOpen: false,
+            question: '',
+            options: [],
+            onSelect: null
+          }
+        })
+      },
+
+      selectClarificationOption: (option) => {
+        const { clarification } = get()
+        if (clarification.onSelect) {
+          clarification.onSelect(option)
+        }
+        get().hideClarification()
       },
 
       // === FILTER ACTIONS ===
@@ -345,6 +531,33 @@ export const useDashboardStore = create(
         })
       },
 
+      completeTour: () => {
+        set({
+          preferences: {
+            ...get().preferences,
+            hasSeenTour: true
+          }
+        })
+      },
+
+      resetTour: () => {
+        set({
+          preferences: {
+            ...get().preferences,
+            hasSeenTour: false
+          }
+        })
+      },
+
+      toggleKeyboardShortcuts: () => {
+        set({
+          preferences: {
+            ...get().preferences,
+            keyboardShortcutsEnabled: !get().preferences.keyboardShortcutsEnabled
+          }
+        })
+      },
+
       // === FAVORITE QUERIES ===
 
       toggleFavoriteQuery: (query) => {
@@ -410,100 +623,154 @@ export const useDashboardStore = create(
         })
       },
 
-      // === QUERY PROCESSING (Mock for MVP) ===
+      // === QUERY PROCESSING WITH INTENT MAPPER ===
 
       processQuery: async (query) => {
-        const { addMessage, setProcessing, addWidget, addRecentQuery } = get()
+        const {
+          addMessage,
+          setProcessing,
+          addWidget,
+          addRecentQuery,
+          setError,
+          clearError,
+          conversationContext,
+          updateConversationContext,
+          showClarification,
+          updateSuggestions
+        } = get()
+
+        // Clear any previous errors
+        clearError()
 
         // Add user message
         addMessage({ role: 'user', content: query })
         setProcessing(true)
         addRecentQuery(query)
 
-        // Simulate AI processing delay
-        await new Promise(resolve => setTimeout(resolve, 800))
+        try {
+          // Simulate AI processing delay
+          await new Promise(resolve => setTimeout(resolve, 600))
 
-        // Mock intent classification
-        const lowerQuery = query.toLowerCase()
-        let response = { role: 'assistant', content: '', widget: null }
+          // Analyze query with intent mapper
+          const analysis = analyzeQuery(query, conversationContext)
 
-        // Simple pattern matching for MVP
-        if (lowerQuery.includes('go/no-go') || lowerQuery.includes('gereedheid')) {
-          response.content = "Hier is de huidige Go/No-Go gereedheid:"
-          response.widget = {
-            type: WIDGET_TYPES.KPI,
-            title: 'Go/No-Go Gereedheid',
-            dataSource: { entity: 'stuurparameters', metric: 'gereedheid' },
-            size: 'md'
+          // Check if clarification is needed
+          if (analysis.needsClarification && analysis.confidence < 0.5) {
+            const clarification = generateClarification(analysis)
+            if (clarification) {
+              setProcessing(false)
+              showClarification(
+                clarification.question,
+                clarification.options,
+                async (selectedOption) => {
+                  // Re-process with clarified intent
+                  const clarifiedQuery = `${query} - ${selectedOption.label || selectedOption.value}`
+                  await get().processQuery(clarifiedQuery)
+                }
+              )
+              addMessage({
+                role: 'assistant',
+                content: `🤔 ${clarification.question}`
+              })
+              return null
+            }
           }
-        }
-        else if (lowerQuery.includes('nps') && lowerQuery.includes('sector')) {
-          response.content = "NPS vergelijking per sector:"
-          response.widget = {
-            type: WIDGET_TYPES.BAR,
-            title: 'NPS per Sector',
-            dataSource: { entity: 'baten', metric: 'nps', groupBy: 'sector' },
-            size: 'lg'
-          }
-        }
-        else if (lowerQuery.includes('actieve') && lowerQuery.includes('inspanning')) {
-          response.content = "Overzicht van actieve inspanningen:"
-          response.widget = {
-            type: WIDGET_TYPES.TABLE,
-            title: 'Actieve Inspanningen',
-            dataSource: { entity: 'inspanningen', filter: { status: 'in_progress' } },
-            size: 'xl'
-          }
-        }
-        else if (lowerQuery.includes('risico')) {
-          response.content = "Top risico's gesorteerd op score:"
-          response.widget = {
-            type: WIDGET_TYPES.TABLE,
-            title: 'Risico Overzicht',
-            dataSource: { entity: 'risicos', sortBy: 'score', order: 'desc' },
-            size: 'lg'
-          }
-        }
-        else if (lowerQuery.includes('dekking') || lowerQuery.includes('domein')) {
-          response.content = "Dekkingsgraad per domein:"
-          response.widget = {
-            type: WIDGET_TYPES.BAR,
-            title: 'Dekking per Domein',
-            dataSource: { entity: 'baten', metric: 'dekking', groupBy: 'domein' },
-            size: 'lg'
-          }
-        }
-        else if (lowerQuery.includes('hoeveel') && lowerQuery.includes('baten')) {
-          response.content = "Totaal aantal baten in het programma:"
-          response.widget = {
-            type: WIDGET_TYPES.KPI,
-            title: 'Totaal Baten',
-            dataSource: { entity: 'baten', aggregation: 'count' },
-            size: 'sm'
-          }
-        }
-        else {
-          response.content = `Ik begreep je vraag "${query}" niet helemaal. Probeer een van de suggesties, of vraag specifiek naar baten, inspanningen, risico's of NPS.`
-        }
 
-        // Add assistant response
-        addMessage(response)
+          // Generate widget configuration
+          const widgetConfig = generateWidgetConfig(analysis)
 
-        // Add widget if generated
-        if (response.widget) {
-          addWidget(response.widget)
+          let response = { role: 'assistant', content: '', widget: null }
+
+          if (widgetConfig) {
+            // Map widget type to WIDGET_TYPES constant
+            const widgetTypeMap = {
+              kpi: WIDGET_TYPES.KPI,
+              bar: WIDGET_TYPES.BAR,
+              line: WIDGET_TYPES.LINE,
+              table: WIDGET_TYPES.TABLE
+            }
+
+            response.widget = {
+              ...widgetConfig,
+              type: widgetTypeMap[widgetConfig.type] || WIDGET_TYPES.KPI
+            }
+
+            // Generate contextual response
+            const responseTemplates = {
+              kpi: `📊 Hier is ${widgetConfig.title}:`,
+              bar: `📊 ${widgetConfig.title} vergelijking:`,
+              line: `📈 ${widgetConfig.title} trend:`,
+              table: `📋 Overzicht van ${widgetConfig.title}:`
+            }
+            response.content = responseTemplates[widgetConfig.type] || `Hier is ${widgetConfig.title}:`
+
+            // Update conversation context
+            updateConversationContext({
+              lastEntities: analysis.entities.map(e => e.entity),
+              lastMetrics: analysis.metrics.map(m => m.metric),
+              lastWidgetType: widgetConfig.type,
+              lastFilters: analysis.groupBy ? { groupBy: analysis.groupBy } : {}
+            })
+
+            // Update suggestions based on context
+            const newSuggestions = generateFollowUpSuggestions({
+              lastEntities: analysis.entities.map(e => e.entity),
+              lastMetrics: analysis.metrics.map(m => m.metric),
+              lastWidgetType: widgetConfig.type
+            })
+
+            // Merge with existing suggestions, prioritizing new ones
+            const currentSuggestions = get().suggestions
+            const mergedSuggestions = [
+              ...newSuggestions.map((s, i) => ({ ...s, id: `followup-${i}`, intent: 'followup' })),
+              ...currentSuggestions.filter(s => !newSuggestions.some(ns => ns.query === s.query)).slice(0, 2)
+            ]
+            get().setSuggestions(mergedSuggestions)
+
+          } else {
+            // No widget generated - provide helpful response
+            if (analysis.isFollowUp && conversationContext.lastEntities.length > 0) {
+              response.content = `Je wilt meer weten over ${conversationContext.lastEntities.join(', ')}. Kun je specifieker zijn? Bijvoorbeeld: "Toon NPS per sector" of "Hoeveel zijn er actief?"`
+            } else {
+              response.content = `Ik begreep je vraag niet helemaal. Probeer specifiek te vragen naar:\n• Baten (bijv. "Hoeveel baten zijn er?")\n• Inspanningen (bijv. "Toon actieve inspanningen")\n• Risico's (bijv. "Wat zijn de hoogste risico's?")\n• NPS of metrics (bijv. "Vergelijk NPS per sector")`
+            }
+          }
+
+          // Add assistant response
+          addMessage(response)
+
+          // Add widget if generated
+          if (response.widget) {
+            addWidget(response.widget)
+          }
+
+          setProcessing(false)
+          return response
+        } catch (error) {
+          console.error('Query processing error:', error)
+          setProcessing(false)
+          setError('Er ging iets mis bij het verwerken van je vraag. Probeer het opnieuw.')
+          addMessage({
+            role: 'assistant',
+            content: '❌ Sorry, er ging iets mis. Probeer het opnieuw of kies een suggestie.'
+          })
+          return null
         }
+      },
 
-        setProcessing(false)
-        return response
+      // Update suggestions
+      setSuggestions: (suggestions) => {
+        set({ suggestions })
       }
     }),
     {
       name: 'kib-dashboard-storage',
       partialize: (state) => ({
         widgets: state.widgets,
+        disclosureLevel: state.disclosureLevel,
         globalFilters: state.globalFilters,
         preferences: state.preferences,
+        panelState: state.panelState,
         conversation: state.conversation.slice(-20) // Keep last 20 messages
       })
     }

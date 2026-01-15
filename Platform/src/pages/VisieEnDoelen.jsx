@@ -23,7 +23,8 @@ import {
   Sparkles,
   Award,
   BarChart3,
-  Flag
+  Flag,
+  Filter
 } from 'lucide-react'
 
 // Status styling
@@ -106,6 +107,8 @@ export default function VisieEnDoelen() {
   const [showAddDoel, setShowAddDoel] = useState(false)
   const [editingDoel, setEditingDoel] = useState(null)
   const [doelFormData, setDoelFormData] = useState(emptyDoel)
+  const [filterStatus, setFilterStatus] = useState(null)
+  const [filterPrioriteit, setFilterPrioriteit] = useState(null)
 
   // Form state for visie
   const [visieForm, setVisieForm] = useState({
@@ -135,6 +138,27 @@ export default function VisieEnDoelen() {
   const getVermogensCount = (doelId) => {
     return vermogens.filter(v => v.gekoppeldeDoelen?.includes(doelId)).length
   }
+
+  // Filter doelen
+  const filteredDoelen = strategischeDoelen.filter(d => {
+    if (filterStatus && d.status !== filterStatus) return false
+    if (filterPrioriteit && d.prioriteit !== filterPrioriteit) return false
+    return true
+  })
+
+  // Stats per status/prioriteit
+  const statusCounts = useMemo(() => ({
+    actief: strategischeDoelen.filter(d => d.status === 'actief').length,
+    gepland: strategischeDoelen.filter(d => d.status === 'gepland').length,
+    afgerond: strategischeDoelen.filter(d => d.status === 'afgerond').length,
+    risico: strategischeDoelen.filter(d => d.status === 'risico').length
+  }), [strategischeDoelen])
+
+  const prioriteitCounts = useMemo(() => ({
+    high: strategischeDoelen.filter(d => d.prioriteit === 'high').length,
+    medium: strategischeDoelen.filter(d => d.prioriteit === 'medium').length,
+    low: strategischeDoelen.filter(d => d.prioriteit === 'low').length
+  }), [strategischeDoelen])
 
   // Calculate progress
   function calculateProgress(huidig, doel) {
@@ -182,12 +206,11 @@ export default function VisieEnDoelen() {
 
   return (
     <div className="space-y-6">
-      {/* Premium Header */}
-      <div className="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-violet-700 rounded-2xl p-8 text-white overflow-hidden">
-        {/* Decorative elements */}
+      {/* Premium Header - Consistent met Vermogens pagina */}
+      <div className="relative bg-gradient-to-br from-[#003366] via-[#004080] to-[#002855] rounded-2xl p-8 text-white overflow-hidden">
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl" />
+          <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
+          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-transparent via-white/5 to-transparent rotate-45" />
         </div>
 
@@ -219,7 +242,7 @@ export default function VisieEnDoelen() {
             </button>
           </div>
 
-          {/* Stats Row */}
+          {/* Stats Row - Met iconen zoals Vermogens */}
           <div className="grid grid-cols-5 gap-4">
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10">
               <div className="flex items-center gap-3">
@@ -280,33 +303,31 @@ export default function VisieEnDoelen() {
         </div>
       </div>
 
-      {/* Visie & Missie Section */}
+      {/* Visie & Missie Section - Verbeterde regelafstand */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Programma Visie - Larger */}
-        <div className="lg:col-span-3 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-8 text-white relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-purple-500/20 to-transparent rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-blue-500/20 to-transparent rounded-full blur-3xl" />
-          <div className="absolute top-6 right-6 text-slate-700/50 group-hover:text-slate-600/50 transition-colors">
+        <div className="lg:col-span-3 bg-gradient-to-br from-[#003366] via-[#003d7a] to-[#002244] rounded-2xl p-8 text-white relative overflow-hidden group">
+          <div className="absolute top-6 right-6 text-white/10 group-hover:text-white/15 transition-colors">
             <Quote className="w-24 h-24" />
           </div>
 
           <div className="relative z-10">
-            <div className="flex items-center gap-2 mb-6">
-              <div className="p-1.5 bg-amber-500/20 rounded-lg">
-                <Star className="w-4 h-4 text-amber-400" />
+            <div className="flex items-center gap-3 mb-8">
+              <div className="p-2 bg-white/15 rounded-xl">
+                <Star className="w-5 h-5 text-white/80" />
               </div>
-              <span className="text-xs uppercase tracking-widest text-slate-400 font-semibold">Programma Visie</span>
+              <span className="text-xs uppercase tracking-widest text-white/50 font-semibold">Programma Visie</span>
             </div>
 
             {editingVisie ? (
               <textarea
                 value={visieForm.programmaVisie}
                 onChange={(e) => setVisieForm({ ...visieForm, programmaVisie: e.target.value })}
-                className="w-full text-2xl font-bold bg-slate-700/50 border border-slate-600 rounded-xl p-4 text-white resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full text-xl font-bold bg-white/10 border border-white/20 rounded-xl p-4 text-white resize-none focus:ring-2 focus:ring-white/30 focus:border-transparent leading-relaxed"
                 rows={3}
               />
             ) : (
-              <blockquote className="text-2xl lg:text-3xl font-bold leading-relaxed mb-8 text-white/95">
+              <blockquote className="text-xl lg:text-2xl font-bold leading-[1.5] mb-10 text-white/95">
                 "{visie.programmaVisie}"
               </blockquote>
             )}
@@ -315,37 +336,37 @@ export default function VisieEnDoelen() {
               {editingVisie ? (
                 <>
                   <div className="flex items-center gap-2">
-                    <FileText className="w-4 h-4 text-slate-500" />
+                    <FileText className="w-4 h-4 text-white/50" />
                     <input
                       type="text"
                       value={visieForm.bronDocument}
                       onChange={(e) => setVisieForm({ ...visieForm, bronDocument: e.target.value })}
-                      className="bg-slate-700/50 border border-slate-600 rounded-lg px-3 py-1.5 text-white text-sm focus:ring-2 focus:ring-purple-500"
+                      className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-white/30"
                       placeholder="Brondocument"
                     />
                   </div>
                   <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-slate-500" />
+                    <Calendar className="w-4 h-4 text-white/50" />
                     <input
                       type="text"
                       value={visieForm.horizon}
                       onChange={(e) => setVisieForm({ ...visieForm, horizon: e.target.value })}
-                      className="bg-slate-700/50 border border-slate-600 rounded-lg px-3 py-1.5 text-white text-sm focus:ring-2 focus:ring-purple-500"
+                      className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-white/30"
                       placeholder="Horizon"
                     />
                   </div>
                 </>
               ) : (
                 <>
-                  <div className="flex items-center gap-2 text-slate-400">
-                    <div className="p-1.5 bg-slate-700/50 rounded-lg">
-                      <FileText className="w-3.5 h-3.5" />
+                  <div className="flex items-center gap-2.5 text-white/60">
+                    <div className="p-2 bg-white/10 rounded-lg">
+                      <FileText className="w-4 h-4" />
                     </div>
                     <span>{visie.bronDocument}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-slate-400">
-                    <div className="p-1.5 bg-slate-700/50 rounded-lg">
-                      <Calendar className="w-3.5 h-3.5" />
+                  <div className="flex items-center gap-2.5 text-white/60">
+                    <div className="p-2 bg-white/10 rounded-lg">
+                      <Calendar className="w-4 h-4" />
                     </div>
                     <span>{visie.horizon}</span>
                   </div>
@@ -356,12 +377,10 @@ export default function VisieEnDoelen() {
         </div>
 
         {/* Missie - Smaller */}
-        <div className="lg:col-span-2 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100 relative overflow-hidden">
-          <div className="absolute -top-12 -right-12 w-32 h-32 bg-blue-200/30 rounded-full blur-2xl" />
-
+        <div className="lg:col-span-2 bg-slate-50 rounded-2xl p-6 border border-slate-200 relative overflow-hidden">
           <div className="relative z-10">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2.5 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg shadow-blue-500/20">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="p-2.5 bg-[#003366] rounded-xl shadow-lg shadow-slate-500/10">
                 <Compass className="w-5 h-5 text-white" />
               </div>
               <h2 className="text-lg font-bold text-slate-800">Missie</h2>
@@ -371,11 +390,11 @@ export default function VisieEnDoelen() {
               <textarea
                 value={visieForm.missie}
                 onChange={(e) => setVisieForm({ ...visieForm, missie: e.target.value })}
-                className="w-full bg-white border border-blue-200 rounded-xl p-4 text-slate-700 text-sm resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full bg-white border border-slate-200 rounded-xl p-4 text-slate-700 text-sm resize-none focus:ring-2 focus:ring-[#003366] focus:border-transparent leading-relaxed"
                 rows={5}
               />
             ) : (
-              <p className="text-slate-600 leading-relaxed">{visie.missie}</p>
+              <p className="text-slate-600 leading-[1.8] text-[15px]">{visie.missie}</p>
             )}
           </div>
         </div>
@@ -386,7 +405,7 @@ export default function VisieEnDoelen() {
         <div className="flex justify-end">
           <button
             onClick={handleSaveVisie}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg shadow-indigo-500/25"
+            className="flex items-center gap-2 px-6 py-3 bg-[#003366] text-white rounded-xl font-medium hover:bg-[#002855] transition-all"
           >
             <Save className="w-4 h-4" />
             Visie & Missie Opslaan
@@ -394,12 +413,76 @@ export default function VisieEnDoelen() {
         </div>
       )}
 
+      {/* Filters - Consistent met Vermogens pagina */}
+      <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Filter className="w-4 h-4 text-slate-400" />
+            <span className="text-xs font-medium text-slate-500">Status:</span>
+            <button
+              onClick={() => setFilterStatus(null)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                !filterStatus ? 'bg-[#003366] text-white shadow-lg' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
+            >
+              Alle
+            </button>
+            {Object.entries(statusConfig).map(([key, config]) => {
+              const StatusIcon = config.icon
+              return (
+                <button
+                  key={key}
+                  onClick={() => setFilterStatus(filterStatus === key ? null : key)}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                    filterStatus === key
+                      ? `${config.color} text-white shadow-lg`
+                      : `${config.bgLight} ${config.textColor} hover:opacity-80`
+                  }`}
+                >
+                  <StatusIcon className="w-3 h-3" />
+                  {config.label} ({statusCounts[key]})
+                </button>
+              )
+            })}
+          </div>
+          <div className="h-6 w-px bg-slate-200" />
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-slate-500">Prioriteit:</span>
+            <button
+              onClick={() => setFilterPrioriteit(null)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                !filterPrioriteit ? 'bg-[#003366] text-white shadow-lg' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
+            >
+              Alle
+            </button>
+            {Object.entries(prioriteitConfig).map(([key, config]) => {
+              const PrioIcon = config.icon
+              return (
+                <button
+                  key={key}
+                  onClick={() => setFilterPrioriteit(filterPrioriteit === key ? null : key)}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                    filterPrioriteit === key
+                      ? `${config.color} text-white shadow-lg`
+                      : `${config.bgLight} ${config.textColor} hover:opacity-80`
+                  }`}
+                >
+                  <PrioIcon className="w-3 h-3" />
+                  {config.label} ({prioriteitCounts[key]})
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+
       {/* Strategische Doelen Section */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="p-6 bg-gradient-to-r from-slate-50 to-white border-b border-slate-200">
+        <div className="p-6 border-b border-slate-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl shadow-lg shadow-emerald-500/20">
+              <div className="p-3 bg-[#003366] rounded-xl">
                 <Target className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -413,7 +496,7 @@ export default function VisieEnDoelen() {
                 setEditingDoel(null)
                 setShowAddDoel(true)
               }}
-              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl hover:from-emerald-600 hover:to-teal-700 transition-all text-sm font-medium shadow-lg shadow-emerald-500/20"
+              className="flex items-center gap-2 px-5 py-2.5 bg-[#003366] text-white rounded-xl hover:bg-[#002855] transition-all text-sm font-medium"
             >
               <Plus className="w-4 h-4" />
               Doel toevoegen
@@ -423,13 +506,13 @@ export default function VisieEnDoelen() {
 
         {/* Add/Edit Doel Form */}
         {showAddDoel && (
-          <div className="p-6 bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-emerald-200">
+          <div className="p-6 bg-slate-50 border-b border-slate-200">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-emerald-500 rounded-lg">
+                <div className="p-2 bg-[#003366] rounded-lg">
                   <Sparkles className="w-4 h-4 text-white" />
                 </div>
-                <h3 className="font-bold text-emerald-800">
+                <h3 className="font-bold text-slate-800">
                   {editingDoel ? 'Doel bewerken' : 'Nieuw Strategisch Doel'}
                 </h3>
               </div>
@@ -448,7 +531,7 @@ export default function VisieEnDoelen() {
                   type="text"
                   value={doelFormData.titel}
                   onChange={(e) => setDoelFormData({ ...doelFormData, titel: e.target.value })}
-                  className="w-full border border-emerald-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:ring-2 focus:ring-[#003366] focus:border-transparent"
                   placeholder="Titel van het doel"
                 />
               </div>
@@ -459,7 +542,7 @@ export default function VisieEnDoelen() {
                   type="text"
                   value={doelFormData.eigenaar}
                   onChange={(e) => setDoelFormData({ ...doelFormData, eigenaar: e.target.value })}
-                  className="w-full border border-emerald-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:ring-2 focus:ring-[#003366] focus:border-transparent"
                   placeholder="Naam/rol"
                 />
               </div>
@@ -469,7 +552,7 @@ export default function VisieEnDoelen() {
                 <textarea
                   value={doelFormData.beschrijving}
                   onChange={(e) => setDoelFormData({ ...doelFormData, beschrijving: e.target.value })}
-                  className="w-full border border-emerald-200 rounded-xl px-4 py-2.5 text-sm bg-white resize-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm bg-white resize-none focus:ring-2 focus:ring-[#003366] focus:border-transparent"
                   rows={2}
                   placeholder="Beschrijving van het doel"
                 />
@@ -481,7 +564,7 @@ export default function VisieEnDoelen() {
                   type="text"
                   value={doelFormData.indicator}
                   onChange={(e) => setDoelFormData({ ...doelFormData, indicator: e.target.value })}
-                  className="w-full border border-emerald-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:ring-2 focus:ring-[#003366] focus:border-transparent"
                   placeholder="NPS, %, etc."
                 />
               </div>
@@ -492,7 +575,7 @@ export default function VisieEnDoelen() {
                   type="text"
                   value={doelFormData.huidigeWaarde}
                   onChange={(e) => setDoelFormData({ ...doelFormData, huidigeWaarde: e.target.value })}
-                  className="w-full border border-emerald-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:ring-2 focus:ring-[#003366] focus:border-transparent"
                   placeholder="+15, 45%"
                 />
               </div>
@@ -503,7 +586,7 @@ export default function VisieEnDoelen() {
                   type="text"
                   value={doelFormData.doelWaarde}
                   onChange={(e) => setDoelFormData({ ...doelFormData, doelWaarde: e.target.value })}
-                  className="w-full border border-emerald-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:ring-2 focus:ring-[#003366] focus:border-transparent"
                   placeholder="+40, 90%"
                 />
               </div>
@@ -513,7 +596,7 @@ export default function VisieEnDoelen() {
                 <select
                   value={doelFormData.prioriteit}
                   onChange={(e) => setDoelFormData({ ...doelFormData, prioriteit: e.target.value })}
-                  className="w-full border border-emerald-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:ring-2 focus:ring-[#003366] focus:border-transparent"
                 >
                   <option value="high">Hoog</option>
                   <option value="medium">Midden</option>
@@ -526,7 +609,7 @@ export default function VisieEnDoelen() {
                 <select
                   value={doelFormData.status}
                   onChange={(e) => setDoelFormData({ ...doelFormData, status: e.target.value })}
-                  className="w-full border border-emerald-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:ring-2 focus:ring-[#003366] focus:border-transparent"
                 >
                   <option value="actief">Actief</option>
                   <option value="gepland">Gepland</option>
@@ -541,7 +624,7 @@ export default function VisieEnDoelen() {
                   type="text"
                   value={doelFormData.tijdshorizon}
                   onChange={(e) => setDoelFormData({ ...doelFormData, tijdshorizon: e.target.value })}
-                  className="w-full border border-emerald-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:ring-2 focus:ring-[#003366] focus:border-transparent"
                   placeholder="Q4 2026"
                 />
               </div>
@@ -556,7 +639,7 @@ export default function VisieEnDoelen() {
               </button>
               <button
                 onClick={handleSubmitDoel}
-                className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl hover:from-emerald-600 hover:to-teal-700 text-sm font-medium transition-all shadow-lg shadow-emerald-500/20"
+                className="flex items-center gap-2 px-5 py-2.5 bg-[#003366] text-white rounded-xl hover:bg-[#002855] text-sm font-medium transition-all"
               >
                 <Save className="w-4 h-4" />
                 {editingDoel ? 'Opslaan' : 'Toevoegen'}
@@ -567,9 +650,9 @@ export default function VisieEnDoelen() {
 
         {/* Doelen Grid */}
         <div className="p-6">
-          {strategischeDoelen.length > 0 ? (
+          {filteredDoelen.length > 0 ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-              {strategischeDoelen.map(doel => {
+              {filteredDoelen.map(doel => {
                 const status = statusConfig[doel.status] || statusConfig.actief
                 const prioriteit = prioriteitConfig[doel.prioriteit] || prioriteitConfig.medium
                 const progress = calculateProgress(doel.huidigeWaarde, doel.doelWaarde)
@@ -580,92 +663,102 @@ export default function VisieEnDoelen() {
                 return (
                   <div
                     key={doel.id}
-                    className="bg-white rounded-xl border border-slate-200 p-5 hover:shadow-xl hover:border-slate-300 transition-all duration-300 group relative"
+                    className="relative bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl hover:border-slate-300 transition-all duration-300 group cursor-pointer"
+                    onClick={() => handleEditDoel(doel)}
                   >
                     {/* Accent line */}
                     <div
-                      className="absolute top-0 left-0 right-0 h-1 rounded-t-xl"
+                      className="h-1.5"
                       style={{ backgroundColor: progressColor }}
                     />
 
-                    {/* Actions */}
-                    <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-200 flex gap-1">
-                      <button
-                        onClick={() => handleEditDoel(doel)}
-                        className="p-2 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
-                      >
-                        <Edit3 className="w-3.5 h-3.5 text-slate-600" />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteDoel(doel.id)}
-                        className="p-2 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
-                      >
-                        <Trash2 className="w-3.5 h-3.5 text-red-500" />
-                      </button>
-                    </div>
-
-                    <div className="flex gap-5">
-                      {/* Circular Progress */}
-                      <div className="flex-shrink-0">
-                        <CircularProgress
-                          value={progress}
-                          size={64}
-                          strokeWidth={5}
-                          color={progressColor}
-                        />
+                    <div className="p-5">
+                      {/* Actions - altijd zichtbaar voor duidelijkheid */}
+                      <div className="absolute top-10 right-4 flex gap-1 z-10">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleEditDoel(doel); }}
+                          className="p-2 bg-slate-100 hover:bg-[#003366] hover:text-white rounded-lg transition-colors group/btn"
+                          title="Klik om te bewerken"
+                        >
+                          <Edit3 className="w-3.5 h-3.5 text-slate-500 group-hover/btn:text-white" />
+                        </button>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleDeleteDoel(doel.id); }}
+                          className="p-2 bg-red-50 hover:bg-red-500 rounded-lg transition-colors group/btn"
+                          title="Verwijderen"
+                        >
+                          <Trash2 className="w-3.5 h-3.5 text-red-400 group-hover/btn:text-white" />
+                        </button>
                       </div>
 
-                      {/* Content */}
-                      <div className="flex-1 min-w-0">
-                        {/* Header */}
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${status.bgLight} ${status.textColor}`}>
-                            <StatusIcon className="w-3 h-3" />
-                            {status.label}
-                          </span>
-                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${prioriteit.bgLight} ${prioriteit.textColor}`}>
-                            {prioriteit.label}
-                          </span>
+                      <div className="flex gap-5">
+                        {/* Circular Progress */}
+                        <div className="flex-shrink-0">
+                          <CircularProgress
+                            value={progress}
+                            size={80}
+                            strokeWidth={6}
+                            color={progressColor}
+                          />
                         </div>
 
-                        <h3 className="font-bold text-slate-800 mb-1 pr-16 line-clamp-1">{doel.titel}</h3>
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
+                          {/* Header */}
+                          <div className="flex items-center gap-2 mb-2.5">
+                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${status.bgLight} ${status.textColor}`}>
+                              <StatusIcon className="w-3 h-3" />
+                              {status.label}
+                            </span>
+                            <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${prioriteit.bgLight} ${prioriteit.textColor}`}>
+                              {prioriteit.label}
+                            </span>
+                          </div>
 
-                        {doel.beschrijving && (
-                          <p className="text-sm text-slate-500 mb-3 line-clamp-2">{doel.beschrijving}</p>
+                          <h3 className="font-bold text-slate-800 mb-1.5 pr-16 line-clamp-1 text-base">{doel.titel}</h3>
+
+                          {doel.beschrijving && (
+                            <p className="text-sm text-slate-500 mb-4 line-clamp-2 leading-relaxed">{doel.beschrijving}</p>
+                          )}
+
+                          {/* Progress Details */}
+                          <div className="flex items-center gap-4 text-xs mb-4">
+                            <div className="flex items-center gap-1.5 text-slate-500">
+                              <BarChart3 className="w-3.5 h-3.5" />
+                              <span>{doel.indicator}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-slate-400">{doel.huidigeWaarde}</span>
+                              <ArrowRight className="w-3 h-3 text-slate-300" />
+                              <span className="font-semibold text-slate-700">{doel.doelWaarde}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Meta - Buiten de flex voor volledige breedte */}
+                      <div className="flex items-center gap-4 text-xs text-slate-500 pt-4 mt-4 border-t border-slate-100">
+                        {doel.eigenaar && (
+                          <span className="flex items-center gap-1.5">
+                            <User className="w-3.5 h-3.5 text-slate-400" />
+                            {doel.eigenaar}
+                          </span>
                         )}
-
-                        {/* Progress Details */}
-                        <div className="flex items-center gap-4 text-xs mb-3">
-                          <div className="flex items-center gap-1.5 text-slate-500">
-                            <BarChart3 className="w-3.5 h-3.5" />
-                            <span>{doel.indicator}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-slate-400">{doel.huidigeWaarde}</span>
-                            <ArrowRight className="w-3 h-3 text-slate-300" />
-                            <span className="font-semibold text-slate-700">{doel.doelWaarde}</span>
-                          </div>
-                        </div>
-
-                        {/* Meta */}
-                        <div className="flex items-center gap-4 text-xs text-slate-500 pt-3 border-t border-slate-100">
-                          {doel.eigenaar && (
-                            <span className="flex items-center gap-1.5">
-                              <User className="w-3.5 h-3.5 text-slate-400" />
-                              {doel.eigenaar}
-                            </span>
-                          )}
-                          {doel.tijdshorizon && (
-                            <span className="flex items-center gap-1.5">
-                              <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                              {doel.tijdshorizon}
-                            </span>
-                          )}
-                          <span className="flex items-center gap-1.5 text-purple-600 font-medium">
-                            <Zap className="w-3.5 h-3.5" />
-                            {vermogensCount} vermogens
+                        {doel.tijdshorizon && (
+                          <span className="flex items-center gap-1.5">
+                            <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                            {doel.tijdshorizon}
                           </span>
-                        </div>
+                        )}
+                        <span className="flex items-center gap-1.5 text-purple-600 font-medium">
+                          <Zap className="w-3.5 h-3.5" />
+                          {vermogensCount} vermogens
+                        </span>
+                        {/* Edit hint */}
+                        <span className="flex items-center gap-1.5 ml-auto text-slate-400 group-hover:text-[#003366] transition-colors">
+                          <Edit3 className="w-3.5 h-3.5" />
+                          <span className="hidden group-hover:inline">Klik om aan te passen</span>
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -674,17 +767,23 @@ export default function VisieEnDoelen() {
             </div>
           ) : (
             <div className="text-center py-16">
-              <div className="w-20 h-20 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Target className="w-10 h-10 text-emerald-500" />
+              <div className="w-20 h-20 bg-gradient-to-br from-slate-100 to-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Target className="w-10 h-10 text-slate-400" />
               </div>
-              <h3 className="text-lg font-semibold text-slate-700 mb-2">Nog geen strategische doelen</h3>
-              <p className="text-slate-500 mb-6">Begin met het definiëren van je eerste strategisch doel</p>
+              <h3 className="text-lg font-semibold text-slate-700 mb-2">
+                {filterStatus || filterPrioriteit ? 'Geen doelen gevonden' : 'Nog geen strategische doelen'}
+              </h3>
+              <p className="text-slate-500 mb-6">
+                {filterStatus || filterPrioriteit
+                  ? 'Probeer een andere filter'
+                  : 'Begin met het definiëren van je eerste strategisch doel'}
+              </p>
               <button
                 onClick={() => setShowAddDoel(true)}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl font-medium hover:from-emerald-600 hover:to-teal-700 transition-all shadow-lg shadow-emerald-500/20"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#003366] text-white rounded-xl font-medium hover:bg-[#002855] transition-all shadow-lg shadow-slate-500/10"
               >
                 <Plus className="w-4 h-4" />
-                Eerste doel toevoegen
+                {filterStatus || filterPrioriteit ? 'Doel toevoegen' : 'Eerste doel toevoegen'}
               </button>
             </div>
           )}

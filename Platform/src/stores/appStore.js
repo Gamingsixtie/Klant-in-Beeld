@@ -853,6 +853,57 @@ export const useAppStore = create((set, get) => ({
     })
   },
 
+  // Link vermogen to baat (voor DIN keten flow)
+  linkVermogenToBaat: (vermogenId, baatId) => {
+    const state = get()
+    set({
+      vermogens: state.vermogens.map(v => {
+        if (v.id === vermogenId) {
+          const gekoppeldeBaten = v.gekoppeldeBaten || []
+          if (!gekoppeldeBaten.includes(baatId)) {
+            return { ...v, gekoppeldeBaten: [...gekoppeldeBaten, baatId] }
+          }
+        }
+        return v
+      })
+    })
+  },
+
+  unlinkVermogenFromBaat: (vermogenId, baatId) => {
+    const state = get()
+    set({
+      vermogens: state.vermogens.map(v => {
+        if (v.id === vermogenId) {
+          return {
+            ...v,
+            gekoppeldeBaten: (v.gekoppeldeBaten || []).filter(id => id !== baatId)
+          }
+        }
+        return v
+      })
+    })
+  },
+
+  // Helper: Get strategische doelen zonder gekoppelde baat (voor DIN keten meldingen)
+  getDoelenZonderBaat: () => {
+    const state = get()
+    const doelenMetBaat = new Set(state.baten.map(b => b.gekoppeldDoel).filter(Boolean))
+    return state.strategischeDoelen.filter(d => !doelenMetBaat.has(d.id))
+  },
+
+  // Helper: Get baten zonder gekoppeld vermogen (voor DIN keten meldingen)
+  getBatenZonderVermogen: () => {
+    const state = get()
+    const allGekoppeldeBaten = state.vermogens.flatMap(v => v.gekoppeldeBaten || [])
+    return state.baten.filter(b => !allGekoppeldeBaten.includes(b.id))
+  },
+
+  // Helper: Get vermogens zonder gekoppelde inspanning (voor DIN keten meldingen)
+  getVermogensZonderInspanning: () => {
+    const state = get()
+    return state.vermogens.filter(v => !v.gekoppeldeInspanningen || v.gekoppeldeInspanningen.length === 0)
+  },
+
   // ==================== COMPUTED VALUES ====================
   getStats: () => {
     const state = get()

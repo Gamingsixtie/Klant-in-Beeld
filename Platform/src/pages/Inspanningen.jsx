@@ -28,7 +28,8 @@ import {
   Link2,
   LayoutList,
   Building,
-  Map
+  Map,
+  Zap
 } from 'lucide-react'
 
 // Type configuratie
@@ -105,7 +106,7 @@ const statussen = [
   { value: 'completed', label: 'Afgerond', icon: CheckCircle, color: 'text-green-500', bg: 'bg-green-100' }
 ]
 
-function InspanningForm({ inspanning, onSave, onCancel, baten }) {
+function InspanningForm({ inspanning, onSave, onCancel, baten, selectedVermogen }) {
   const [form, setForm] = useState(inspanning || {
     type: 'project',
     code: '',
@@ -122,6 +123,8 @@ function InspanningForm({ inspanning, onSave, onCancel, baten }) {
     werkfase: 1,
     gekoppeldeBaten: []
   })
+
+  const isNew = inspanning?._isNew
 
   const toggleBaat = (baatId) => {
     const current = form.gekoppeldeBaten || []
@@ -144,10 +147,13 @@ function InspanningForm({ inspanning, onSave, onCancel, baten }) {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-xl font-semibold text-white">
-                {inspanning ? 'Inspanning bewerken' : 'Nieuwe inspanning toevoegen'}
+                {inspanning && !isNew ? 'Inspanning bewerken' : 'Nieuwe inspanning toevoegen'}
               </h2>
               <p className="text-white/70 text-sm mt-1">
-                Definieer een project, proces of traject
+                {selectedVermogen
+                  ? `Voor vermogen: ${selectedVermogen.naam}`
+                  : 'Definieer een project, proces of traject'
+                }
               </p>
             </div>
             <button onClick={onCancel} className="p-2 hover:bg-white/10 rounded-lg transition-colors">
@@ -155,6 +161,21 @@ function InspanningForm({ inspanning, onSave, onCancel, baten }) {
             </button>
           </div>
         </div>
+
+        {/* Gekoppeld Vermogen indicator */}
+        {selectedVermogen && (
+          <div className="mx-6 mt-4 p-4 bg-amber-50 rounded-xl border border-amber-200">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-amber-500 rounded-lg">
+                <Link2 className="w-4 h-4 text-white" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-amber-800">Deze inspanning wordt gekoppeld aan:</p>
+                <p className="text-xs text-amber-600 mt-0.5">{selectedVermogen.naam} ({selectedVermogen.type} - {selectedVermogen.domein})</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           {/* Type selectie */}
@@ -449,11 +470,17 @@ function InspanningForm({ inspanning, onSave, onCancel, baten }) {
 function Inspanningen() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const { inspanningen, addInspanning, updateInspanning, deleteInspanning, baten } = useAppStore()
+  const { inspanningen, addInspanning, updateInspanning, deleteInspanning, baten, vermogens, linkVermogenToInspanning } = useAppStore()
   const [showForm, setShowForm] = useState(false)
   const [editingInspanning, setEditingInspanning] = useState(null)
   const [search, setSearch] = useState('')
   const [showFilters, setShowFilters] = useState(false)
+  const [selectedVermogenForInspanning, setSelectedVermogenForInspanning] = useState(null) // Vermogen waarvoor inspanning wordt aangemaakt
+
+  // Vermogens zonder gekoppelde inspanning (voor DIN keten meldingen)
+  const vermogensZonderInspanning = useMemo(() => {
+    return vermogens.filter(v => !v.gekoppeldeInspanningen || v.gekoppeldeInspanningen.length === 0)
+  }, [vermogens])
   const [selectedType, setSelectedType] = useState(null)
   const [selectedDomein, setSelectedDomein] = useState(null)
   const [selectedSector, setSelectedSector] = useState(null)
@@ -565,18 +592,63 @@ function Inspanningen() {
     )
   }
 
-  const handleSave = (form) => {
-    if (editingInspanning) {
+  // Open formulier voor een specifiek vermogen
+  const handleOpenFormForVermogen = (vermogen) => {
+    setSelectedVermogenForInspanning(vermogen)
+    setEditingInspanning({
+      type: 'project',
+      code: '',
+      naam: '',
+      beschrijving: `Inspanning voor vermogen: ${vermogen.naam}`,
+      sector: 'Programma',
+      domein: vermogen.domein || 'Proces',
+      eigenaar: vermogen.eigenaar || '',
+      leider: '',
+      startMaand: 1,
+      eindMaand: 6,
+      status: 'planned',
+      levenscyclus: 'opbouwen',
+      werkfase: 1,
+      gekoppeldeBaten: [],
+      _isNew: true, // Flag voor nieuw item
+      _linkedVermogenId: vermogen.id // Vermogen om te koppelen na opslaan
+    })
+    setShowForm(true)
+  }
+
+  const handleSave = async (form) => {
+    if (editingInspanning && !editingInspanning._isNew) {
       updateInspanning(editingInspanning.id, form)
     } else {
-      addInspanning(form)
+      // Nieuw item - eerst toevoegen
+      // Genereer een temp ID dat we kunnen gebruiken voor de koppeling
+      const tempId = `temp-${Date.now()}`
+      const newForm = { ...form, id: tempId }
+
+      // Voeg de inspanning toe
+      await addInspanning(form)
+
+      // Als er een vermogen gekoppeld moet worden
+      if (selectedVermogenForInspanning) {
+        // Wacht kort en dan koppelen met de nieuwste inspanning
+        setTimeout(() => {
+          const state = useAppStore.getState()
+          // Zoek de nieuwste inspanning (de laatste in de array)
+          const nieuwsteInspanning = state.inspanningen[state.inspanningen.length - 1]
+          if (nieuwsteInspanning && selectedVermogenForInspanning) {
+            linkVermogenToInspanning(selectedVermogenForInspanning.id, nieuwsteInspanning.id)
+          }
+        }, 200)
+      }
     }
     setShowForm(false)
     setEditingInspanning(null)
+    setSelectedVermogenForInspanning(null)
   }
 
   const handleEdit = (inspanning) => {
     setEditingInspanning(inspanning)
+    setSelectedVermogenForInspanning(null)
     setShowForm(true)
   }
 
@@ -604,13 +676,14 @@ function Inspanningen() {
               Beheer projecten, processen en trajecten binnen het programma
             </p>
           </div>
-          <button
-            onClick={() => setShowForm(true)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-white text-[#003366] rounded-xl font-medium hover:bg-white/90 transition-colors shadow-sm"
-          >
-            <Plus className="w-5 h-5" />
-            Nieuwe inspanning
-          </button>
+          {vermogensZonderInspanning.length > 0 && (
+            <div className="flex items-center gap-2 px-4 py-2 bg-amber-500/20 backdrop-blur-sm rounded-xl border border-amber-400/30">
+              <div className="w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center text-xs font-bold">
+                {vermogensZonderInspanning.length}
+              </div>
+              <span className="text-sm text-amber-100">Vermogens wachten op inspanning</span>
+            </div>
+          )}
         </div>
 
         {/* Summary Stats - Type breakdown */}
@@ -827,6 +900,62 @@ function Inspanningen() {
           </div>
         )}
       </div>
+
+      {/* DIN Keten Meldingen - Vermogens wachten op Inspanning */}
+      {vermogensZonderInspanning.length > 0 && (
+        <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl border-2 border-amber-200 overflow-hidden">
+          <div className="bg-amber-100/50 px-5 py-4 border-b border-amber-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-amber-500 rounded-xl">
+                  <Zap className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="font-bold text-amber-900">Vermogens wachten op een Inspanning</h2>
+                  <p className="text-sm text-amber-700">Klik op een vermogen om een inspanning aan te maken die hieraan bijdraagt</p>
+                </div>
+              </div>
+              <div className="px-3 py-1 bg-amber-500 text-white rounded-full text-sm font-bold">
+                {vermogensZonderInspanning.length}
+              </div>
+            </div>
+          </div>
+          <div className="p-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {vermogensZonderInspanning.map(vermogen => {
+                const dConfig = domeinConfig[vermogen.domein] || domeinConfig.Mens
+                return (
+                  <button
+                    key={vermogen.id}
+                    onClick={() => handleOpenFormForVermogen(vermogen)}
+                    className="flex items-start gap-3 p-4 bg-white rounded-xl border-2 border-amber-200 hover:border-amber-400 hover:shadow-md transition-all text-left group"
+                  >
+                    <div className={`p-2 ${dConfig.bgLight} rounded-lg flex-shrink-0`}>
+                      <Zap className={`w-5 h-5 ${dConfig.text}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-slate-800 group-hover:text-amber-700 transition-colors line-clamp-1">
+                        {vermogen.naam}
+                      </p>
+                      <p className="text-xs text-slate-500 mt-0.5">{vermogen.type}</p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className={`px-2 py-0.5 text-xs rounded-full ${dConfig.bgLight} ${dConfig.text}`}>
+                          {vermogen.domein}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="p-2 bg-amber-100 rounded-lg">
+                        <Plus className="w-4 h-4 text-amber-600" />
+                      </div>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Uitleg Banner */}
       <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border border-indigo-200 p-4">
@@ -1223,14 +1352,10 @@ function Inspanningen() {
             ) : (
               <div className="bg-white rounded-xl border border-slate-200 p-8 text-center">
                 <Icon className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-                <p className="text-slate-500 mb-3">Nog geen {config.label.toLowerCase()}en</p>
-                <button
-                  onClick={() => setShowForm(true)}
-                  className={`inline-flex items-center gap-2 px-4 py-2 ${config.bgLight} ${config.text} rounded-lg text-sm font-medium hover:opacity-80`}
-                >
-                  <Plus className="w-4 h-4" />
-                  Voeg {config.label.toLowerCase()} toe
-                </button>
+                <p className="text-slate-500 mb-2">Nog geen {config.label.toLowerCase()}en</p>
+                <p className="text-xs text-slate-400">
+                  Voeg een inspanning toe via de <a href="/vermogens" className="text-amber-600 hover:underline font-medium">Vermogens</a> pagina
+                </p>
               </div>
             )}
           </div>
@@ -1242,20 +1367,16 @@ function Inspanningen() {
         <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
           <Briefcase className="w-12 h-12 text-slate-300 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-slate-800 mb-2">Geen inspanningen gevonden</h3>
-          <p className="text-slate-500 mb-6">
+          <p className="text-slate-500 mb-2">
             {search || activeFiltersCount > 0
               ? 'Pas je zoek- of filtercriteria aan'
-              : 'Begin met het toevoegen van projecten en trajecten'
+              : 'Inspanningen worden aangemaakt via de DIN keten'
             }
           </p>
           {!search && activeFiltersCount === 0 && (
-            <button
-              onClick={() => setShowForm(true)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#003366] text-white rounded-xl hover:bg-[#0066cc] transition-colors"
-            >
-              <Plus className="w-5 h-5" />
-              Eerste inspanning toevoegen
-            </button>
+            <p className="text-sm text-slate-400">
+              Voeg eerst een <a href="/vermogens" className="text-amber-600 hover:underline font-medium">vermogen</a> toe, daarna kun je hier een inspanning aanmaken
+            </p>
           )}
         </div>
       )}
@@ -1265,8 +1386,9 @@ function Inspanningen() {
         <InspanningForm
           inspanning={editingInspanning}
           onSave={handleSave}
-          onCancel={() => { setShowForm(false); setEditingInspanning(null) }}
+          onCancel={() => { setShowForm(false); setEditingInspanning(null); setSelectedVermogenForInspanning(null); }}
           baten={baten}
+          selectedVermogen={selectedVermogenForInspanning}
         />
       )}
     </div>

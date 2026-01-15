@@ -9,8 +9,9 @@
  * - Quick actions bar
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useMethodologieStore } from '../stores/methodologieStore'
+import { useAppStore } from '../stores/appStore'
 import {
   levensloopcycli,
   themas,
@@ -22,7 +23,6 @@ import {
 import {
   sectoren,
   domeinen,
-  batenProfielen,
   programmaInfo,
   documentenRegister,
   kernprincipes,
@@ -125,6 +125,7 @@ const viewModes = [
 function Methodologie() {
   const navigate = useNavigate()
   const { voortgang, getCyclusVoortgang, getTotaleVoortgang, getVolgendeActie, advanceWeek, advanceCyclus, canUnlockCyclus, getStuurparametersMetMetadata, updateStuurparameter } = useMethodologieStore()
+  const { baten } = useAppStore()
   const [geselecteerdeCyclus, setGeselecteerdeCyclus] = useState(null)
   const [geselecteerdThema, setGeselecteerdThema] = useState(null)
   const [activeView, setActiveView] = useState('overzicht')
@@ -142,6 +143,31 @@ function Methodologie() {
   const totaal = getTotaleVoortgang()
   const volgendeActie = getVolgendeActie()
   const stuurparameters = getStuurparametersMetMetadata()
+
+  // Bereken baten per sector voor de sectie
+  const batenPerSector = useMemo(() => {
+    const sectorMapping = {
+      'Primair onderwijs': 'po',
+      'Voortgezet onderwijs': 'vo',
+      'Zakelijk Professionals': 'professionals'
+    }
+
+    const grouped = {
+      po: baten.filter(b => b.sector === 'Primair onderwijs'),
+      vo: baten.filter(b => b.sector === 'Voortgezet onderwijs'),
+      professionals: baten.filter(b => b.sector === 'Zakelijk Professionals')
+    }
+
+    // Bereken statistieken
+    const stats = {
+      total: baten.length,
+      completed: baten.filter(b => b.status === 'completed').length,
+      inProgress: baten.filter(b => b.status === 'in_progress').length,
+      pending: baten.filter(b => b.status === 'pending').length
+    }
+
+    return { grouped, stats }
+  }, [baten])
 
   // Toggle section expansion (progressive disclosure)
   const toggleSection = (section) => {
@@ -1163,14 +1189,20 @@ function Methodologie() {
           <div className="flex items-center gap-2">
             <Target className="w-5 h-5 text-slate-400" />
             <h2 className="font-medium text-slate-800">Baten per Sector</h2>
-            <span className="text-xs text-slate-500 ml-2">6 baten × 3 sectoren</span>
+            <span className="text-xs text-slate-500 ml-2">{batenPerSector.stats.total} baten</span>
           </div>
           <div className="flex items-center gap-4">
-            {/* Quick priority summary (zoals Keto) */}
+            {/* Quick status summary */}
             <div className="flex items-center gap-2">
-              <span className="text-xs text-red-600 font-medium">3 kritiek</span>
-              <span className="text-xs text-amber-600 font-medium">5 hoog</span>
-              <span className="text-xs text-green-600 font-medium">10 midden</span>
+              {batenPerSector.stats.completed > 0 && (
+                <span className="text-xs text-green-600 font-medium">{batenPerSector.stats.completed} afgerond</span>
+              )}
+              {batenPerSector.stats.inProgress > 0 && (
+                <span className="text-xs text-blue-600 font-medium">{batenPerSector.stats.inProgress} actief</span>
+              )}
+              {batenPerSector.stats.pending > 0 && (
+                <span className="text-xs text-slate-500 font-medium">{batenPerSector.stats.pending} gepland</span>
+              )}
             </div>
             {expandedSections.baten ? (
               <ChevronDown className="w-5 h-5 text-slate-400" />
@@ -1182,89 +1214,112 @@ function Methodologie() {
 
         {expandedSections.baten && (
           <div className="p-4 pt-0">
-            {/* Baten tabel met sector-specifieke waarden */}
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-slate-200">
-                    <th className="text-left py-3 px-2 font-medium text-slate-600">Baat</th>
-                    <th className="text-center py-3 px-2 font-medium text-slate-600">
-                      <div className="flex items-center justify-center gap-1">
-                        <div className="w-3 h-3 rounded" style={{ backgroundColor: sectoren[0].kleur }} />
-                        PO
+            {/* Baten per sector kolommen */}
+            <div className="grid grid-cols-3 gap-4">
+              {/* PO Kolom */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 pb-2 border-b border-slate-200">
+                  <div className="w-3 h-3 rounded" style={{ backgroundColor: sectoren[0]?.kleur || '#3b82f6' }} />
+                  <span className="font-medium text-slate-700">PO</span>
+                  <span className="text-xs text-slate-400">({batenPerSector.grouped.po.length})</span>
+                </div>
+                {batenPerSector.grouped.po.length > 0 ? (
+                  batenPerSector.grouped.po.map(baat => (
+                    <div key={baat.id} className="p-2 bg-slate-50 rounded-lg border border-slate-100">
+                      <div className="font-medium text-slate-800 text-sm">{baat.naam}</div>
+                      <div className="text-xs text-slate-500 mt-0.5">{baat.indicator || baat.domein}</div>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                          baat.status === 'completed' ? 'bg-green-100 text-green-700' :
+                          baat.status === 'in_progress' ? 'bg-blue-100 text-blue-700' :
+                          'bg-slate-100 text-slate-600'
+                        }`}>
+                          {baat.status === 'completed' ? 'Afgerond' : baat.status === 'in_progress' ? 'Actief' : 'Gepland'}
+                        </span>
                       </div>
-                    </th>
-                    <th className="text-center py-3 px-2 font-medium text-slate-600">
-                      <div className="flex items-center justify-center gap-1">
-                        <div className="w-3 h-3 rounded" style={{ backgroundColor: sectoren[1].kleur }} />
-                        VO
-                      </div>
-                    </th>
-                    <th className="text-center py-3 px-2 font-medium text-slate-600">
-                      <div className="flex items-center justify-center gap-1">
-                        <div className="w-3 h-3 rounded" style={{ backgroundColor: sectoren[2].kleur }} />
-                        ZAK
-                      </div>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {batenProfielen.slice(0, 6).map(baat => (
-                    <tr key={baat.id} className="border-b border-slate-100 hover:bg-slate-50">
-                      <td className="py-3 px-2">
-                        <div className="font-medium text-slate-800">{baat.naam}</div>
-                        <div className="text-xs text-slate-500">{baat.indicator}</div>
-                      </td>
-                      {['po', 'vo', 'professionals'].map((sectorId, idx) => {
-                        const sectorData = baat.perSector?.[sectorId]
-                        const prioriteitKleur = {
-                          kritiek: 'bg-red-100 text-red-700 border-red-200',
-                          hoog: 'bg-amber-100 text-amber-700 border-amber-200',
-                          midden: 'bg-green-100 text-green-700 border-green-200'
-                        }
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-xs text-slate-400 italic py-2">Geen baten voor PO</div>
+                )}
+              </div>
 
-                        return (
-                          <td key={sectorId} className="py-3 px-2 text-center">
-                            {sectorData ? (
-                              <div className="space-y-1">
-                                <div className="text-xs text-slate-500">
-                                  {sectorData.nulmeting} → <span className="font-semibold text-slate-700">{sectorData.doel}</span>
-                                </div>
-                                <span className={`inline-block text-[10px] px-1.5 py-0.5 rounded border ${prioriteitKleur[sectorData.prioriteit]}`}>
-                                  {sectorData.prioriteit}
-                                </span>
-                              </div>
-                            ) : (
-                              <span className="text-slate-300">-</span>
-                            )}
-                          </td>
-                        )
-                      })}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              {/* VO Kolom */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 pb-2 border-b border-slate-200">
+                  <div className="w-3 h-3 rounded" style={{ backgroundColor: sectoren[1]?.kleur || '#8b5cf6' }} />
+                  <span className="font-medium text-slate-700">VO</span>
+                  <span className="text-xs text-slate-400">({batenPerSector.grouped.vo.length})</span>
+                </div>
+                {batenPerSector.grouped.vo.length > 0 ? (
+                  batenPerSector.grouped.vo.map(baat => (
+                    <div key={baat.id} className="p-2 bg-slate-50 rounded-lg border border-slate-100">
+                      <div className="font-medium text-slate-800 text-sm">{baat.naam}</div>
+                      <div className="text-xs text-slate-500 mt-0.5">{baat.indicator || baat.domein}</div>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                          baat.status === 'completed' ? 'bg-green-100 text-green-700' :
+                          baat.status === 'in_progress' ? 'bg-blue-100 text-blue-700' :
+                          'bg-slate-100 text-slate-600'
+                        }`}>
+                          {baat.status === 'completed' ? 'Afgerond' : baat.status === 'in_progress' ? 'Actief' : 'Gepland'}
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-xs text-slate-400 italic py-2">Geen baten voor VO</div>
+                )}
+              </div>
+
+              {/* ZAK Kolom */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 pb-2 border-b border-slate-200">
+                  <div className="w-3 h-3 rounded" style={{ backgroundColor: sectoren[2]?.kleur || '#f59e0b' }} />
+                  <span className="font-medium text-slate-700">ZAK</span>
+                  <span className="text-xs text-slate-400">({batenPerSector.grouped.professionals.length})</span>
+                </div>
+                {batenPerSector.grouped.professionals.length > 0 ? (
+                  batenPerSector.grouped.professionals.map(baat => (
+                    <div key={baat.id} className="p-2 bg-slate-50 rounded-lg border border-slate-100">
+                      <div className="font-medium text-slate-800 text-sm">{baat.naam}</div>
+                      <div className="text-xs text-slate-500 mt-0.5">{baat.indicator || baat.domein}</div>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                          baat.status === 'completed' ? 'bg-green-100 text-green-700' :
+                          baat.status === 'in_progress' ? 'bg-blue-100 text-blue-700' :
+                          'bg-slate-100 text-slate-600'
+                        }`}>
+                          {baat.status === 'completed' ? 'Afgerond' : baat.status === 'in_progress' ? 'Actief' : 'Gepland'}
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-xs text-slate-400 italic py-2">Geen baten voor ZAK</div>
+                )}
+              </div>
             </div>
 
-            {/* Legenda en link naar Framework */}
+            {/* Link naar Baten pagina */}
             <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-100">
               <div className="flex items-center gap-4 text-xs text-slate-500">
-                <span className="font-medium">Prioriteit:</span>
+                <span className="font-medium">Status:</span>
                 <div className="flex items-center gap-1">
-                  <span className="px-1.5 py-0.5 rounded border bg-red-100 text-red-700 border-red-200">kritiek</span>
+                  <span className="px-1.5 py-0.5 rounded bg-green-100 text-green-700">afgerond</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <span className="px-1.5 py-0.5 rounded border bg-amber-100 text-amber-700 border-amber-200">hoog</span>
+                  <span className="px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">actief</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <span className="px-1.5 py-0.5 rounded border bg-green-100 text-green-700 border-green-200">midden</span>
+                  <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">gepland</span>
                 </div>
               </div>
               <button
-                onClick={() => navigate('/framework')}
+                onClick={() => navigate('/baten')}
                 className="flex items-center gap-2 px-4 py-2 bg-[#003366] text-white rounded-lg hover:bg-[#002244] transition-colors text-sm focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
               >
-                <span>Bekijk Baten × Domeinen Matrix</span>
+                <span>Beheer Baten</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>

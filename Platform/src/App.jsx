@@ -16,6 +16,7 @@ import Sessies from './pages/Sessies'
 import ProgrammaVsLijn from './pages/ProgrammaVsLijn'
 import VisieEnDoelen from './pages/VisieEnDoelen'
 import Vermogens from './pages/Vermogens'
+import DINKeten from './pages/DINKeten'
 import { useAppStore } from './stores/appStore'
 
 function App() {
@@ -62,6 +63,7 @@ function App() {
               <Route path="/roadmap" element={<Roadmap />} />
               <Route path="/visie-doelen" element={<VisieEnDoelen />} />
               <Route path="/vermogens" element={<Vermogens />} />
+              <Route path="/din-keten" element={<DINKeten />} />
               <Route path="/settings" element={<Settings />} />
             </Routes>
           </div>

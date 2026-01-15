@@ -15,7 +15,8 @@ import {
   Play,
   Scale,
   Eye,
-  Zap
+  Zap,
+  Link2
 } from 'lucide-react'
 
 const navItems = [
@@ -31,6 +32,7 @@ const navItems = [
   { path: '/sector/professionals', label: 'ZAK', description: 'Professionals', color: '#f59e0b' },
   // DIN Keten - juiste volgorde
   { type: 'divider', label: 'DIN Keten' },
+  { path: '/din-keten', icon: Link2, label: 'DIN Overzicht', description: 'Complete keten' },
   { path: '/visie-doelen', icon: Eye, label: 'Visie & Doelen', description: '1. Strategische richting' },
   { path: '/baten', icon: Target, label: 'Baten', description: '2. Meetbare resultaten' },
   { path: '/vermogens', icon: Zap, label: 'Vermogens', description: '3. Capabilities' },
