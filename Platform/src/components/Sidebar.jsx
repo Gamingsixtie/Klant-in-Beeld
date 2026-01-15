@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import { useMethodologieStore } from '../stores/methodologieStore'
+import { useAuth } from './Auth/AuthProvider'
 import {
   BookOpen,
   LayoutDashboard,
@@ -16,7 +17,9 @@ import {
   Scale,
   Eye,
   Zap,
-  Link2
+  Link2,
+  LogOut,
+  User
 } from 'lucide-react'
 
 const navItems = [
@@ -47,6 +50,7 @@ const navItems = [
 
 function Sidebar() {
   const { getTotaleVoortgang, voortgang } = useMethodologieStore()
+  const { user, signOut, requiresAuth } = useAuth()
   const totaal = getTotaleVoortgang()
 
   const navLinkClass = (isActive) => 
@@ -138,6 +142,30 @@ function Sidebar() {
           <Settings className="w-[18px] h-[18px] opacity-80" />
           <span className="font-medium text-[13px]">Instellingen</span>
         </NavLink>
+
+        {/* User info & Logout */}
+        {requiresAuth && user && (
+          <div className="mt-3 pt-3 border-t border-white/[0.06]">
+            <div className="flex items-center gap-2 px-3 py-2">
+              <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center">
+                <User className="w-4 h-4 text-white/60" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[11px] text-white/60 truncate">
+                  {user.email}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={signOut}
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-white/50 hover:bg-white/[0.06] hover:text-white/80 transition-all duration-150"
+            >
+              <LogOut className="w-[18px] h-[18px] opacity-80" />
+              <span className="font-medium text-[13px]">Uitloggen</span>
+            </button>
+          </div>
+        )}
+
         <div className="mt-4 px-3 text-[10px] text-white/20">
           <div className="font-medium">Werken aan Programmas</div>
           <div className="mt-0.5 opacity-70">v1.0.0</div>

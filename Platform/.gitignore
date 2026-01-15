@@ -25,3 +25,12 @@ dist-ssr
 
 # Windows reserved names
 nul
+
+# Environment variables (BELANGRIJK: nooit committen!)
+.env
+.env.local
+.env.production
+.env.*.local
+
+# Electron build output
+dist-electron

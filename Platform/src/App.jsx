@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import Sidebar from './components/Sidebar'
 import Methodologie from './pages/Methodologie'
 import ThemaDetail from './pages/ThemaDetail'
@@ -18,18 +18,49 @@ import VisieEnDoelen from './pages/VisieEnDoelen'
 import Vermogens from './pages/Vermogens'
 import DINKeten from './pages/DINKeten'
 import { useAppStore } from './stores/appStore'
+import { AuthProvider, useAuth } from './components/Auth/AuthProvider'
+import LoginPage from './components/Auth/LoginPage'
+import ResetPasswordPage from './components/Auth/ResetPasswordPage'
 
-function App() {
+// Main app content (protected)
+function AppContent() {
   const { initializeFromSupabase, isInitialized, isLoading } = useAppStore()
+  const { isAuthenticated, loading: authLoading } = useAuth()
+  const location = useLocation()
+
+  // Check if we're on the reset-password page
+  const isResetPasswordPage = location.pathname === '/reset-password'
 
   // Initialize data from Supabase on app load
   useEffect(() => {
-    if (!isInitialized) {
+    if (!isInitialized && isAuthenticated) {
       initializeFromSupabase()
     }
-  }, [initializeFromSupabase, isInitialized])
+  }, [initializeFromSupabase, isInitialized, isAuthenticated])
 
-  // Show loading state
+  // Show auth loading state
+  if (authLoading) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center bg-[#eef1f5]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#003366] mx-auto mb-4"></div>
+          <p className="text-slate-600">Authenticatie controleren...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Show reset password page (accessible when user has recovery token)
+  if (isResetPasswordPage && isAuthenticated) {
+    return <ResetPasswordPage />
+  }
+
+  // Show login page if not authenticated
+  if (!isAuthenticated) {
+    return <LoginPage />
+  }
+
+  // Show data loading state
   if (isLoading && !isInitialized) {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-[#eef1f5]">
@@ -53,7 +84,7 @@ function App() {
               <Route path="/introductie" element={<Introductie />} />
               <Route path="/thema/:themaId" element={<ThemaDetail />} />
               <Route path="/sector/:sectorId" element={<SectorDetail />} />
-                            <Route path="/templates" element={<Templates />} />
+              <Route path="/templates" element={<Templates />} />
               <Route path="/sessies" element={<Sessies />} />
               <Route path="/programma-vs-lijn" element={<ProgrammaVsLijn />} />
               <Route path="/dashboard" element={<AIDashboard />} />
@@ -65,11 +96,20 @@ function App() {
               <Route path="/vermogens" element={<Vermogens />} />
               <Route path="/din-keten" element={<DINKeten />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
             </Routes>
           </div>
         </div>
       </main>
     </div>
+  )
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   )
 }
 
