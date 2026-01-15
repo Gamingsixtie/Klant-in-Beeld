@@ -470,15 +470,49 @@ export const useAppStore = create((set, get) => ({
     try {
       const data = await db.fetchAllData()
       if (data) {
+        // Check of we initiële data moeten migreren naar Supabase
+        const needsMigration = {
+          strategischeDoelen: !data.strategischeDoelen || data.strategischeDoelen.length === 0,
+          vermogens: !data.vermogens || data.vermogens.length === 0,
+          visie: !data.visie || Object.keys(data.visie).length === 0
+        }
+
+        // Migreer initiële data als tabellen leeg zijn
+        if (needsMigration.strategischeDoelen) {
+          console.log('📦 Migreren initiële strategische doelen naar Supabase...')
+          for (const doel of initialStrategischeDoelen) {
+            const { id, ...doelData } = doel // Remove local ID
+            await db.createStrategischDoel(doelData)
+          }
+        }
+
+        if (needsMigration.vermogens) {
+          console.log('📦 Migreren initiële vermogens naar Supabase...')
+          for (const vermogen of initialVermogens) {
+            const { id, ...vermogenData } = vermogen // Remove local ID
+            await db.createVermogen(vermogenData)
+          }
+        }
+
+        if (needsMigration.visie) {
+          console.log('📦 Migreren initiële visie naar Supabase...')
+          await db.upsertVisie(initialVisie)
+        }
+
+        // Herlaad data na migratie
+        const freshData = needsMigration.strategischeDoelen || needsMigration.vermogens || needsMigration.visie
+          ? await db.fetchAllData()
+          : data
+
         set({
-          baten: data.baten?.length > 0 ? data.baten : initialBaten,
-          inspanningen: data.inspanningen?.length > 0 ? data.inspanningen : initialInspanningen,
-          stakeholders: data.stakeholders?.length > 0 ? data.stakeholders : initialStakeholders,
-          risicos: data.risicos || initialRisicos,
-          issues: data.issues || initialIssues,
-          strategischeDoelen: data.strategischeDoelen?.length > 0 ? data.strategischeDoelen : initialStrategischeDoelen,
-          vermogens: data.vermogens?.length > 0 ? data.vermogens : initialVermogens,
-          visie: data.visie || initialVisie,
+          baten: freshData.baten?.length > 0 ? freshData.baten : initialBaten,
+          inspanningen: freshData.inspanningen?.length > 0 ? freshData.inspanningen : initialInspanningen,
+          stakeholders: freshData.stakeholders?.length > 0 ? freshData.stakeholders : initialStakeholders,
+          risicos: freshData.risicos || initialRisicos,
+          issues: freshData.issues || initialIssues,
+          strategischeDoelen: freshData.strategischeDoelen?.length > 0 ? freshData.strategischeDoelen : initialStrategischeDoelen,
+          vermogens: freshData.vermogens?.length > 0 ? freshData.vermogens : initialVermogens,
+          visie: freshData.visie && Object.keys(freshData.visie).length > 0 ? freshData.visie : initialVisie,
           isInitialized: true,
           isLoading: false,
           useSupabase: true
