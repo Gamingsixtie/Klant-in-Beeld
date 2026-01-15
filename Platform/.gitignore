@@ -34,3 +34,5 @@ nul
 
 # Electron build output
 dist-electron
+
+.vercel
