@@ -130,37 +130,37 @@ function ProgrammaVsLijn() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#003366] via-[#004080] to-[#003366] rounded-2xl p-6 shadow-xl overflow-hidden relative">
+      <div className="bg-gradient-to-r from-[#003366] via-[#004080] to-[#003366] rounded-2xl p-4 sm:p-6 shadow-xl overflow-hidden relative">
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
           <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-blue-400/10 rounded-full blur-3xl" />
         </div>
         <div className="relative z-10">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-white/20 backdrop-blur-sm rounded-2xl shadow-lg">
-                <Scale className="w-8 h-8 text-white" />
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="p-2 sm:p-3 bg-white/20 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-lg">
+                <Scale className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-white/60 text-sm font-medium">Beslissingstool</span>
+                  <span className="text-white/60 text-xs sm:text-sm font-medium">Beslissingstool</span>
                 </div>
-                <h1 className="text-2xl font-bold text-white">Programma of Lijn?</h1>
-                <p className="text-white/70 mt-1 max-w-xl">
+                <h1 className="text-xl sm:text-2xl font-bold text-white">Programma of Lijn?</h1>
+                <p className="text-white/70 mt-1 max-w-xl text-sm hidden sm:block">
                   Bepaal of een initiatief thuishoort in het programma of in de lijnorganisatie.
                 </p>
               </div>
             </div>
-            <div className="flex gap-3">
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10 text-center">
-                <Briefcase className="w-5 h-5 text-white mx-auto mb-1" />
-                <div className="text-xs text-white/60">Programma</div>
-                <div className="text-sm font-semibold text-white">Tijdelijk</div>
+            <div className="flex gap-2 sm:gap-3">
+              <div className="flex-1 sm:flex-none bg-white/10 backdrop-blur-sm rounded-xl p-2 sm:p-3 border border-white/10 text-center">
+                <Briefcase className="w-4 h-4 sm:w-5 sm:h-5 text-white mx-auto mb-1" />
+                <div className="text-[10px] sm:text-xs text-white/60">Programma</div>
+                <div className="text-xs sm:text-sm font-semibold text-white">Tijdelijk</div>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10 text-center">
-                <Building className="w-5 h-5 text-white mx-auto mb-1" />
-                <div className="text-xs text-white/60">Lijn</div>
-                <div className="text-sm font-semibold text-white">Permanent</div>
+              <div className="flex-1 sm:flex-none bg-white/10 backdrop-blur-sm rounded-xl p-2 sm:p-3 border border-white/10 text-center">
+                <Building className="w-4 h-4 sm:w-5 sm:h-5 text-white mx-auto mb-1" />
+                <div className="text-[10px] sm:text-xs text-white/60">Lijn</div>
+                <div className="text-xs sm:text-sm font-semibold text-white">Permanent</div>
               </div>
             </div>
           </div>
@@ -364,9 +364,9 @@ function ProgrammaVsLijn() {
       )}
 
       {/* Kenmerken vergelijking */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6">
         <h2 className="font-semibold text-slate-800 mb-4">Kenmerken vergelijking</h2>
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           {/* Programma */}
           <div className="p-4 bg-[#003366]/5 rounded-xl border-2 border-[#003366]">
             <div className="flex items-center gap-2 mb-3">

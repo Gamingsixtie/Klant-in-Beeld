@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import Sidebar from './components/Sidebar'
 import MobileHeader from './components/MobileHeader'
+import BottomNav from './components/BottomNav'
 import { SidebarProvider } from './hooks/useResponsive'
 import Methodologie from './pages/Methodologie'
 import ThemaDetail from './pages/ThemaDetail'
@@ -83,8 +84,8 @@ function AppContent() {
         {/* Sidebar - responsive: overlay op mobiel, vast op desktop */}
         <Sidebar />
 
-        {/* Main content - pt-20 voor mobile header + safe area op iPhone notch */}
-        <main className="flex-1 overflow-auto bg-[#f8f9fb] min-w-0 pt-20 lg:pt-0">
+        {/* Main content - dynamische padding voor mobile header + bottom nav */}
+        <main className="flex-1 overflow-auto bg-[#f8f9fb] min-w-0 main-content-mobile pb-20 lg:pb-0">
           <div className="min-h-full px-4 py-4 sm:px-6 sm:py-6 lg:px-10 lg:py-10 xl:px-14 xl:py-12">
             <div className="max-w-[1400px] mx-auto">
               <Routes>
@@ -110,6 +111,9 @@ function AppContent() {
             </div>
           </div>
         </main>
+
+        {/* Bottom Navigation - alleen zichtbaar op mobiel */}
+        <BottomNav />
       </div>
     </SidebarProvider>
   )

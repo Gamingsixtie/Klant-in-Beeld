@@ -271,7 +271,7 @@ export default function AIDashboard() {
   }[panelState]
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] gap-4 lg:gap-6 relative">
+    <div className="flex flex-col lg:flex-row h-[calc(100dvh-theme(spacing.20)-theme(spacing.8))] lg:h-[calc(100vh-8rem)] gap-4 lg:gap-6 relative">
       {/* Keyboard Shortcuts Help Modal */}
       {showShortcutsHelp && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -344,31 +344,49 @@ export default function AIDashboard() {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Premium Header - Corporate Blue consistent met andere pagina's */}
-        <div className="bg-gradient-to-br from-[#003366] via-[#004080] to-[#002855] rounded-2xl p-5 mb-6 relative overflow-hidden">
+        <div className="bg-gradient-to-br from-[#003366] via-[#004080] to-[#002855] rounded-2xl p-4 sm:p-5 mb-4 sm:mb-6 relative overflow-hidden">
           {/* Background decoration */}
           <div className="absolute inset-0 overflow-hidden">
             <div className="absolute -top-24 -right-24 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
             <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-blue-400/10 rounded-full blur-3xl" />
           </div>
 
-          <div className="relative z-10 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl shadow-lg">
-                <Sparkles className="w-6 h-6 text-white" />
+          <div className="relative z-10 space-y-3 sm:space-y-0 sm:flex sm:items-center sm:justify-between">
+            {/* Title row */}
+            <div className="flex items-center justify-between sm:justify-start gap-3 sm:gap-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 sm:p-3 bg-white/20 backdrop-blur-sm rounded-xl shadow-lg">
+                  <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+                    AI Dashboard
+                    <span className="text-[10px] sm:text-xs bg-white/20 text-white/90 px-1.5 sm:px-2 py-0.5 rounded-full font-medium">Beta</span>
+                  </h1>
+                  <p className="text-xs sm:text-sm text-white/70 hidden sm:block">Stel vragen over je programma data</p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-xl font-bold text-white flex items-center gap-2">
-                  AI Dashboard
-                  <span className="text-xs bg-white/20 text-white/90 px-2 py-0.5 rounded-full font-medium">Beta</span>
-                </h1>
-                <p className="text-sm text-white/70">Stel vragen over je programma data</p>
-              </div>
+
+              {/* Stats badges - alleen op grotere schermen inline */}
+              {hasWidgets && (
+                <div className="flex items-center gap-2 sm:hidden">
+                  <div className="flex items-center gap-1 bg-white/10 backdrop-blur-sm px-2 py-1 rounded-lg border border-white/10">
+                    <Layers className="w-3 h-3 text-blue-300" />
+                    <span className="text-[10px] text-white font-medium">{kpiCount}</span>
+                  </div>
+                  <div className="flex items-center gap-1 bg-white/10 backdrop-blur-sm px-2 py-1 rounded-lg border border-white/10">
+                    <Activity className="w-3 h-3 text-emerald-300" />
+                    <span className="text-[10px] text-white font-medium">{chartCount}</span>
+                  </div>
+                </div>
+              )}
             </div>
 
-            <div className="flex items-center gap-3">
-              {/* Stats badges */}
+            {/* Controls row */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              {/* Stats badges - desktop */}
               {hasWidgets && (
-                <div className="flex items-center gap-2">
+                <div className="hidden sm:flex items-center gap-2">
                   <div className="flex items-center gap-1.5 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-white/10">
                     <Layers className="w-3.5 h-3.5 text-blue-300" />
                     <span className="text-xs text-white font-medium">{kpiCount} KPIs</span>
@@ -380,32 +398,34 @@ export default function AIDashboard() {
                 </div>
               )}
 
-              {/* Sector Filter */}
-              <div className="flex items-center gap-0.5 bg-white/10 backdrop-blur-sm rounded-xl p-1" data-tour="sector-filter">
-                <button
-                  onClick={() => setGlobalFilter('sector', null)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                    !globalFilters.sector
-                      ? 'bg-white text-slate-900 shadow-md'
-                      : 'text-slate-300 hover:text-white hover:bg-white/10'
-                  }`}
-                >
-                  Alle
-                </button>
-                {sectoren.map(sector => (
+              {/* Sector Filter - horizontaal scrollbaar op mobiel */}
+              <div className="flex-1 sm:flex-none overflow-x-auto scrollbar-hide -mx-1 px-1">
+                <div className="flex items-center gap-0.5 bg-white/10 backdrop-blur-sm rounded-xl p-1 w-max" data-tour="sector-filter">
                   <button
-                    key={sector.id}
-                    onClick={() => setGlobalFilter('sector', sector.id)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                      globalFilters.sector === sector.id
-                        ? 'bg-white shadow-md'
+                    onClick={() => setGlobalFilter('sector', null)}
+                    className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-medium transition-all whitespace-nowrap ${
+                      !globalFilters.sector
+                        ? 'bg-white text-slate-900 shadow-md'
                         : 'text-slate-300 hover:text-white hover:bg-white/10'
                     }`}
-                    style={globalFilters.sector === sector.id ? { color: sector.kleur } : {}}
                   >
-                    {sector.afkorting}
+                    Alle
                   </button>
-                ))}
+                  {sectoren.map(sector => (
+                    <button
+                      key={sector.id}
+                      onClick={() => setGlobalFilter('sector', sector.id)}
+                      className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-medium transition-all whitespace-nowrap ${
+                        globalFilters.sector === sector.id
+                          ? 'bg-white shadow-md'
+                          : 'text-slate-300 hover:text-white hover:bg-white/10'
+                      }`}
+                      style={globalFilters.sector === sector.id ? { color: sector.kleur } : {}}
+                    >
+                      {sector.afkorting}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Export Menu */}

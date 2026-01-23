@@ -287,6 +287,26 @@ main {
 }
 
 /* ========================================
+   MOBILE HEADER & CONTENT SPACING
+   ======================================== */
+
+/* Mobile header height: 56px base + safe area */
+:root {
+  --mobile-header-height: 56px;
+}
+
+/* Main content padding voor mobile header */
+.main-content-mobile {
+  padding-top: calc(var(--mobile-header-height) + env(safe-area-inset-top, 0px));
+}
+
+@media (min-width: 1024px) {
+  .main-content-mobile {
+    padding-top: 0;
+  }
+}
+
+/* ========================================
    MOBILE SIDEBAR - Expliciete classes voor Tailwind v4
    ======================================== */
 
@@ -350,10 +370,12 @@ main {
 }
 
 /* Hide scrollbar on mobile nav */
-.no-scrollbar::-webkit-scrollbar {
+.no-scrollbar::-webkit-scrollbar,
+.scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
-.no-scrollbar {
+.no-scrollbar,
+.scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }

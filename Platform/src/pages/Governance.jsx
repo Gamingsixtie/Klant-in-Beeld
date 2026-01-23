@@ -68,8 +68,8 @@ function StakeholderForm({ stakeholder, onSave, onCancel }) {
             <X className="w-5 h-5 text-slate-500" />
           </button>
         </div>
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Naam</label>
               <input
@@ -99,7 +99,7 @@ function StakeholderForm({ stakeholder, onSave, onCancel }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Functie</label>
               <input
@@ -120,7 +120,7 @@ function StakeholderForm({ stakeholder, onSave, onCancel }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
               <input
@@ -141,7 +141,7 @@ function StakeholderForm({ stakeholder, onSave, onCancel }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Belang</label>
               <select
@@ -339,24 +339,25 @@ function Governance() {
           </button>
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-4 mt-4">
+        {/* Tabs - scrollbaar op mobiel */}
+        <div className="flex gap-2 sm:gap-4 mt-4 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
           {[
-            { id: 'organigram', label: 'Organigram', icon: Users },
-            { id: 'stakeholders', label: `Stakeholders (${stakeholders.length})`, icon: User },
-            { id: 'raci', label: 'RACI Matrix', icon: CheckCircle }
+            { id: 'organigram', label: 'Organigram', shortLabel: 'Org', icon: Users },
+            { id: 'stakeholders', label: `Stakeholders (${stakeholders.length})`, shortLabel: `Stake (${stakeholders.length})`, icon: User },
+            { id: 'raci', label: 'RACI Matrix', shortLabel: 'RACI', icon: CheckCircle }
           ].map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg transition-colors whitespace-nowrap text-sm sm:text-base ${
                 activeTab === tab.id
                   ? 'bg-white text-[#003366] font-medium'
                   : 'text-white/80 hover:bg-white/10'
               }`}
             >
               <tab.icon className="w-4 h-4" />
-              {tab.label}
+              <span className="hidden sm:inline">{tab.label}</span>
+              <span className="sm:hidden">{tab.shortLabel}</span>
             </button>
           ))}
         </div>
@@ -461,7 +462,7 @@ function Governance() {
       <div className="bg-white rounded-xl border border-slate-200 p-5">
         <h2 className="text-lg font-semibold text-slate-800 mb-4">Rollen & Verantwoordelijkheden</h2>
 
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Sponsorgroep */}
           <div className="bg-slate-50 rounded-xl border border-slate-200 p-4 hover:shadow-md transition-all">
             <div className="flex items-center gap-2 mb-3">
@@ -784,7 +785,7 @@ function Governance() {
       <div className="bg-white rounded-xl border border-slate-100 hover:shadow-md transition-all duration-200 p-6">
         <h2 className="text-lg font-semibold text-slate-800 mb-6">Overlegstructuur</h2>
 
-        <div className="grid grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
           {/* Programmaraad */}
           <div className="p-5 bg-purple-50 rounded-xl border border-purple-200">
             <div className="flex items-center gap-3 mb-4">
@@ -1001,7 +1002,7 @@ function Governance() {
       {activeTab === 'stakeholders' && (
         <div className="space-y-6">
           {/* Stakeholder Summary Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
             {Object.entries(roleColors).map(([role, colors]) => {
               const count = stakeholdersByRole[role]?.length || 0
               return (
@@ -1273,11 +1274,11 @@ function Governance() {
           {/* Legenda */}
           <div className="mt-6 p-4 bg-slate-50 rounded-lg">
             <div className="text-sm font-medium text-slate-700 mb-2">Legenda rollen:</div>
-            <div className="grid grid-cols-5 gap-4 text-xs text-slate-600">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4 text-xs text-slate-600">
               <div><strong>PE</strong> = Programma-eigenaar</div>
               <div><strong>PM</strong> = Programmamanager</div>
               <div><strong>PR</strong> = Programmaraad</div>
-              <div><strong>BE</strong> = Baateigenaar (Sectormanager)</div>
+              <div><strong>BE</strong> = Baateigenaar</div>
               <div><strong>IL</strong> = Inspanningsleider</div>
             </div>
           </div>
