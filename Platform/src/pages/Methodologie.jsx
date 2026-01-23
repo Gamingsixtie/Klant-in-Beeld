@@ -222,7 +222,7 @@ function Methodologie() {
 
           <div className="p-6 space-y-6">
             {/* Kerninfo */}
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
               <div className="bg-slate-50 rounded-lg p-4">
                 <div className="text-xs text-slate-500 mb-1">Kernvraag</div>
                 <div className="font-medium text-slate-800">{cyclus.kernvraag}</div>
@@ -620,7 +620,7 @@ function Methodologie() {
 
         {expandedSections.stuurparameters && (
           <div className="p-4 pt-0">
-            <div className="grid grid-cols-5 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
               {stuurparameters.map(param => (
                 <div
                   key={param.id}
@@ -815,8 +815,9 @@ function Methodologie() {
             Timeline: Faseverloop Week 1-8
           </h2>
 
-          {/* Timeline Grid */}
-          <div className="relative">
+          {/* Timeline Grid - horizontaal scrollbaar op mobiel */}
+          <div className="relative overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+            <div className="min-w-[600px]">
             {/* Week headers */}
             <div className="grid grid-cols-9 gap-1 mb-2">
               <div className="text-xs font-medium text-slate-500 p-2">Fase</div>
@@ -881,6 +882,7 @@ function Methodologie() {
                 </button>
               </div>
             </div>
+            </div>{/* end min-w wrapper */}
           </div>
         </div>
       )}
@@ -963,8 +965,8 @@ function Methodologie() {
             </div>
           </div>
         </div>
-        <div className="p-4">
-        <div className="flex items-center">
+        <div className="p-4 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 sm:overflow-visible">
+        <div className="flex items-center min-w-[500px] sm:min-w-0">
           {levensloopcycli.map((cyclus, index) => {
             const isHuidig = voortgang.huidigeCyclus === cyclus.id
             const cyclusVoortgang = getCyclusVoortgang(cyclus.id)
@@ -1050,7 +1052,7 @@ function Methodologie() {
         </button>
 
         {expandedSections.themas && (
-          <div className="p-4 pt-0 grid grid-cols-4 gap-3">
+          <div className="p-4 pt-0 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
             {themas.map(thema => {
               const Icon = themaIcons[thema.id] || Circle
               const { templates, register } = getDocumentenVoorThema(thema.id)
@@ -1869,7 +1871,7 @@ function Methodologie() {
           <Users className="w-5 h-5 text-slate-400" />
           <h2 className="text-base font-medium text-slate-800">Sectoren</h2>
         </div>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           {sectoren.map(sector => (
             <button
               key={sector.id}

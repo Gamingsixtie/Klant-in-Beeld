@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, createContext, useContext } from 'react'
 
 // Breakpoint definitions matching Tailwind defaults
 const BREAKPOINTS = {
@@ -7,6 +7,31 @@ const BREAKPOINTS = {
   lg: 1024,
   xl: 1280,
   '2xl': 1536
+}
+
+// Context voor sidebar state (mobile menu)
+const SidebarContext = createContext(null)
+
+export function SidebarProvider({ children }) {
+  const [isOpen, setIsOpen] = useState(false)
+
+  const open = useCallback(() => setIsOpen(true), [])
+  const close = useCallback(() => setIsOpen(false), [])
+  const toggle = useCallback(() => setIsOpen(prev => !prev), [])
+
+  return (
+    <SidebarContext.Provider value={{ isOpen, open, close, toggle }}>
+      {children}
+    </SidebarContext.Provider>
+  )
+}
+
+export function useSidebar() {
+  const context = useContext(SidebarContext)
+  if (!context) {
+    throw new Error('useSidebar must be used within a SidebarProvider')
+  }
+  return context
 }
 
 /**
@@ -66,6 +91,11 @@ export function useResponsive() {
     return 'expanded'
   }, [isMobile, isTablet])
 
+  // Helper: should sidebar be shown as fixed (desktop) or overlay (mobile)
+  // Matches Tailwind's lg: breakpoint (1024px)
+  const shouldShowFixedSidebar = breakpoint === 'lg' || breakpoint === 'xl' || breakpoint === '2xl'
+  const shouldShowMobileSidebar = breakpoint === 'xs' || breakpoint === 'sm' || breakpoint === 'md'
+
   return {
     breakpoint,
     dimensions,
@@ -74,6 +104,9 @@ export function useResponsive() {
     isDesktop,
     isSmallScreen,
     getRecommendedPanelState,
+    // Sidebar helpers
+    shouldShowFixedSidebar,
+    shouldShowMobileSidebar,
     // Direct breakpoint checks
     isXs: breakpoint === 'xs',
     isSm: breakpoint === 'sm',

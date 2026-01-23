@@ -285,3 +285,139 @@ main {
 .number-animate {
   font-variant-numeric: tabular-nums;
 }
+
+/* ========================================
+   MOBILE SIDEBAR - Expliciete classes voor Tailwind v4
+   ======================================== */
+
+/* Mobile sidebar - verborgen by default */
+.sidebar-mobile {
+  position: fixed;
+  inset: 0;
+  left: 0;
+  z-index: 50;
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-100%);
+  transition: transform 300ms ease-out;
+}
+
+.sidebar-mobile.open {
+  transform: translateX(0);
+}
+
+/* Desktop sidebar - altijd zichtbaar */
+@media (min-width: 1024px) {
+  .sidebar-mobile {
+    position: static;
+    z-index: auto;
+    width: 260px;
+    transform: translateX(0);
+    flex-shrink: 0;
+  }
+
+  /* Verberg backdrop op desktop */
+  .sidebar-backdrop {
+    display: none;
+  }
+}
+
+/* ========================================
+   MOBILE RESPONSIVE UTILITIES
+   ======================================== */
+
+/* Safe area support voor notch devices (iPhone X+) */
+@supports (padding: max(0px)) {
+  .safe-top {
+    padding-top: max(0.5rem, env(safe-area-inset-top));
+  }
+  .safe-bottom {
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+  }
+  .safe-left {
+    padding-left: max(0px, env(safe-area-inset-left));
+  }
+  .safe-right {
+    padding-right: max(0px, env(safe-area-inset-right));
+  }
+}
+
+/* Touch-friendly targets - minimum 44x44px als per Apple HIG */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Hide scrollbar on mobile nav */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Mobile drawer overlay animation */
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInFromLeft {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+.animate-overlay {
+  animation: fadeInOverlay 0.3s ease-out;
+}
+
+.animate-drawer {
+  animation: slideInFromLeft 0.3s ease-out;
+}
+
+/* Prevent body scroll when mobile menu is open */
+body.menu-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+/* Responsive text utilities */
+@media (max-width: 640px) {
+  .text-responsive-sm {
+    font-size: 0.875rem;
+  }
+  .text-responsive-xs {
+    font-size: 0.75rem;
+  }
+}
+
+/* Mobile-first grid gaps */
+.gap-responsive {
+  gap: 0.5rem;
+}
+@media (min-width: 640px) {
+  .gap-responsive {
+    gap: 0.75rem;
+  }
+}
+@media (min-width: 1024px) {
+  .gap-responsive {
+    gap: 1rem;
+  }
+}
+
+/* Horizontal scroll container for tables */
+.scroll-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Card stack on mobile */
+@media (max-width: 640px) {
+  .card-stack > * + * {
+    margin-top: 0.75rem;
+  }
+}

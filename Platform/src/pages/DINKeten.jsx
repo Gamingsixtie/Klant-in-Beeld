@@ -194,19 +194,19 @@ export default function DINKeten() {
         </div>
 
         <div className="relative z-10">
-          <div className="flex items-start justify-between mb-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-white/20 backdrop-blur-sm rounded-2xl shadow-lg">
-                <Link2 className="w-8 h-8" />
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="p-2 sm:p-3 bg-white/20 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-lg">
+                <Link2 className="w-6 h-6 sm:w-8 sm:h-8" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold tracking-tight text-white">DIN Keten Overzicht</h1>
-                <p className="text-white/70 mt-1">Doelen → Baten → Vermogens → Inspanningen</p>
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight text-white">DIN Keten Overzicht</h1>
+                <p className="text-white/70 mt-1 text-xs sm:text-sm">Doelen → Baten → Vermogens → Inspanningen</p>
               </div>
             </div>
 
             {/* View Toggle */}
-            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-xl p-1">
+            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-xl p-1 self-start">
               <button
                 onClick={() => setViewMode('flow')}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
@@ -228,10 +228,10 @@ export default function DINKeten() {
             </div>
           </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-11 gap-2">
+          {/* Stats - responsive: stack op mobiel, flex wrap op tablet, grid op desktop */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-11 gap-2">
             {/* Doelen stats */}
-            <div className="col-span-2 bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10">
+            <div className="col-span-1 sm:col-span-1 md:col-span-2 bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10">
               <div className="flex items-center gap-2 mb-2">
                 <div className="p-1.5 bg-teal-500 rounded-lg">
                   <Eye className="w-4 h-4 text-white" />
@@ -247,13 +247,13 @@ export default function DINKeten() {
               </div>
             </div>
 
-            {/* Arrow */}
-            <div className="flex items-center justify-center">
+            {/* Arrow - verborgen op mobiel */}
+            <div className="hidden md:flex items-center justify-center">
               <ArrowRight className="w-5 h-5 text-white/40" />
             </div>
 
             {/* Baten stats */}
-            <div className="col-span-2 bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10">
+            <div className="col-span-1 sm:col-span-1 md:col-span-2 bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10">
               <div className="flex items-center gap-2 mb-2">
                 <div className="p-1.5 bg-amber-500 rounded-lg">
                   <Target className="w-4 h-4 text-white" />
@@ -269,13 +269,13 @@ export default function DINKeten() {
               </div>
             </div>
 
-            {/* Arrow */}
-            <div className="flex items-center justify-center">
+            {/* Arrow - verborgen op mobiel */}
+            <div className="hidden md:flex items-center justify-center">
               <ArrowRight className="w-5 h-5 text-white/40" />
             </div>
 
             {/* Vermogens stats */}
-            <div className="col-span-2 bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10">
+            <div className="col-span-1 sm:col-span-1 md:col-span-2 bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10">
               <div className="flex items-center gap-2 mb-2">
                 <div className="p-1.5 bg-violet-500 rounded-lg">
                   <Zap className="w-4 h-4 text-white" />
@@ -291,13 +291,13 @@ export default function DINKeten() {
               </div>
             </div>
 
-            {/* Arrow */}
-            <div className="flex items-center justify-center">
+            {/* Arrow - verborgen op mobiel */}
+            <div className="hidden md:flex items-center justify-center">
               <ArrowRight className="w-5 h-5 text-white/40" />
             </div>
 
             {/* Inspanningen stats */}
-            <div className="col-span-2 bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10">
+            <div className="col-span-1 sm:col-span-1 md:col-span-2 bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10">
               <div className="flex items-center gap-2">
                 <div className="p-1.5 bg-blue-500 rounded-lg">
                   <Briefcase className="w-4 h-4 text-white" />
@@ -579,7 +579,7 @@ export default function DINKeten() {
                       {/* Expanded Details */}
                       {isExpanded && (
                         <div className="px-4 pb-4 pt-2 border-t border-slate-200 bg-white/50">
-                          <div className="grid grid-cols-4 gap-3">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
                             {/* Doel details */}
                             <div className="bg-white rounded-lg p-3 border border-slate-200">
                               <div className="flex items-center gap-2 mb-2">
@@ -810,7 +810,7 @@ export default function DINKeten() {
       )}
 
       {/* Quick Navigation */}
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
         <button
           onClick={() => navigate('/visie-doelen')}
           className="flex items-center gap-3 p-4 bg-gradient-to-br from-teal-50 to-cyan-50 rounded-xl border-2 border-teal-200 hover:border-teal-400 transition-all group"

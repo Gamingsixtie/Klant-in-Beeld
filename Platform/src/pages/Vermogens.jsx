@@ -304,7 +304,7 @@ export default function Vermogens() {
           </div>
 
           {/* Stats Row */}
-          <div className="grid grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4">
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-white/20 rounded-lg">

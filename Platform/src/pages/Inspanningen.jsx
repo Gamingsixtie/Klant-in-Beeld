@@ -181,7 +181,7 @@ function InspanningForm({ inspanning, onSave, onCancel, baten, selectedVermogen 
           {/* Type selectie */}
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-3">Type inspanning</label>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {Object.entries(typeConfig).map(([value, config]) => {
                 const Icon = config.icon
                 return (
@@ -687,7 +687,7 @@ function Inspanningen() {
         </div>
 
         {/* Summary Stats - Type breakdown */}
-        <div className="grid grid-cols-5 gap-4 mt-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4 mt-6">
           <div className="bg-white/10 backdrop-blur rounded-xl p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-white/20 rounded-lg">

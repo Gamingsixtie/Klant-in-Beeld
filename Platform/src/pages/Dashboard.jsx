@@ -176,16 +176,16 @@ export default function Dashboard() {
   return (
     <div className="space-y-4">
       {/* HEADER - Compact met sector filter */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-bold text-slate-900">Programma Dashboard</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-lg sm:text-xl font-bold text-slate-900">Programma Dashboard</h1>
+          <p className="text-xs sm:text-sm text-slate-500">
             Cyclus: <span className="font-medium text-slate-700">{voortgang?.huidigeCyclus || 'Verkennen'}</span>
           </p>
         </div>
 
         {/* Sector Filter - Compact */}
-        <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-0.5">
+        <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-0.5 overflow-x-auto">
           <button
             onClick={() => setSectorFilter('alle')}
             className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
@@ -211,7 +211,7 @@ export default function Dashboard() {
 
       {/* ITERATIE 5: Actionable Insights - Alerts bovenaan */}
       {insights.length > 0 && (
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {insights.map((insight, i) => (
             <button
               key={i}
@@ -235,9 +235,9 @@ export default function Dashboard() {
       )}
 
       {/* ITERATIE 1: Primaire KPI - Go/No-Go Gereedheid altijd zichtbaar */}
-      <div className="grid grid-cols-5 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2 sm:gap-3">
         {/* Go/No-Go Gereedheid - Hoofdkaart */}
-        <div className="col-span-2 bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-4 text-white">
+        <div className="col-span-1 sm:col-span-2 bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-4 text-white">
           <div className="flex items-start justify-between mb-3">
             <div>
               <div className="text-xs text-white/60 uppercase tracking-wide">Go/No-Go Gereedheid</div>
@@ -327,7 +327,7 @@ export default function Dashboard() {
             {kpis.stuurparamsOk} van {kpis.stuurparamsTotal} op groen
           </span>
         </div>
-        <div className="grid grid-cols-5 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
           {stuurparameters?.map((param) => (
             <div
               key={param.id}
@@ -354,7 +354,7 @@ export default function Dashboard() {
       {sectorFilter === 'alle' && (
         <div className="bg-white rounded-xl border border-slate-200 p-4">
           <h3 className="text-sm font-semibold text-slate-700 mb-3">Per Sector</h3>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
             {sectorStats.map(sector => (
               <button
                 key={sector.id}
@@ -387,7 +387,7 @@ export default function Dashboard() {
 
       {/* Detail data - Baten en Inspanningen */}
       {hasData && (
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3">
           {/* Baten */}
           <div className="bg-white rounded-xl border border-slate-200 p-4">
             <div className="flex items-center justify-between mb-3">

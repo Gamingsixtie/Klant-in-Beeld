@@ -1,6 +1,8 @@
 import { useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import Sidebar from './components/Sidebar'
+import MobileHeader from './components/MobileHeader'
+import { SidebarProvider } from './hooks/useResponsive'
 import Methodologie from './pages/Methodologie'
 import ThemaDetail from './pages/ThemaDetail'
 import AIDashboard from './pages/AIDashboard'
@@ -41,8 +43,8 @@ function AppContent() {
   // Show auth loading state
   if (authLoading) {
     return (
-      <div className="flex h-screen w-screen items-center justify-center bg-[#eef1f5]">
-        <div className="text-center">
+      <div className="flex h-dvh w-full items-center justify-center bg-[#eef1f5]">
+        <div className="text-center px-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#003366] mx-auto mb-4"></div>
           <p className="text-slate-600">Authenticatie controleren...</p>
         </div>
@@ -63,8 +65,8 @@ function AppContent() {
   // Show data loading state
   if (isLoading && !isInitialized) {
     return (
-      <div className="flex h-screen w-screen items-center justify-center bg-[#eef1f5]">
-        <div className="text-center">
+      <div className="flex h-dvh w-full items-center justify-center bg-[#eef1f5]">
+        <div className="text-center px-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#003366] mx-auto mb-4"></div>
           <p className="text-slate-600">Data laden...</p>
         </div>
@@ -73,35 +75,43 @@ function AppContent() {
   }
 
   return (
-    <div className="flex h-screen w-screen bg-[#eef1f5]">
-      <Sidebar />
-      <main className="flex-1 overflow-auto bg-[#f8f9fb]">
-        <div className="min-h-full px-10 py-10 lg:px-14 lg:py-12 xl:px-16">
-          <div className="max-w-[1400px] mx-auto">
-            <Routes>
-              <Route path="/" element={<Methodologie />} />
-              <Route path="/methodologie" element={<Methodologie />} />
-              <Route path="/introductie" element={<Introductie />} />
-              <Route path="/thema/:themaId" element={<ThemaDetail />} />
-              <Route path="/sector/:sectorId" element={<SectorDetail />} />
-              <Route path="/templates" element={<Templates />} />
-              <Route path="/sessies" element={<Sessies />} />
-              <Route path="/programma-vs-lijn" element={<ProgrammaVsLijn />} />
-              <Route path="/dashboard" element={<AIDashboard />} />
-              <Route path="/baten" element={<Baten />} />
-              <Route path="/inspanningen" element={<Inspanningen />} />
-              <Route path="/governance" element={<Governance />} />
-              <Route path="/roadmap" element={<Roadmap />} />
-              <Route path="/visie-doelen" element={<VisieEnDoelen />} />
-              <Route path="/vermogens" element={<Vermogens />} />
-              <Route path="/din-keten" element={<DINKeten />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/reset-password" element={<ResetPasswordPage />} />
-            </Routes>
+    <SidebarProvider>
+      <div className="flex h-dvh w-full bg-[#eef1f5]">
+        {/* Mobile Header - alleen zichtbaar op kleine schermen */}
+        <MobileHeader />
+
+        {/* Sidebar - responsive: overlay op mobiel, vast op desktop */}
+        <Sidebar />
+
+        {/* Main content */}
+        <main className="flex-1 overflow-auto bg-[#f8f9fb] min-w-0 pt-14 lg:pt-0">
+          <div className="min-h-full px-4 py-4 sm:px-6 sm:py-6 lg:px-10 lg:py-10 xl:px-14 xl:py-12">
+            <div className="max-w-[1400px] mx-auto">
+              <Routes>
+                <Route path="/" element={<Methodologie />} />
+                <Route path="/methodologie" element={<Methodologie />} />
+                <Route path="/introductie" element={<Introductie />} />
+                <Route path="/thema/:themaId" element={<ThemaDetail />} />
+                <Route path="/sector/:sectorId" element={<SectorDetail />} />
+                <Route path="/templates" element={<Templates />} />
+                <Route path="/sessies" element={<Sessies />} />
+                <Route path="/programma-vs-lijn" element={<ProgrammaVsLijn />} />
+                <Route path="/dashboard" element={<AIDashboard />} />
+                <Route path="/baten" element={<Baten />} />
+                <Route path="/inspanningen" element={<Inspanningen />} />
+                <Route path="/governance" element={<Governance />} />
+                <Route path="/roadmap" element={<Roadmap />} />
+                <Route path="/visie-doelen" element={<VisieEnDoelen />} />
+                <Route path="/vermogens" element={<Vermogens />} />
+                <Route path="/din-keten" element={<DINKeten />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
+              </Routes>
+            </div>
           </div>
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
+    </SidebarProvider>
   )
 }
 

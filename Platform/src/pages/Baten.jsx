@@ -199,7 +199,7 @@ function BaatForm({ baat, onSave, onCancel, selectedDoel }) {
           {/* Sector selectie */}
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">Sector *</label>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               {sectoren.map(s => {
                 const config = sectorConfig[s]
                 return (
@@ -225,7 +225,7 @@ function BaatForm({ baat, onSave, onCancel, selectedDoel }) {
           {/* Domein selectie */}
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">Domein *</label>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {domeinen.map(d => {
                 const config = domeinConfig[d]
                 const Icon = config.icon
@@ -597,7 +597,7 @@ function Baten() {
         </div>
 
         {/* Sector stats */}
-        <div className="grid grid-cols-4 gap-3 mt-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mt-6">
           <div className="bg-white/10 backdrop-blur rounded-xl p-3 text-center">
             <p className="text-2xl font-bold text-white">{stats.total}</p>
             <p className="text-white/60 text-xs">Totaal</p>

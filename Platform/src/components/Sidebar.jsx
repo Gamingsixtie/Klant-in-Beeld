@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import { useMethodologieStore } from '../stores/methodologieStore'
 import { useAuth } from './Auth/AuthProvider'
+import { useSidebar } from '../hooks/useResponsive'
 import {
   BookOpen,
   LayoutDashboard,
@@ -19,7 +20,8 @@ import {
   Zap,
   Link2,
   LogOut,
-  User
+  User,
+  X
 } from 'lucide-react'
 
 const navItems = [
@@ -51,23 +53,51 @@ const navItems = [
 function Sidebar() {
   const { getTotaleVoortgang, voortgang } = useMethodologieStore()
   const { user, signOut, requiresAuth } = useAuth()
+  const { isOpen, close } = useSidebar()
   const totaal = getTotaleVoortgang()
 
-  const navLinkClass = (isActive) => 
-    "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 " + 
+  const navLinkClass = (isActive) =>
+    "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 touch-target " +
     (isActive ? "bg-white/[0.12] text-white" : "text-white/50 hover:bg-white/[0.06] hover:text-white/80")
 
+  // Sluit sidebar bij navigatie (op desktop heeft dit geen effect)
+  const handleNavClick = () => close()
+
+  // Sidebar: Mobile = hidden overlay, Desktop = static (using custom CSS)
+  const sidebarClasses = `sidebar-mobile ${isOpen ? 'open' : ''}`
+
   return (
-    <aside className="w-[260px] bg-gradient-to-b from-[#003366] via-[#002d5a] to-[#002244] text-white flex flex-col">
+    <>
+      {/* Backdrop voor mobiel - alleen zichtbaar als menu open */}
+      {isOpen && (
+        <div
+          className="sidebar-backdrop fixed inset-0 bg-black/50 z-40 transition-opacity duration-300"
+          onClick={close}
+          aria-hidden="true"
+        />
+      )}
+
+      <aside className={`${sidebarClasses} bg-gradient-to-b from-[#003366] via-[#002d5a] to-[#002244] text-white`}>
       <div className="p-6 border-b border-white/[0.06]">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-[#ff6600] to-[#e55a00] rounded-xl flex items-center justify-center shadow-lg shadow-orange-900/20">
-            <TrendingUp className="w-5 h-5" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-[#ff6600] to-[#e55a00] rounded-xl flex items-center justify-center shadow-lg shadow-orange-900/20">
+              <TrendingUp className="w-5 h-5" />
+            </div>
+            <div>
+              <h1 className="font-semibold text-[15px] tracking-tight">Klant in Beeld</h1>
+              <p className="text-[11px] text-white/40 font-medium">Cito Programma</p>
+            </div>
           </div>
-          <div>
-            <h1 className="font-semibold text-[15px] tracking-tight">Klant in Beeld</h1>
-            <p className="text-[11px] text-white/40 font-medium">Cito Programma</p>
-          </div>
+
+          {/* Close button - alleen zichtbaar op mobiel via CSS */}
+          <button
+            onClick={close}
+            className="p-2 rounded-lg hover:bg-white/10 transition-colors lg:hidden"
+            aria-label="Sluit menu"
+          >
+            <X className="w-5 h-5 text-white/60" />
+          </button>
         </div>
 
         <div className="mt-5">
@@ -104,6 +134,7 @@ function Sidebar() {
               <li key={item.path}>
                 <NavLink
                   to={item.path}
+                  onClick={handleNavClick}
                   className={({ isActive }) => navLinkClass(isActive)}
                 >
                   {item.icon ? (
@@ -137,6 +168,7 @@ function Sidebar() {
       <div className="p-4 border-t border-white/[0.06]">
         <NavLink
           to="/settings"
+          onClick={handleNavClick}
           className={({ isActive }) => navLinkClass(isActive)}
         >
           <Settings className="w-[18px] h-[18px] opacity-80" />
@@ -171,7 +203,8 @@ function Sidebar() {
           <div className="mt-0.5 opacity-70">v1.0.0</div>
         </div>
       </div>
-    </aside>
+      </aside>
+    </>
   )
 }
 
