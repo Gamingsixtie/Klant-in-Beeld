@@ -83,8 +83,8 @@ function AppContent() {
         {/* Sidebar - responsive: overlay op mobiel, vast op desktop */}
         <Sidebar />
 
-        {/* Main content */}
-        <main className="flex-1 overflow-auto bg-[#f8f9fb] min-w-0 pt-14 lg:pt-0">
+        {/* Main content - pt-20 voor mobile header + safe area op iPhone notch */}
+        <main className="flex-1 overflow-auto bg-[#f8f9fb] min-w-0 pt-20 lg:pt-0">
           <div className="min-h-full px-4 py-4 sm:px-6 sm:py-6 lg:px-10 lg:py-10 xl:px-14 xl:py-12">
             <div className="max-w-[1400px] mx-auto">
               <Routes>
